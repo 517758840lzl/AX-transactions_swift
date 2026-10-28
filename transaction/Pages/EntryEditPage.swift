@@ -40,16 +40,15 @@ struct EntryFormView: View {
             FieldLabel(text: copy.amount)
             LedgerField(text: $amount, placeholder: "0.00", decimal: true)
             HStack(spacing: 8) {
-                mathButton("+") { amount += "+" }
-                mathButton("−") { amount += "-" }
-                if showsSolve {
-                    Button(copy.amountSolve) { applySolve() }
-                        .font(.system(size: 15, weight: .bold))
-                        .foregroundStyle(Palette.ink)
-                        .padding(.horizontal, 16)
-                        .frame(minHeight: 40)
-                        .background(Palette.pink, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                }
+                mathButton("+", enabled: canAppendMark) { amount += "+" }
+                mathButton("−", enabled: canAppendMark) { amount += "-" }
+                Button(copy.amountSolve) { applySolve() }
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundColor(showsSolve ? Palette.ink : Palette.faint)
+                    .padding(.horizontal, 16)
+                    .frame(minHeight: 40)
+                    .background(showsSolve ? Palette.pink : Palette.neutral, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .disabled(!showsSolve)
             }
             FieldLabel(text: copy.name)
             LedgerField(text: $title, placeholder: copy.namePh)
@@ -191,21 +190,27 @@ struct EntryFormView: View {
         }
     }
 
-    private var showsSolve: Bool {
-        let marks: Set<Character> = ["+", "-", "－", "−"]
-        return amount.contains(where: { marks.contains($0) }) && LedgerMoney.solve(amount) != nil
+    private var canAppendMark: Bool {
+        guard let value = LedgerMoney.solve(amount) else { return false }
+        return value > 0
     }
 
-    private func mathButton(_ title: String, action: @escaping () -> Void) -> some View {
+    private var showsSolve: Bool {
+        let marks: Set<Character> = ["+", "-", "－", "−"]
+        return amount.contains(where: { marks.contains($0) }) && canAppendMark
+    }
+
+    private func mathButton(_ title: String, enabled: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
                 .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(Palette.ink)
+                .foregroundColor(enabled ? Palette.ink : Palette.faint)
                 .frame(minWidth: 52, minHeight: 40)
-                .background(Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .background(enabled ? Color.white : Palette.neutral, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                 .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Palette.line, lineWidth: 1))
         }
         .buttonStyle(.plain)
+        .disabled(!enabled)
     }
 
     private func applySolve() {
