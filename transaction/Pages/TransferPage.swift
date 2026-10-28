@@ -26,14 +26,15 @@ struct TransferFormView: View {
         .onAppear {
             guard !ready else { return }
             ready = true
-            fromID = store.book.accounts.first?.id ?? ""
-            toID = store.book.accounts.dropFirst().first?.id ?? fromID
+            fromID = store.openAccounts().first?.id ?? ""
+            toID = store.openAccounts().dropFirst().first?.id ?? fromID
         }
     }
 
     private func accountChoice(_ label: String, id: String, onSelect: @escaping (String) -> Void) -> some View {
-        let name = store.book.accounts.first { $0.id == id }?.name ?? ""
-        let options = store.book.accounts.map { ChoiceOption(id: $0.id, title: $0.name) }
+        let choices = store.openAccounts(keeping: id)
+        let name = choices.first { $0.id == id }?.name ?? ""
+        let options = choices.map { ChoiceOption(id: $0.id, title: $0.name) }
         return ChoiceField(label: label, title: name, options: options, selectedID: id, onSelect: onSelect)
     }
 

@@ -4,6 +4,7 @@ import SwiftUI
 struct RootView: View {
     @StateObject private var store: BookStore
     @StateObject private var screen = LedgerScreen()
+    @State private var locked = false
 
     init(store: BookStore) {
         _store = StateObject(wrappedValue: store)
@@ -59,7 +60,15 @@ struct RootView: View {
         .environment(\.pageBack, { screen.close() })
         .environment(\.keyboardDone, copy.done)
         .environment(\.amountsHidden, store.book.hideAmounts)
-        .onAppear { store.settleRepeats() }
+        .onAppear {
+            store.settleRepeats()
+            locked = store.book.lockOnOpen
+        }
+        .overlay {
+            if locked {
+                AppLockCover(title: copy.lockTitle, retry: copy.lockRetry) { locked = false }
+            }
+        }
         .tint(Palette.ink)
     }
 
@@ -100,6 +109,8 @@ struct RootView: View {
             CurrencyPickView(store: store)
         case .privacy:
             PrivacyView(title: copy.privacyTitle)
+        case .removed:
+            RemovedListView(store: store)
         }
     }
 

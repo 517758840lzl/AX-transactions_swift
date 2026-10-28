@@ -18,4 +18,5 @@ enum Page: Hashable {
     case language
     case currency
     case privacy
+    case removed
 }

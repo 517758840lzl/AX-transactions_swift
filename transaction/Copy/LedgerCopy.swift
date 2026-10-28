@@ -210,6 +210,31 @@ struct LedgerCopy {
     var categoryAddedFormat: String
     var starterCategories: [String]
     var categoryHintAmounts: [String: Double]
+    var cardStatementDay: String
+    var cardDueDay: String
+    var cardBill: String
+    var refundMark: String
+    var refundDone: String
+    var refundBackFormat: String
+    var splitMark: String
+    var splitAmount: String
+    var goalAttach: String
+    var goalNone: String
+    var goalDeposit: String
+    var goalFrom: String
+    var goalTo: String
+    var archiveAccount: String
+    var restoreAccount: String
+    var archivedTitle: String
+    var removedTitle: String
+    var removedRestore: String
+    var removedEmpty: String
+    var lockOnOpen: String
+    var lockTitle: String
+    var lockRetry: String
+    var lockOnWord: String
+    var lockOffWord: String
+    var amountSolve: String
     var localeID: String
 
     func monthTitle(now: Date = Date()) -> String {
@@ -246,6 +271,10 @@ struct LedgerCopy {
 
     func claimBack(_ title: String) -> String {
         fill(claimBackFormat, ["title": title])
+    }
+
+    func refundBack(_ title: String) -> String {
+        fill(refundBackFormat, ["title": title])
     }
 
     func categoryAdded(_ name: String) -> String {
@@ -399,6 +428,14 @@ private let chinese = LedgerCopy(
     categoryAddedFormat: "已添加分类：{name}",
     starterCategories: ["餐饮", "交通", "日用", "居住", "收入", "订阅", "娱乐"],
     categoryHintAmounts: ["餐饮": 1800, "交通": 400, "日用": 600, "居住": 3200, "收入": 8000, "订阅": 200, "娱乐": 500],
+    cardStatementDay: "出账日", cardDueDay: "还款日", cardBill: "本期账单",
+    refundMark: "退款", refundDone: "已退款", refundBackFormat: "{title} 退款",
+    splitMark: "拆成两笔", splitAmount: "另一笔金额",
+    goalAttach: "计入存钱目标", goalNone: "不计入", goalDeposit: "存入目标", goalFrom: "从", goalTo: "转到",
+    archiveAccount: "归档", restoreAccount: "恢复", archivedTitle: "已归档",
+    removedTitle: "回收站", removedRestore: "恢复", removedEmpty: "回收站是空的",
+    lockOnOpen: "打开时解锁", lockTitle: "解锁后才能看账", lockRetry: "再试一次",
+    lockOnWord: "已开启", lockOffWord: "未开启", amountSolve: "计算",
     localeID: "zh_CN"
 )
 
@@ -474,5 +511,13 @@ private let englishCopy = LedgerCopy(
     categoryAddedFormat: "Added category: {name}",
     starterCategories: ["Dining", "Transit", "Daily", "Housing", "Income", "Subscriptions", "Entertainment"],
     categoryHintAmounts: ["Dining": 1800, "Transit": 400, "Daily": 600, "Housing": 3200, "Income": 8000, "Subscriptions": 200, "Entertainment": 500],
+    cardStatementDay: "Statement day", cardDueDay: "Due day", cardBill: "This statement",
+    refundMark: "Refund", refundDone: "Refunded", refundBackFormat: "{title} refund",
+    splitMark: "Split in two", splitAmount: "Other amount",
+    goalAttach: "Count toward a goal", goalNone: "None", goalDeposit: "Add to goal", goalFrom: "From", goalTo: "To",
+    archiveAccount: "Archive", restoreAccount: "Restore", archivedTitle: "Archived",
+    removedTitle: "Recently deleted", removedRestore: "Restore", removedEmpty: "Nothing here",
+    lockOnOpen: "Unlock to open", lockTitle: "Unlock to see the book", lockRetry: "Try again",
+    lockOnWord: "On", lockOffWord: "Off", amountSolve: "Calculate",
     localeID: "en_US"
 )

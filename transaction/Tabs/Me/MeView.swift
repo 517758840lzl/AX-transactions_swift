@@ -65,6 +65,10 @@ struct MeView: View {
                     store.setHideAmounts(!store.book.hideAmounts)
                 }
                 divider
+                settingsRow(copy.lockOnOpen, trailing: store.book.lockOnOpen ? copy.lockOnWord : copy.lockOffWord) {
+                    store.setLockOnOpen(!store.book.lockOnOpen)
+                }
+                divider
                 settingsRow(copy.language, trailing: languageName, opens: true) { screen.open(.language) }
                 divider
                 settingsRow(copy.currency, trailing: "\(store.book.currency.rawValue) \(store.book.mark)", opens: true) { screen.open(.currency) }
@@ -74,6 +78,10 @@ struct MeView: View {
                 settingsRow(copy.exportBook, opens: true) { ShareSheet.present(store.exportText()) }
                 divider
                 settingsRow(copy.importData, opens: true) { pickingFile = true }
+                divider
+                settingsRow(copy.removedTitle, trailing: store.book.removed.isEmpty ? "" : "\(store.book.removed.count)", opens: true) {
+                    screen.open(.removed)
+                }
                 divider
                 settingsRow(copy.clearBook, opens: true, destructive: true) { confirmClear = true }
             }

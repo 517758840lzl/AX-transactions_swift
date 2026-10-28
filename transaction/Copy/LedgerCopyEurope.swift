@@ -70,6 +70,14 @@ let spanishCopy = LedgerCopy(
     categoryAddedFormat: "Categoría añadida: {name}",
     starterCategories: ["Comida", "Transporte", "Diario", "Vivienda", "Ingresos", "Suscripciones", "Ocio"],
     categoryHintAmounts: ["Comida": 1800, "Transporte": 400, "Diario": 600, "Vivienda": 3200, "Ingresos": 8000, "Suscripciones": 200, "Ocio": 500],
+    cardStatementDay: "Día de corte", cardDueDay: "Día de pago", cardBill: "Este periodo",
+    refundMark: "Reembolso", refundDone: "Reembolsado", refundBackFormat: "Reembolso de {title}",
+    splitMark: "Dividir en dos", splitAmount: "Otro importe",
+    goalAttach: "Sumar a una meta", goalNone: "Ninguna", goalDeposit: "Ingresar a la meta", goalFrom: "Desde", goalTo: "Hacia",
+    archiveAccount: "Archivar", restoreAccount: "Restaurar", archivedTitle: "Archivadas",
+    removedTitle: "Eliminadas", removedRestore: "Restaurar", removedEmpty: "No hay nada",
+    lockOnOpen: "Pedir desbloqueo", lockTitle: "Desbloquea para ver", lockRetry: "Reintentar",
+    lockOnWord: "Activado", lockOffWord: "Desactivado", amountSolve: "Calcular",
     localeID: "es_ES"
 )
 
@@ -143,6 +151,14 @@ let portugueseCopy = LedgerCopy(
     categoryAddedFormat: "Categoria adicionada: {name}",
     starterCategories: ["Alimentação", "Transporte", "Dia a dia", "Moradia", "Receitas", "Assinaturas", "Lazer"],
     categoryHintAmounts: ["Alimentação": 1800, "Transporte": 400, "Dia a dia": 600, "Moradia": 3200, "Receitas": 8000, "Assinaturas": 200, "Lazer": 500],
+    cardStatementDay: "Dia de corte", cardDueDay: "Dia de pagamento", cardBill: "Este período",
+    refundMark: "Reembolso", refundDone: "Reembolsado", refundBackFormat: "Reembolso de {title}",
+    splitMark: "Dividir em dois", splitAmount: "Outro valor",
+    goalAttach: "Somar a uma meta", goalNone: "Nenhuma", goalDeposit: "Guardar na meta", goalFrom: "De", goalTo: "Para",
+    archiveAccount: "Arquivar", restoreAccount: "Restaurar", archivedTitle: "Arquivadas",
+    removedTitle: "Apagadas", removedRestore: "Restaurar", removedEmpty: "Nada aqui",
+    lockOnOpen: "Pedir desbloqueio", lockTitle: "Desbloqueie para ver", lockRetry: "Tentar de novo",
+    lockOnWord: "Ligado", lockOffWord: "Desligado", amountSolve: "Calcular",
     localeID: "pt_BR"
 )
 
@@ -216,6 +232,14 @@ let frenchCopy = LedgerCopy(
     categoryAddedFormat: "Catégorie ajoutée : {name}",
     starterCategories: ["Repas", "Transports", "Quotidien", "Logement", "Revenus", "Abonnements", "Loisirs"],
     categoryHintAmounts: ["Repas": 1800, "Transports": 400, "Quotidien": 600, "Logement": 3200, "Revenus": 8000, "Abonnements": 200, "Loisirs": 500],
+    cardStatementDay: "Jour d'arrêté", cardDueDay: "Jour d'échéance", cardBill: "Cette période",
+    refundMark: "Remboursement", refundDone: "Remboursé", refundBackFormat: "Remboursement de {title}",
+    splitMark: "Couper en deux", splitAmount: "Autre montant",
+    goalAttach: "Compter pour un objectif", goalNone: "Aucun", goalDeposit: "Verser à l'objectif", goalFrom: "Depuis", goalTo: "Vers",
+    archiveAccount: "Archiver", restoreAccount: "Restaurer", archivedTitle: "Archivés",
+    removedTitle: "Supprimées", removedRestore: "Restaurer", removedEmpty: "Rien ici",
+    lockOnOpen: "Verrouiller à l'ouverture", lockTitle: "Déverrouillez pour voir", lockRetry: "Réessayer",
+    lockOnWord: "Activé", lockOffWord: "Désactivé", amountSolve: "Calculer",
     localeID: "fr_FR"
 )
 
@@ -289,6 +313,14 @@ let germanCopy = LedgerCopy(
     categoryAddedFormat: "Kategorie hinzugefügt: {name}",
     starterCategories: ["Essen", "Verkehr", "Alltag", "Wohnen", "Einnahmen", "Abos", "Freizeit"],
     categoryHintAmounts: ["Essen": 1800, "Verkehr": 400, "Alltag": 600, "Wohnen": 3200, "Einnahmen": 8000, "Abos": 200, "Freizeit": 500],
+    cardStatementDay: "Abrechnungstag", cardDueDay: "Fälligkeitstag", cardBill: "Diese Abrechnung",
+    refundMark: "Erstattung", refundDone: "Erstattet", refundBackFormat: "Erstattung: {title}",
+    splitMark: "In zwei teilen", splitAmount: "Anderer Betrag",
+    goalAttach: "Einem Ziel zuordnen", goalNone: "Keins", goalDeposit: "Zum Ziel legen", goalFrom: "Von", goalTo: "Nach",
+    archiveAccount: "Archivieren", restoreAccount: "Wiederherstellen", archivedTitle: "Archiviert",
+    removedTitle: "Zuletzt gelöscht", removedRestore: "Wiederherstellen", removedEmpty: "Nichts hier",
+    lockOnOpen: "Beim Öffnen sperren", lockTitle: "Zum Ansehen entsperren", lockRetry: "Nochmal",
+    lockOnWord: "An", lockOffWord: "Aus", amountSolve: "Rechnen",
     localeID: "de_DE"
 )
 
@@ -362,5 +394,13 @@ let italianCopy = LedgerCopy(
     categoryAddedFormat: "Categoria aggiunta: {name}",
     starterCategories: ["Pasti", "Trasporti", "Quotidiano", "Casa", "Entrate", "Abbonamenti", "Svago"],
     categoryHintAmounts: ["Pasti": 1800, "Trasporti": 400, "Quotidiano": 600, "Casa": 3200, "Entrate": 8000, "Abbonamenti": 200, "Svago": 500],
+    cardStatementDay: "Giorno di estratto", cardDueDay: "Giorno di scadenza", cardBill: "Questo periodo",
+    refundMark: "Rimborso", refundDone: "Rimborsato", refundBackFormat: "Rimborso di {title}",
+    splitMark: "Dividi in due", splitAmount: "Altro importo",
+    goalAttach: "Conta per un obiettivo", goalNone: "Nessuno", goalDeposit: "Versa nell'obiettivo", goalFrom: "Da", goalTo: "A",
+    archiveAccount: "Archivia", restoreAccount: "Ripristina", archivedTitle: "Archiviati",
+    removedTitle: "Eliminati", removedRestore: "Ripristina", removedEmpty: "Niente qui",
+    lockOnOpen: "Blocca all'apertura", lockTitle: "Sblocca per vedere", lockRetry: "Riprova",
+    lockOnWord: "Attivo", lockOffWord: "Spento", amountSolve: "Calcola",
     localeID: "it_IT"
 )

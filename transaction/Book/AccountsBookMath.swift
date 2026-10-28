@@ -27,7 +27,7 @@ extension BookMath {
         LedgerMoney.cents(holdingMarketValue(holding) - holding.costTotal)
     }
     static func netWorth(accounts: [Account], entries: [Entry], holdings: [Holding]) -> Double {
-        let kept = accounts.filter(\.countsInWorth)
+        let kept = accounts.filter { $0.countsInWorth && !$0.archived }
         let ids = Set(kept.map(\.id))
         let keptEntries = entries.filter { $0.accountId.isEmpty || ids.contains($0.accountId) }
         let cash = kept.reduce(0) { $0 + accountTotal($1, entries: keptEntries) }
@@ -40,7 +40,7 @@ extension BookMath {
     /// The period change is today's net worth minus the net worth on the day before that start.
     /// Holdings stay at the current market value on every day, so they drop out of the change.
     static func windowSnapshot(accounts: [Account], entries: [Entry], holdings: [Holding], days: Int, now: Date = Date()) -> WindowSnapshot {
-        let kept = accounts.filter(\.countsInWorth)
+        let kept = accounts.filter { $0.countsInWorth && !$0.archived }
         let ids = Set(kept.map(\.id))
         let keptEntries = entries.filter { $0.accountId.isEmpty || ids.contains($0.accountId) }
         let holdingsValue = holdingsMarketTotal(holdings)
@@ -84,5 +84,30 @@ extension BookMath {
     static func formatPercent(delta: Double, base: Double) -> String {
         if base == 0 { return delta == 0 ? "0%" : "—" }
         return LedgerMoney.signedPercent((delta / abs(base)) * 100)
+    }
+
+    static func goalKept(_ goal: SavingGoal, entries: [Entry]) -> Double {
+        let linked = entries.filter { $0.goalId == goal.id && $0.isOut }.reduce(0) { $0 + $1.amount }
+        return LedgerMoney.cents(goal.saved + linked)
+    }
+
+    /// Statement window for a card. `statementDay` and `dueDay` are 1...28.
+    static func cardCycle(_ account: Account, entries: [Entry], now: Date = Date()) -> CardCycle? {
+        guard account.kind == .card, account.statementDay >= 1 else { return nil }
+        let today = LedgerDay.today(now)
+        let day = Calendar.current.component(.day, from: now)
+        let offset = day >= account.statementDay ? 0 : -1
+        let start = LedgerDay.dateInMonth(offset: offset, day: account.statementDay, now: now)
+        let nextStart = LedgerDay.dateInMonth(offset: offset + 1, day: account.statementDay, now: now)
+        let end = LedgerDay.adding(days: -1, to: nextStart)
+        let dueDay = account.dueDay >= 1 ? account.dueDay : account.statementDay
+        var due = LedgerDay.dateInMonth(offset: offset, day: dueDay, now: now)
+        if due <= start {
+            due = LedgerDay.dateInMonth(offset: offset + 1, day: dueDay, now: now)
+        }
+        let close = min(end, today)
+        let rows = entries.filter { $0.accountId == account.id && $0.date >= start && $0.date <= close }
+        let spent = rows.reduce(0) { $0 + ($1.isOut ? $1.amount : -$1.amount) }
+        return CardCycle(start: start, end: end, due: due, spent: LedgerMoney.cents(spent))
     }
 }

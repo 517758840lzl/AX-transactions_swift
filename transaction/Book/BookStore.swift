@@ -30,7 +30,12 @@ final class BookStore: ObservableObject {
             store.persist()
         }
         store.settleRepeats()
+        store.purgeRemoved()
         return store
+    }
+
+    func openAccounts(keeping id: String = "") -> [Account] {
+        book.accounts.filter { !$0.archived || $0.id == id }
     }
 
     var copy: LedgerCopy { LedgerCopy.resolve(book.locale) }
@@ -152,7 +157,8 @@ final class BookStore: ObservableObject {
         persist()
     }
 
-    func saveEntry(_ entry: Entry, creatingCashNamed name: String?) {
+    @discardableResult
+    func saveEntry(_ entry: Entry, creatingCashNamed name: String?) -> Entry {
         var next = entry
         if next.accountId.isEmpty {
             let account = Account(
@@ -175,10 +181,94 @@ final class BookStore: ObservableObject {
             book.entries.insert(next, at: 0)
         }
         persist()
+        return next
     }
 
     func deleteEntry(_ id: String) {
+        if let entry = book.entries.first(where: { $0.id == id }) {
+            book.removed.insert(RemovedEntry(entry: entry, removedOn: LedgerDay.today()), at: 0)
+        }
         book.entries.removeAll { $0.id == id }
+        persist()
+    }
+
+    func restoreEntry(_ id: String) {
+        guard let item = book.removed.first(where: { $0.id == id }) else { return }
+        book.removed.removeAll { $0.id == id }
+        if !book.entries.contains(where: { $0.id == item.entry.id }) {
+            book.entries.insert(item.entry, at: 0)
+        }
+        persist()
+    }
+
+    func purgeRemoved(now: Date = Date()) {
+        let cutoff = LedgerDay.adding(days: -7, to: LedgerDay.today(now))
+        let kept = book.removed.filter { $0.removedOn >= cutoff }
+        guard kept.count != book.removed.count else { return }
+        book.removed = kept
+        persist()
+    }
+
+    func refund(_ source: Entry) {
+        guard source.isOut, source.refundOf.isEmpty else { return }
+        guard !book.entries.contains(where: { $0.refundOf == source.id }) else { return }
+        let back = Entry(
+            id: "refund-\(source.id)",
+            title: copy.refundBack(source.title),
+            amount: source.amount,
+            direction: .income,
+            category: source.category,
+            date: LedgerDay.today(),
+            accountName: source.accountName,
+            accountId: source.accountId,
+            checked: true,
+            shared: source.shared,
+            countsInBudget: false,
+            claim: .none,
+            refundOf: source.id
+        )
+        saveEntry(back, creatingCashNamed: nil)
+    }
+
+    func depositTowardGoal(_ goal: SavingGoal, from: Account, to: Account, amount: Double, date: String) {
+        let value = LedgerMoney.cents(amount)
+        guard value > 0, from.id != to.id else { return }
+        let stamp = LedgerID.make()
+        let incoming = Entry(
+            id: "transfer-\(stamp)-in",
+            title: "\(copy.transferFrom) \(from.name)",
+            amount: value,
+            direction: .income,
+            category: copy.transferCategory,
+            date: date,
+            accountName: to.name,
+            accountId: to.id,
+            checked: true,
+            shared: false,
+            countsInBudget: false,
+            claim: .none
+        )
+        let outgoing = Entry(
+            id: "transfer-\(stamp)-out",
+            title: goal.title,
+            amount: value,
+            direction: .out,
+            category: copy.transferCategory,
+            date: date,
+            accountName: from.name,
+            accountId: from.id,
+            checked: true,
+            shared: false,
+            countsInBudget: false,
+            claim: .none,
+            goalId: goal.id
+        )
+        book.entries.insert(contentsOf: [incoming, outgoing], at: 0)
+        persist()
+    }
+
+    func setLockOnOpen(_ on: Bool) {
+        book.lockOnOpen = on
         persist()
     }
 
@@ -252,6 +342,7 @@ final class BookStore: ObservableObject {
         book.categoryCaps = [:]
         book.repeats = []
         book.goals = []
+        book.removed = []
         book.sampleCleared = true
         persist()
     }

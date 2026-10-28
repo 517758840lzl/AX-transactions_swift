@@ -18,6 +18,10 @@ struct Account: Identifiable, Equatable {
     var opening: Double
     var kind: AccountKind
     var countsInWorth: Bool
+    var archived: Bool = false
+    /// 1...28. Zero means the card has no statement cycle yet.
+    var statementDay: Int = 0
+    var dueDay: Int = 0
 }
 
 struct Holding: Identifiable, Equatable {
@@ -44,8 +48,27 @@ struct Entry: Identifiable, Equatable {
     var shared: Bool
     var countsInBudget: Bool
     var claim: ClaimMark
+    /// Set on the money that came back. Empty on the original spend.
+    var refundOf: String = ""
+    /// Saving goal this outflow counts toward.
+    var goalId: String = ""
+    /// Shared by the two halves of one purchase.
+    var splitGroup: String = ""
 
     var isOut: Bool { direction == .out }
+}
+
+struct RemovedEntry: Equatable, Identifiable {
+    var entry: Entry
+    var removedOn: String
+    var id: String { entry.id }
+}
+
+struct CardCycle {
+    var start: String
+    var end: String
+    var due: String
+    var spent: Double
 }
 
 enum ClaimMark: String {
@@ -104,6 +127,8 @@ struct Book {
     var repeats: [RepeatPlan]
     var goals: [SavingGoal]
     var hideAmounts: Bool
+    var lockOnOpen: Bool
+    var removed: [RemovedEntry]
     var sampleCleared: Bool
 
     var mark: String { currency.mark }
@@ -124,6 +149,8 @@ struct Book {
             repeats: [],
             goals: [],
             hideAmounts: false,
+            lockOnOpen: false,
+            removed: [],
             sampleCleared: false
         )
     }

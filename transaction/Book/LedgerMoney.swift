@@ -29,6 +29,36 @@ enum LedgerMoney {
         return String(grouped.reversed()) + "." + fraction
     }
 
+    /// Reads a plain amount or a sum such as `12+8` or `20-3.5`.
+    static func solve(_ raw: String) -> Double? {
+        let text = raw
+            .replacingOccurrences(of: " ", with: "")
+            .replacingOccurrences(of: "＋", with: "+")
+            .replacingOccurrences(of: "－", with: "-")
+            .replacingOccurrences(of: "−", with: "-")
+        guard !text.isEmpty else { return nil }
+        var total = 0.0
+        var number = ""
+        var sign = 1.0
+        func flush() -> Bool {
+            if number.isEmpty { return false }
+            guard let value = Double(number) else { return false }
+            total += sign * value
+            number = ""
+            return true
+        }
+        for character in text {
+            if character == "+" || character == "-" {
+                guard flush() else { return nil }
+                sign = character == "-" ? -1 : 1
+            } else {
+                number.append(character)
+            }
+        }
+        guard flush() else { return nil }
+        return total
+    }
+
     static func text(_ value: Double, mark: String, signed: Bool = false) -> String {
         let sign: String
         if signed, value > 0 {

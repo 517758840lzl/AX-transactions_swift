@@ -46,6 +46,7 @@ struct AccountsView: View {
                 if shows("fund") {
                     holdingGroup(copy.holdingsFund, funds, toneOffset: 5, copy: copy)
                 }
+                archivedGroup(copy)
             }
             if store.book.accounts.count >= 2 {
                 PillButton(title: copy.transfer, filled: false) { screen.open(.transfer) }
@@ -159,7 +160,7 @@ struct AccountsView: View {
     private func mixRows(priorISO: String, stocks: [Holding], funds: [Holding], copy: LedgerCopy) -> [MixSlice] {
         var rows: [MixSlice] = []
         for kind in AccountKind.order {
-            let accounts = store.book.accounts.filter { $0.kind == kind }
+            let accounts = store.book.accounts.filter { $0.kind == kind && !$0.archived }
             if accounts.isEmpty { continue }
             let total = accounts.reduce(0) { sum, account in
                 sum + BookMath.accountNowAndPrior(account, entries: store.book.entries, priorISO: priorISO).now
@@ -177,7 +178,7 @@ struct AccountsView: View {
 
     @ViewBuilder
     private func accountGroup(_ kind: AccountKind, priorISO: String, copy: LedgerCopy) -> some View {
-        let accounts = store.book.accounts.filter { $0.kind == kind }
+        let accounts = store.book.accounts.filter { $0.kind == kind && !$0.archived }
         if !accounts.isEmpty {
             let toneBase = AccountKind.order.firstIndex(of: kind) ?? 0
             let rows = accounts.map { account -> (Account, Double, Double) in
@@ -204,6 +205,34 @@ struct AccountsView: View {
                             value: row.1,
                             detail: BookMath.formatPercent(delta: delta, base: row.2),
                             detailColor: delta >= 0 ? Palette.up : Palette.down
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.top, 4)
+        }
+    }
+
+    @ViewBuilder
+    private func archivedGroup(_ copy: LedgerCopy) -> some View {
+        let accounts = store.book.accounts.filter(\.archived)
+        if !accounts.isEmpty {
+            VStack(alignment: .leading, spacing: 0) {
+                Text(copy.archivedTitle)
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundStyle(Palette.muted)
+                ForEach(Array(accounts.enumerated()), id: \.element.id) { index, account in
+                    Button {
+                        screen.open(.account(id: account.id))
+                    } label: {
+                        ledgerLine(
+                            name: account.name,
+                            meta: copy.accountKind(account.kind),
+                            tone: index,
+                            value: BookMath.accountTotal(account, entries: store.book.entries),
+                            detail: "",
+                            detailColor: Palette.muted
                         )
                     }
                     .buttonStyle(.plain)

@@ -25,6 +25,7 @@ enum BookDocument {
         [
             "sampleCleared": book.sampleCleared,
             "hideAmounts": book.hideAmounts,
+            "lockOnOpen": book.lockOnOpen,
             "monthly": book.monthlyBudget as Any? ?? NSNull(),
             "categoryCaps": book.categoryCaps,
             "categories": book.categories,
@@ -46,6 +47,9 @@ enum BookDocument {
                     "opening": account.opening,
                     "kind": account.kind.rawValue,
                     "countsInWorth": account.countsInWorth,
+                    "archived": account.archived,
+                    "statementDay": account.statementDay,
+                    "dueDay": account.dueDay,
                 ] as [String: Any]
             },
             "holdings": book.holdings.map { holding in
@@ -60,22 +64,7 @@ enum BookDocument {
                     "priceAsOf": holding.priceAsOf,
                 ] as [String: Any]
             },
-            "entries": book.entries.map { entry in
-                [
-                    "id": entry.id,
-                    "title": entry.title,
-                    "amount": entry.amount,
-                    "direction": entry.direction.rawValue,
-                    "category": entry.category,
-                    "date": entry.date,
-                    "accountName": entry.accountName,
-                    "accountId": entry.accountId,
-                    "checked": entry.checked,
-                    "shared": entry.shared,
-                    "countsInBudget": entry.countsInBudget,
-                    "claim": entry.claim.rawValue,
-                ] as [String: Any]
-            },
+            "entries": book.entries.map { entryObject($0) },
             "goals": book.goals.map { goal in
                 [
                     "id": goal.id,
@@ -102,6 +91,32 @@ enum BookDocument {
             "gender": book.gender.rawValue,
             "locale": book.locale.rawValue,
             "currency": book.currency.rawValue,
+            "removed": book.removed.map { item in
+                [
+                    "removedOn": item.removedOn,
+                    "entry": entryObject(item.entry),
+                ] as [String: Any]
+            },
+        ]
+    }
+
+    private static func entryObject(_ entry: Entry) -> [String: Any] {
+        [
+            "id": entry.id,
+            "title": entry.title,
+            "amount": entry.amount,
+            "direction": entry.direction.rawValue,
+            "category": entry.category,
+            "date": entry.date,
+            "accountName": entry.accountName,
+            "accountId": entry.accountId,
+            "checked": entry.checked,
+            "shared": entry.shared,
+            "countsInBudget": entry.countsInBudget,
+            "claim": entry.claim.rawValue,
+            "refundOf": entry.refundOf,
+            "goalId": entry.goalId,
+            "splitGroup": entry.splitGroup,
         ]
     }
 
@@ -110,6 +125,8 @@ enum BookDocument {
         var book = Book.empty()
         book.sampleCleared = sampleCleared
         book.hideAmounts = map["hideAmounts"] as? Bool ?? false
+        book.lockOnOpen = map["lockOnOpen"] as? Bool ?? false
+        book.removed = removed(map["removed"])
         book.goals = goals(map["goals"])
         book.repeats = repeats(map["repeats"])
         book.nickname = map["nickname"] as? String ?? ""
@@ -141,7 +158,10 @@ enum BookDocument {
                 name: "\(map["name"] ?? "")",
                 opening: money(map["opening"]) ?? 0,
                 kind: AccountKind.read(map["kind"]),
-                countsInWorth: map["countsInWorth"] as? Bool ?? true
+                countsInWorth: map["countsInWorth"] as? Bool ?? true,
+                archived: map["archived"] as? Bool ?? false,
+                statementDay: day(map["statementDay"]),
+                dueDay: day(map["dueDay"])
             )
         }
     }
@@ -171,20 +191,41 @@ enum BookDocument {
         guard let list = raw as? [Any] else { return sampleCleared ? [] : SampleBook.entries() }
         return list.compactMap { item in
             guard let map = item as? [String: Any] else { return nil }
-            return Entry(
-                id: "\(map["id"] ?? "")",
-                title: "\(map["title"] ?? "")",
-                amount: money(map["amount"]) ?? 0,
-                direction: map["direction"] as? String == "in" ? .income : .out,
-                category: "\(map["category"] ?? "")",
-                date: "\(map["date"] ?? "")",
-                accountName: "\(map["accountName"] ?? "")",
-                accountId: "\(map["accountId"] ?? "")",
-                checked: map["checked"] as? Bool ?? false,
-                shared: map["shared"] as? Bool ?? false,
-                countsInBudget: map["countsInBudget"] as? Bool ?? true,
-                claim: ClaimMark.read(map["claim"])
-            )
+            return readEntry(map)
+        }
+    }
+
+    private static func day(_ raw: Any?) -> Int {
+        let value = raw as? Int ?? Int(money(raw) ?? 0)
+        guard value >= 1 else { return 0 }
+        return min(value, 28)
+    }
+
+    private static func readEntry(_ map: [String: Any]) -> Entry {
+        Entry(
+            id: "\(map["id"] ?? "")",
+            title: "\(map["title"] ?? "")",
+            amount: money(map["amount"]) ?? 0,
+            direction: map["direction"] as? String == "in" ? .income : .out,
+            category: "\(map["category"] ?? "")",
+            date: "\(map["date"] ?? "")",
+            accountName: "\(map["accountName"] ?? "")",
+            accountId: "\(map["accountId"] ?? "")",
+            checked: map["checked"] as? Bool ?? false,
+            shared: map["shared"] as? Bool ?? false,
+            countsInBudget: map["countsInBudget"] as? Bool ?? true,
+            claim: ClaimMark.read(map["claim"]),
+            refundOf: "\(map["refundOf"] ?? "")",
+            goalId: "\(map["goalId"] ?? "")",
+            splitGroup: "\(map["splitGroup"] ?? "")"
+        )
+    }
+
+    private static func removed(_ raw: Any?) -> [RemovedEntry] {
+        guard let list = raw as? [Any] else { return [] }
+        return list.compactMap { item in
+            guard let map = item as? [String: Any], let entryMap = map["entry"] as? [String: Any] else { return nil }
+            return RemovedEntry(entry: readEntry(entryMap), removedOn: "\(map["removedOn"] ?? "")")
         }
     }
 

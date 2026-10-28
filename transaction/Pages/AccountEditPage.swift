@@ -9,6 +9,9 @@ struct AccountFormView: View {
     @State private var opening = ""
     @State private var kind = AccountKind.cash
     @State private var countsInWorth = true
+    @State private var archived = false
+    @State private var statementDay = ""
+    @State private var dueDay = ""
     @State private var ready = false
 
     var body: some View {
@@ -23,6 +26,12 @@ struct AccountFormView: View {
             }
             FieldLabel(text: copy.accountBalance)
             LedgerField(text: $opening, placeholder: "0.00", decimal: true)
+            if kind == .card {
+                FieldLabel(text: copy.cardStatementDay)
+                LedgerField(text: $statementDay, placeholder: "1–28", decimal: true)
+                FieldLabel(text: copy.cardDueDay)
+                LedgerField(text: $dueDay, placeholder: "1–28", decimal: true)
+            }
             Button { countsInWorth.toggle() } label: {
                 HStack(spacing: 8) {
                     RoundedRectangle(cornerRadius: 4, style: .continuous)
@@ -42,8 +51,11 @@ struct AccountFormView: View {
                 }
             }
             .buttonStyle(.plain)
-            PillButton(title: copy.save, enabled: canSave) { save() }
+            PillButton(title: copy.save, enabled: canSave) { save(archived: archived) }
             if editing {
+                PillButton(title: archived ? copy.restoreAccount : copy.archiveAccount, filled: false) {
+                    save(archived: !archived)
+                }
                 Button(copy.deleteAccount) {
                     if let accountID { store.removeAccount(accountID) }
                     pageBack()
@@ -63,21 +75,32 @@ struct AccountFormView: View {
             opening = LedgerMoney.fixed(account.opening, fraction: 2)
             kind = account.kind
             countsInWorth = account.countsInWorth
+            archived = account.archived
+            statementDay = account.statementDay > 0 ? String(account.statementDay) : ""
+            dueDay = account.dueDay > 0 ? String(account.dueDay) : ""
         }
+    }
+
+    private func cycleDay(_ raw: String) -> Int {
+        guard let value = Int(raw.trimmingCharacters(in: .whitespacesAndNewlines)), value >= 1 else { return 0 }
+        return min(value, 28)
     }
 
     private var canSave: Bool {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && Double(opening.trimmingCharacters(in: .whitespacesAndNewlines)) != nil
     }
 
-    private func save() {
+    private func save(archived nextArchived: Bool) {
         guard canSave, let value = Double(opening.trimmingCharacters(in: .whitespacesAndNewlines)) else { return }
         store.upsertAccount(Account(
             id: accountID ?? LedgerID.make(),
             name: name.trimmingCharacters(in: .whitespacesAndNewlines),
             opening: LedgerMoney.cents(value),
             kind: kind,
-            countsInWorth: countsInWorth
+            countsInWorth: countsInWorth,
+            archived: nextArchived,
+            statementDay: kind == .card ? cycleDay(statementDay) : 0,
+            dueDay: kind == .card ? cycleDay(dueDay) : 0
         ))
         pageBack()
     }

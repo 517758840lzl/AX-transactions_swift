@@ -63,6 +63,14 @@ let traditionalCopy = LedgerCopy(
     categoryAddedFormat: "已新增分類：{name}",
     starterCategories: ["餐飲", "交通", "日用", "居住", "收入", "訂閱", "娛樂"],
     categoryHintAmounts: ["餐飲": 1800, "交通": 400, "日用": 600, "居住": 3200, "收入": 8000, "訂閱": 200, "娛樂": 500],
+    cardStatementDay: "出帳日", cardDueDay: "還款日", cardBill: "本期帳單",
+    refundMark: "退款", refundDone: "已退款", refundBackFormat: "{title} 退款",
+    splitMark: "拆成兩筆", splitAmount: "另一筆金額",
+    goalAttach: "計入存錢目標", goalNone: "不計入", goalDeposit: "存入目標", goalFrom: "從", goalTo: "轉到",
+    archiveAccount: "歸檔", restoreAccount: "恢復", archivedTitle: "已歸檔",
+    removedTitle: "回收站", removedRestore: "恢復", removedEmpty: "回收站是空的",
+    lockOnOpen: "打開時解鎖", lockTitle: "解鎖後才能看帳", lockRetry: "再試一次",
+    lockOnWord: "已開啟", lockOffWord: "未開啟", amountSolve: "計算",
     localeID: "zh_TW"
 )
 
@@ -129,6 +137,14 @@ let japaneseCopy = LedgerCopy(
     categoryAddedFormat: "カテゴリを追加しました：{name}",
     starterCategories: ["食費", "交通", "日用品", "住居", "収入", "サブスク", "娯楽"],
     categoryHintAmounts: ["食費": 1800, "交通": 400, "日用品": 600, "住居": 3200, "収入": 8000, "サブスク": 200, "娯楽": 500],
+    cardStatementDay: "締め日", cardDueDay: "支払日", cardBill: "今回の請求",
+    refundMark: "返金", refundDone: "返金済み", refundBackFormat: "{title} の返金",
+    splitMark: "2つに分ける", splitAmount: "もう一方の金額",
+    goalAttach: "貯金目標に入れる", goalNone: "入れない", goalDeposit: "目標に入れる", goalFrom: "から", goalTo: "へ",
+    archiveAccount: "アーカイブ", restoreAccount: "戻す", archivedTitle: "アーカイブ済み",
+    removedTitle: "ゴミ箱", removedRestore: "戻す", removedEmpty: "ゴミ箱は空です",
+    lockOnOpen: "開くときにロック", lockTitle: "ロックを解除すると見られます", lockRetry: "もう一度",
+    lockOnWord: "オン", lockOffWord: "オフ", amountSolve: "計算",
     localeID: "ja_JP"
 )
 
@@ -195,5 +211,13 @@ let koreanCopy = LedgerCopy(
     categoryAddedFormat: "분류를 추가했습니다: {name}",
     starterCategories: ["식비", "교통", "생활", "주거", "수입", "구독", "여가"],
     categoryHintAmounts: ["식비": 1800, "교통": 400, "생활": 600, "주거": 3200, "수입": 8000, "구독": 200, "여가": 500],
+    cardStatementDay: "결제일", cardDueDay: "납부일", cardBill: "이번 청구",
+    refundMark: "환불", refundDone: "환불됨", refundBackFormat: "{title} 환불",
+    splitMark: "두 건으로 나누기", splitAmount: "다른 금액",
+    goalAttach: "저축 목표에 넣기", goalNone: "넣지 않음", goalDeposit: "목표에 넣기", goalFrom: "출금", goalTo: "입금",
+    archiveAccount: "보관", restoreAccount: "복원", archivedTitle: "보관됨",
+    removedTitle: "최근 삭제", removedRestore: "복원", removedEmpty: "비어 있음",
+    lockOnOpen: "열 때 잠금", lockTitle: "잠금을 풀어야 볼 수 있어요", lockRetry: "다시 시도",
+    lockOnWord: "켜짐", lockOffWord: "꺼짐", amountSolve: "계산",
     localeID: "ko_KR"
 )

@@ -32,6 +32,20 @@ final class LedgerScreen: ObservableObject {
         if !path.isEmpty { path.removeLast() }
     }
 
+    func openRange(account id: String, from: String, to: String) {
+        accountId = id
+        txMode = .range
+        txFrom = from
+        txTo = min(to, LedgerDay.today())
+        category = nil
+        status = "all"
+        txDirection = "all"
+        search = ""
+        showCalendar = false
+        tab = 1
+        path = []
+    }
+
     func openAccountFeed(id: String) {
         accountId = id
         txMode = .range
