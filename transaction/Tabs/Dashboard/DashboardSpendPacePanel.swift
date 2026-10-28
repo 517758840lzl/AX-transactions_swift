@@ -15,7 +15,7 @@ struct DashboardSpendPacePanel: View {
 
     var body: some View {
         PanelCard(title: copy.spendPace, trailing: {
-            Button(copy.toTransactions) { screen.tab = 1 }
+            Button(copy.toTransactions) { screen.selectTab(1) }
                 .font(.system(size: 13, weight: .bold))
                 .foregroundStyle(Palette.ink)
         }) {

@@ -16,7 +16,7 @@ struct DashboardCategoriesPanel: View {
     var body: some View {
         if !parts.isEmpty {
             PanelCard(title: copy.monthCategories, trailing: {
-                Button(copy.report) { screen.tab = 1 }
+                Button(copy.report) { screen.selectTab(1) }
                     .font(.system(size: 13, weight: .bold))
                     .foregroundStyle(Palette.ink)
             }) {
@@ -38,7 +38,7 @@ struct DashboardCategoriesPanel: View {
         let tint = Palette.slice(part.colorIndex)
         return Button {
             screen.category = part.name
-            screen.tab = 1
+            screen.selectTab(1)
         } label: {
             VStack(spacing: 5) {
                 Text(part.name)

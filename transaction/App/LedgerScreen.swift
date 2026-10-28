@@ -33,12 +33,34 @@ final class LedgerScreen: ObservableObject {
     var windowDays: Int { BookMath.windowDays[min(max(windowIndex, 0), 1)] }
 
     func open(_ page: Page) {
-        path.append(page)
+        withAnimation(Self.pageSlide) {
+            path.append(page)
+        }
     }
 
     func close() {
-        if !path.isEmpty { path.removeLast() }
+        guard !path.isEmpty else { return }
+        withAnimation(Self.pageSlide) {
+            path.removeLast()
+        }
     }
+
+    func selectTab(_ index: Int) {
+        withAnimation(Self.tabFade) {
+            tab = index
+        }
+    }
+
+    /// Leaves the current page and shows a tab underneath.
+    func reveal(tab index: Int) {
+        withAnimation(Self.pageSlide) {
+            tab = index
+            path.removeAll()
+        }
+    }
+
+    private static let pageSlide = Animation.timingCurve(0.22, 0.9, 0.28, 1, duration: 0.34)
+    private static let tabFade = Animation.easeInOut(duration: 0.2)
 
     func openRange(account id: String, from: String, to: String) {
         accountId = id
@@ -50,8 +72,7 @@ final class LedgerScreen: ObservableObject {
         txDirection = "all"
         search = ""
         showCalendar = false
-        tab = 1
-        path = []
+        reveal(tab: 1)
     }
 
     func openAccountFeed(id: String) {
@@ -64,7 +85,6 @@ final class LedgerScreen: ObservableObject {
         txDirection = "all"
         search = ""
         showCalendar = false
-        tab = 1
-        path = []
+        reveal(tab: 1)
     }
 }

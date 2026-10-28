@@ -11,6 +11,7 @@ import SwiftUI
 struct RootView: View {
     @StateObject private var store: BookStore
     @StateObject private var screen = LedgerScreen()
+    @State private var opening = true
 
     init(store: BookStore) {
         _store = StateObject(wrappedValue: store)
@@ -20,13 +21,17 @@ struct RootView: View {
         let copy = store.copy
         ZStack(alignment: .bottomTrailing) {
                 VStack(spacing: 0) {
-                    Group {
-                        switch screen.tab {
-                        case 0: DashboardView(store: store, screen: screen)
-                        case 1: TransactionsView(store: store, screen: screen)
-                        case 2: AccountsView(store: store, screen: screen)
-                        default: MeView(store: store, screen: screen)
+                    ZStack {
+                        Group {
+                            switch screen.tab {
+                            case 0: DashboardView(store: store, screen: screen)
+                            case 1: TransactionsView(store: store, screen: screen)
+                            case 2: AccountsView(store: store, screen: screen)
+                            default: MeView(store: store, screen: screen)
+                            }
                         }
+                        .id(screen.tab)
+                        .transition(.opacity)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     tabBar(copy)
@@ -55,10 +60,21 @@ struct RootView: View {
                         .padding(.bottom, 96)
                         .frame(maxWidth: .infinity)
                 }
-                ForEach(Array(screen.path.enumerated()), id: \.offset) { _, page in
+                ForEach(Array(screen.path.enumerated()), id: \.offset) { index, page in
                     destination(page, copy: copy)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(Palette.stage)
+                        .zIndex(Double(index + 1))
+                        .transition(.move(edge: .trailing))
+                }
+                if opening {
+                    OpeningCover(line: store.book.locale.openingLine) {
+                        withAnimation(.easeOut(duration: 0.32)) {
+                            opening = false
+                        }
+                    }
+                    .transition(.opacity)
+                    .zIndex(40)
                 }
             }
             .background(Palette.stage)
@@ -124,7 +140,7 @@ struct RootView: View {
         return HStack(spacing: 0) {
             ForEach(labels.indices, id: \.self) { index in
                 Button {
-                    screen.tab = index
+                    screen.selectTab(index)
                 } label: {
                     VStack(spacing: 4) {
                         Image(systemName: icons[index])

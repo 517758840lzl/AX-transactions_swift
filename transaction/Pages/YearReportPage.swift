@@ -85,7 +85,6 @@ struct YearReportPage: View {
         screen.accountId = nil
         screen.showCalendar = false
         screen.calendarDay = nil
-        screen.tab = 1
-        screen.path = []
+        screen.reveal(tab: 1)
     }
 }

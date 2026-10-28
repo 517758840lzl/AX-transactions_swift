@@ -72,7 +72,6 @@ struct BookExportPage: View {
     }
 
     private func showTab(_ index: Int) {
-        screen.tab = index
-        screen.path = []
+        screen.reveal(tab: index)
     }
 }

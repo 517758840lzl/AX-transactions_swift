@@ -34,6 +34,21 @@ enum BookLocale: String, CaseIterable {
         }
     }
 
+    var openingLine: String {
+        switch self {
+        case .zh: return "从容入账 · 本机私密 · 账目清楚"
+        case .zhHant: return "從容入帳 · 本機私密 · 賬目清楚"
+        case .en: return "Quiet entries · On-device privacy · Clear accounts"
+        case .ja: return "静かな記録 · 端末の中だけ · 明瞭な残高"
+        case .ko: return "고요한 기록 · 기기 안에서만 · 분명한 장부"
+        case .es: return "Apuntes serenos · Privado en el dispositivo · Cuentas claras"
+        case .pt: return "Registos serenos · Privado no dispositivo · Contas claras"
+        case .fr: return "Écriture sereine · Privé sur l'appareil · Comptes clairs"
+        case .de: return "Ruhige Buchungen · Privat auf dem Gerät · Klare Konten"
+        case .it: return "Note serene · Privato sul dispositivo · Conti chiari"
+        }
+    }
+
     static func read(_ raw: Any?) -> BookLocale {
         guard let value = raw as? String, let locale = BookLocale(rawValue: value) else { return .zh }
         return locale
