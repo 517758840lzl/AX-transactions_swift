@@ -1,0 +1,33 @@
+{
+  "sampleCleared": false,
+  "categories": ["餐饮", "交通", "日用", "居住", "收入", "订阅", "娱乐"],
+  "accounts": [
+    { "id": "sample-cash", "name": "现金", "opening": 860, "kind": "cash" },
+    { "id": "sample-card", "name": "Visa", "opening": 4200, "kind": "card" }
+  ],
+  "holdings": [
+    {
+      "id": "sample-holding-nvda",
+      "kind": "stock",
+      "code": "NVDA",
+      "name": "NVIDIA",
+      "qty": 1000,
+      "costTotal": 34230,
+      "price": 27.19
+    }
+  ],
+  "entries": [
+    { "id": "sample-lunch", "title": "午饭", "amount": 18.4, "direction": "out", "category": "餐饮", "ago": 0, "accountId": "sample-cash", "checked": false, "shared": false },
+    { "id": "sample-metro", "title": "地铁", "amount": 2.75, "direction": "out", "category": "交通", "ago": 0, "accountId": "sample-cash", "checked": true, "shared": false },
+    { "id": "sample-coffee", "title": "咖啡", "amount": 6.5, "direction": "out", "category": "餐饮", "ago": 1, "accountId": "sample-card", "checked": false, "shared": false },
+    { "id": "sample-market", "title": "超市", "amount": 54.2, "direction": "out", "category": "日用", "ago": 1, "accountId": "sample-card", "checked": true, "shared": true },
+    { "id": "sample-film", "title": "电影", "amount": 16, "direction": "out", "category": "娱乐", "ago": 4, "accountId": "sample-card", "checked": false, "shared": false },
+    { "id": "sample-sub", "title": "视频会员", "amount": 15.99, "direction": "out", "category": "订阅", "ago": 8, "accountId": "sample-card", "checked": true, "shared": false },
+    { "id": "sample-rent", "title": "房租", "amount": 1450, "direction": "out", "category": "居住", "ago": 15, "accountId": "sample-card", "checked": true, "shared": true },
+    { "id": "sample-pay", "title": "工资", "amount": 3200, "direction": "in", "category": "收入", "ago": 19, "accountId": "sample-card", "checked": true, "shared": false },
+    { "id": "sample-prev-coffee", "title": "咖啡", "amount": 7.2, "direction": "out", "category": "餐饮", "monthOffset": -1, "monthDay": 6, "accountId": "sample-card", "checked": true, "shared": false },
+    { "id": "sample-prev-market", "title": "超市", "amount": 48, "direction": "out", "category": "日用", "monthOffset": -1, "monthDay": 14, "accountId": "sample-card", "checked": true, "shared": true },
+    { "id": "sample-prev-ride", "title": "地铁", "amount": 18, "direction": "out", "category": "交通", "monthOffset": -1, "monthDay": 21, "accountId": "sample-card", "checked": false, "shared": false },
+    { "id": "sample-prev-rent", "title": "房租", "amount": 1450, "direction": "out", "category": "居住", "monthOffset": -1, "monthDay": 5, "accountId": "sample-card", "checked": true, "shared": true }
+  ]
+}

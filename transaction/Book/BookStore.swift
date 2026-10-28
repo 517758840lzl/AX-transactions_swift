@@ -1,0 +1,259 @@
+import Combine
+import Foundation
+
+final class BookStore: ObservableObject {
+    @Published private(set) var book: Book
+    @Published var note: String?
+
+    private let fileURL: URL
+    private var noteTask: Task<Void, Never>?
+
+    init(book: Book, fileURL: URL) {
+        self.book = book
+        self.fileURL = fileURL
+    }
+
+    static func open() -> BookStore {
+        let directory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
+        let folder = directory.appendingPathComponent("SpendLogBook", isDirectory: true)
+        try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        let fileURL = folder.appendingPathComponent("ledger-book-v1.json")
+        let book: Book
+        if let raw = try? String(contentsOf: fileURL, encoding: .utf8), let decoded = BookDocument.decode(raw) {
+            book = decoded
+        } else {
+            book = SampleBook.seed()
+        }
+        let store = BookStore(book: book, fileURL: fileURL)
+        if !FileManager.default.fileExists(atPath: fileURL.path) {
+            store.persist()
+        }
+        return store
+    }
+
+    var copy: LedgerCopy { LedgerCopy.resolve(book.locale) }
+
+    func flash(_ message: String) {
+        note = message
+        noteTask?.cancel()
+        noteTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 1_600_000_000)
+            guard !Task.isCancelled else { return }
+            self?.note = nil
+        }
+    }
+
+    func replace(_ book: Book) {
+        self.book = book
+        persist()
+    }
+
+    func setLocale(_ locale: BookLocale) {
+        guard book.locale != locale else { return }
+        book.locale = locale
+        persist()
+    }
+
+    func setCurrency(_ currency: CurrencyCode) {
+        guard book.currency != currency else { return }
+        book.currency = currency
+        persist()
+    }
+
+    func saveProfile(nickname: String, gender: Gender) {
+        let trimmed = String(nickname.trimmingCharacters(in: .whitespacesAndNewlines).prefix(12))
+        guard !trimmed.isEmpty else { return }
+        book.nickname = trimmed
+        book.gender = gender
+        persist()
+    }
+
+    func saveBudget(monthly: Double?, caps: [String: Double], clear: Bool) {
+        if clear {
+            book.monthlyBudget = nil
+            book.categoryCaps = [:]
+        } else {
+            book.monthlyBudget = monthly
+            book.categoryCaps = caps
+        }
+        persist()
+    }
+
+    func addCategory(_ name: String) {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, !book.categories.contains(trimmed) else { return }
+        book.categories.append(trimmed)
+        persist()
+        flash(copy.categoryAdded(trimmed))
+    }
+
+    func removeCategory(_ name: String) {
+        guard book.categories.count > 1, let fallback = book.categories.first(where: { $0 != name }) else { return }
+        book.categories.removeAll { $0 == name }
+        book.categoryCaps[name] = nil
+        book.entries = book.entries.map { entry in
+            var next = entry
+            if next.category == name { next.category = fallback }
+            return next
+        }
+        persist()
+    }
+
+    func upsertAccount(_ account: Account) {
+        if let index = book.accounts.firstIndex(where: { $0.id == account.id }) {
+            book.accounts[index] = account
+            book.entries = book.entries.map { entry in
+                guard entry.accountId == account.id else { return entry }
+                var next = entry
+                next.accountName = account.name
+                return next
+            }
+        } else {
+            book.accounts.append(account)
+        }
+        persist()
+    }
+
+    func removeAccount(_ id: String) {
+        book.accounts.removeAll { $0.id == id }
+        book.entries.removeAll { $0.accountId == id }
+        persist()
+    }
+
+    func upsertHolding(_ holding: Holding) -> Bool {
+        let key = holding.code.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        let duplicate = book.holdings.contains {
+            $0.id != holding.id && $0.kind == holding.kind && $0.code.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() == key
+        }
+        if duplicate {
+            flash(copy.holdingDuplicate)
+            return false
+        }
+        if let index = book.holdings.firstIndex(where: { $0.id == holding.id }) {
+            book.holdings[index] = holding
+        } else {
+            book.holdings.append(holding)
+        }
+        persist()
+        return true
+    }
+
+    func removeHolding(_ id: String) {
+        book.holdings.removeAll { $0.id == id }
+        persist()
+    }
+
+    func saveEntry(_ entry: Entry, creatingCashNamed name: String?) {
+        var next = entry
+        if next.accountId.isEmpty {
+            let account = Account(
+                id: LedgerID.make(),
+                name: (name?.trimmingCharacters(in: .whitespacesAndNewlines)).flatMap { $0.isEmpty ? nil : $0 } ?? copy.accountKindCash,
+                opening: 0,
+                kind: .cash
+            )
+            book.accounts.append(account)
+            next.accountId = account.id
+            next.accountName = account.name
+        } else if let account = book.accounts.first(where: { $0.id == next.accountId }) {
+            next.accountName = account.name
+        }
+        next.amount = LedgerMoney.cents(next.amount)
+        if let index = book.entries.firstIndex(where: { $0.id == next.id }) {
+            book.entries[index] = next
+        } else {
+            book.entries.insert(next, at: 0)
+        }
+        persist()
+    }
+
+    func deleteEntry(_ id: String) {
+        book.entries.removeAll { $0.id == id }
+        persist()
+    }
+
+    func toggleChecked(_ id: String) {
+        guard let index = book.entries.firstIndex(where: { $0.id == id }) else { return }
+        book.entries[index].checked.toggle()
+        persist()
+    }
+
+    func markReviewed(_ ids: [String]) {
+        let set = Set(ids)
+        book.entries = book.entries.map { entry in
+            guard set.contains(entry.id) else { return entry }
+            var next = entry
+            next.checked = true
+            return next
+        }
+        persist()
+    }
+
+    func addTransfer(from: Account, to: Account, amount: Double, date: String) {
+        let value = LedgerMoney.cents(amount)
+        let stamp = LedgerID.make()
+        let copy = self.copy
+        let incoming = Entry(
+            id: "transfer-\(stamp)-in",
+            title: "\(copy.transferFrom) \(from.name)",
+            amount: value,
+            direction: .income,
+            category: copy.transferCategory,
+            date: date,
+            accountName: to.name,
+            accountId: to.id,
+            checked: true,
+            shared: false
+        )
+        let outgoing = Entry(
+            id: "transfer-\(stamp)-out",
+            title: "\(copy.transferTo) \(to.name)",
+            amount: value,
+            direction: .out,
+            category: copy.transferCategory,
+            date: date,
+            accountName: from.name,
+            accountId: from.id,
+            checked: true,
+            shared: false
+        )
+        book.entries.insert(contentsOf: [incoming, outgoing], at: 0)
+        persist()
+    }
+
+    func clearSample() {
+        book.accounts.removeAll { $0.id.hasPrefix("sample-") }
+        book.holdings.removeAll { $0.id.hasPrefix("sample-") }
+        book.entries.removeAll { $0.id.hasPrefix("sample-") }
+        book.sampleCleared = true
+        persist()
+    }
+
+    func clearBook() {
+        book.entries = []
+        book.accounts = []
+        book.holdings = []
+        book.templates = []
+        book.monthlyBudget = nil
+        book.categoryCaps = [:]
+        book.sampleCleared = true
+        persist()
+    }
+
+    func importDocument(_ raw: String) -> Bool {
+        guard let parsed = BookDocument.decode(raw) else { return false }
+        book = parsed
+        persist()
+        return true
+    }
+
+    func exportText() -> String {
+        BookDocument.encode(book)
+    }
+
+    private func persist() {
+        let text = BookDocument.encode(book)
+        try? text.write(to: fileURL, atomically: true, encoding: .utf8)
+    }
+}
