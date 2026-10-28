@@ -14,13 +14,7 @@ struct AccountsView: View {
 
     var body: some View {
         let copy = store.copy
-        let days = screen.windowDays
-        let snapshot = BookMath.windowSnapshot(
-            accounts: store.book.accounts,
-            entries: store.book.entries,
-            holdings: store.book.holdings,
-            days: days
-        )
+        let days = BookMath.worthDays(screen.worthSpan, entries: store.book.entries)
         let priorISO = LedgerDay.adding(days: -1, to: BookMath.windowStart(days: days))
         let stocks = store.book.holdings.filter { $0.kind == .stock || $0.kind == .etf }
         let funds = store.book.holdings.filter { $0.kind == .fund }
@@ -40,7 +34,7 @@ struct AccountsView: View {
             if empty {
                 Text(copy.accountsEmpty).font(.system(size: 15)).foregroundStyle(Palette.muted).padding(.top, 24)
             } else {
-                hero(copy, snapshot: snapshot)
+                WorthSummary(store: store, screen: screen, opens: true)
                 mix(copy, priorISO: priorISO, stocks: stocks, funds: funds)
                 ForEach(AccountKind.order, id: \.self) { kind in
                     if shows(kind.rawValue) {
@@ -64,52 +58,6 @@ struct AccountsView: View {
                 SampleBanner(title: copy.sampleBanner, actionTitle: copy.sampleClear) { store.clearSample() }
             }
         }
-    }
-
-    private func hero(_ copy: LedgerCopy, snapshot: WindowSnapshot) -> some View {
-        let up = snapshot.delta >= 0
-        return VStack(alignment: .leading, spacing: 0) {
-            Text(copy.netAssets)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(Palette.onDark)
-            MoneyText(value: snapshot.netWorth, mark: store.book.mark, size: 36, color: .white)
-                .padding(.top, 6)
-            if snapshot.holdingsTotal > 0 {
-                (
-                    Text(copy.accountBalance).foregroundColor(Palette.onDarkSoft)
-                        + Text(" ")
-                        + Text(LedgerMoney.text(snapshot.cashBalance, mark: store.book.mark)).foregroundColor(Palette.onDarkSoft)
-                        + Text(" · ").foregroundColor(Palette.onDarkSoft)
-                        + Text(copy.holdingMarketValue).foregroundColor(Palette.onDarkSoft)
-                        + Text(" ")
-                        + Text(LedgerMoney.text(snapshot.holdingsTotal, mark: store.book.mark)).foregroundColor(Palette.onDarkSoft)
-                )
-                .font(.system(size: 13, weight: .semibold))
-                .padding(.top, 10)
-            }
-            SegmentControl(labels: [copy.accountsWindow7, copy.accountsWindow30], index: screen.windowIndex, onDark: true) {
-                screen.windowIndex = $0
-            }
-            .padding(.top, 14)
-            TrendChart(amounts: snapshot.amounts, fitDataRange: true)
-                .id(screen.windowIndex)
-                .padding(.top, 12)
-            (
-                Text(copy.accountPeriodDelta).foregroundColor(Palette.onDark)
-                    + Text("  ")
-                    + Text(LedgerMoney.text(snapshot.delta, mark: store.book.mark, signed: true)).foregroundColor(.white)
-                    + Text("  ")
-                    + Text(BookMath.formatPercent(delta: snapshot.delta, base: snapshot.prior)).foregroundColor(up ? Palette.heroUp : Palette.pink)
-            )
-            .font(.system(size: 13, weight: .semibold))
-            .padding(.top, 8)
-        }
-        .padding(EdgeInsets(top: 20, leading: 18, bottom: 18, trailing: 18))
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Palette.ink, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
-        .plateShadow(opacity: 0.22, radius: 20, y: 18)
-        .padding(.top, 2)
-        .id(screen.windowIndex)
     }
 
     private func shows(_ id: String) -> Bool {

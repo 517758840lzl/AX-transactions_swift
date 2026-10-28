@@ -118,6 +118,8 @@ struct RootView: View {
             PrivacyView(title: copy.privacyTitle)
         case .removed:
             RemovedListView(store: store)
+        case .worthTrend:
+            WorthTrendPage(store: store, screen: screen)
         }
     }
 

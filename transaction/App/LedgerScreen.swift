@@ -28,6 +28,7 @@ final class LedgerScreen: ObservableObject {
     @Published var calendarDay: String?
     @Published var accountId: String?
     @Published var windowIndex = 1
+    @Published var worthSpan = WorthSpan.month
 
     var windowDays: Int { BookMath.windowDays[min(max(windowIndex, 0), 1)] }
 

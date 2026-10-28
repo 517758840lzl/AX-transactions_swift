@@ -242,6 +242,17 @@ struct LedgerCopy {
     var lockOnWord: String
     var lockOffWord: String
     var amountSolve: String
+    var worthGrowth: String
+    var worthPastWeek: String
+    var worthPastMonth: String
+    var worthPastQuarter: String
+    var worthPastYear: String
+    var worthPastAll: String
+    var worthSpanWeek: String
+    var worthSpanMonth: String
+    var worthSpanQuarter: String
+    var worthSpanYear: String
+    var worthSpanAll: String
     var localeID: String
 
     func monthTitle(now: Date = Date()) -> String {
@@ -282,6 +293,26 @@ struct LedgerCopy {
 
     func refundBack(_ title: String) -> String {
         fill(refundBackFormat, ["title": title])
+    }
+
+    func worthPast(_ span: WorthSpan) -> String {
+        switch span {
+        case .week: return worthPastWeek
+        case .month: return worthPastMonth
+        case .quarter: return worthPastQuarter
+        case .year: return worthPastYear
+        case .all: return worthPastAll
+        }
+    }
+
+    func worthSpanTitle(_ span: WorthSpan) -> String {
+        switch span {
+        case .week: return worthSpanWeek
+        case .month: return worthSpanMonth
+        case .quarter: return worthSpanQuarter
+        case .year: return worthSpanYear
+        case .all: return worthSpanAll
+        }
     }
 
     func categoryAdded(_ name: String) -> String {
@@ -442,7 +473,9 @@ private let chinese = LedgerCopy(
     archiveAccount: "归档", restoreAccount: "恢复", archivedTitle: "已归档",
     removedTitle: "回收站", removedRestore: "恢复", removedEmpty: "回收站是空的",
     lockOnOpen: "打开时解锁", lockTitle: "解锁后才能看账", lockRetry: "再试一次",
-    lockOnWord: "已开启", lockOffWord: "未开启", amountSolve: "计算",
+    lockOnWord: "已开启", lockOffWord: "未开启",     amountSolve: "计算",
+    worthGrowth: "区间净增长", worthPastWeek: "过去7天", worthPastMonth: "过去1个月", worthPastQuarter: "过去3个月", worthPastYear: "过去1年", worthPastAll: "全部",
+    worthSpanWeek: "7天", worthSpanMonth: "1月", worthSpanQuarter: "3月", worthSpanYear: "1年", worthSpanAll: "全部",
     localeID: "zh_CN"
 )
 
@@ -525,6 +558,8 @@ private let englishCopy = LedgerCopy(
     archiveAccount: "Archive", restoreAccount: "Restore", archivedTitle: "Archived",
     removedTitle: "Recently deleted", removedRestore: "Restore", removedEmpty: "Nothing here",
     lockOnOpen: "Unlock to open", lockTitle: "Unlock to see the book", lockRetry: "Try again",
-    lockOnWord: "On", lockOffWord: "Off", amountSolve: "Calculate",
+    lockOnWord: "On", lockOffWord: "Off",     amountSolve: "Calculate",
+    worthGrowth: "Net change", worthPastWeek: "Past 7 days", worthPastMonth: "Past month", worthPastQuarter: "Past 3 months", worthPastYear: "Past year", worthPastAll: "All",
+    worthSpanWeek: "7D", worthSpanMonth: "1M", worthSpanQuarter: "3M", worthSpanYear: "1Y", worthSpanAll: "All",
     localeID: "en_US"
 )

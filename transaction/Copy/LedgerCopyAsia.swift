@@ -77,7 +77,9 @@ let traditionalCopy = LedgerCopy(
     archiveAccount: "歸檔", restoreAccount: "恢復", archivedTitle: "已歸檔",
     removedTitle: "回收站", removedRestore: "恢復", removedEmpty: "回收站是空的",
     lockOnOpen: "打開時解鎖", lockTitle: "解鎖後才能看帳", lockRetry: "再試一次",
-    lockOnWord: "已開啟", lockOffWord: "未開啟", amountSolve: "計算",
+    lockOnWord: "已開啟", lockOffWord: "未開啟",     amountSolve: "計算",
+    worthGrowth: "區間淨增長", worthPastWeek: "過去7天", worthPastMonth: "過去1個月", worthPastQuarter: "過去3個月", worthPastYear: "過去1年", worthPastAll: "全部",
+    worthSpanWeek: "7天", worthSpanMonth: "1月", worthSpanQuarter: "3月", worthSpanYear: "1年", worthSpanAll: "全部",
     localeID: "zh_TW"
 )
 
@@ -151,7 +153,9 @@ let japaneseCopy = LedgerCopy(
     archiveAccount: "アーカイブ", restoreAccount: "戻す", archivedTitle: "アーカイブ済み",
     removedTitle: "ゴミ箱", removedRestore: "戻す", removedEmpty: "ゴミ箱は空です",
     lockOnOpen: "開くときにロック", lockTitle: "ロックを解除すると見られます", lockRetry: "もう一度",
-    lockOnWord: "オン", lockOffWord: "オフ", amountSolve: "計算",
+    lockOnWord: "オン", lockOffWord: "オフ",     amountSolve: "計算",
+    worthGrowth: "期間の増減", worthPastWeek: "過去7日", worthPastMonth: "過去1か月", worthPastQuarter: "過去3か月", worthPastYear: "過去1年", worthPastAll: "すべて",
+    worthSpanWeek: "7日", worthSpanMonth: "1か月", worthSpanQuarter: "3か月", worthSpanYear: "1年", worthSpanAll: "すべて",
     localeID: "ja_JP"
 )
 
@@ -225,6 +229,8 @@ let koreanCopy = LedgerCopy(
     archiveAccount: "보관", restoreAccount: "복원", archivedTitle: "보관됨",
     removedTitle: "최근 삭제", removedRestore: "복원", removedEmpty: "비어 있음",
     lockOnOpen: "열 때 잠금", lockTitle: "잠금을 풀어야 볼 수 있어요", lockRetry: "다시 시도",
-    lockOnWord: "켜짐", lockOffWord: "꺼짐", amountSolve: "계산",
+    lockOnWord: "켜짐", lockOffWord: "꺼짐",     amountSolve: "계산",
+    worthGrowth: "구간 순증", worthPastWeek: "최근 7일", worthPastMonth: "최근 1개월", worthPastQuarter: "최근 3개월", worthPastYear: "최근 1년", worthPastAll: "전체",
+    worthSpanWeek: "7일", worthSpanMonth: "1개월", worthSpanQuarter: "3개월", worthSpanYear: "1년", worthSpanAll: "전체",
     localeID: "ko_KR"
 )

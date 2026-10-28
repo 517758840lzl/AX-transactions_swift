@@ -7,6 +7,11 @@
 
 import Foundation
 
+enum WorthSpan: Int, CaseIterable, Identifiable {
+    case week, month, quarter, year, all
+    var id: Int { rawValue }
+}
+
 extension BookMath {
     static func signed(_ entry: Entry) -> Double {
         entry.isOut ? -entry.amount : entry.amount
@@ -40,6 +45,21 @@ extension BookMath {
         let cash = kept.reduce(0) { $0 + accountTotal($1, entries: keptEntries) }
         return LedgerMoney.cents(cash + holdingsMarketTotal(holdings))
     }
+    static func worthDays(_ span: WorthSpan, entries: [Entry], now: Date = Date()) -> Int {
+        switch span {
+        case .week: return 7
+        case .month: return 30
+        case .quarter: return 90
+        case .year: return 365
+        case .all:
+            let today = LedgerDay.parse(LedgerDay.today(now))
+            let dates = entries.map(\.date).filter { $0.count >= 10 }
+            let first = dates.min().map { LedgerDay.parse($0) } ?? today
+            let count = Calendar.current.dateComponents([.day], from: first, to: today).day ?? 0
+            return max(count + 1, 2)
+        }
+    }
+
     static func windowStart(days: Int, now: Date = Date()) -> String {
         LedgerDay.iso(Calendar.current.date(byAdding: .day, value: -(days - 1), to: now) ?? now)
     }
