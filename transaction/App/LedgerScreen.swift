@@ -61,6 +61,7 @@ final class LedgerScreen: ObservableObject {
 
     private static let pageSlide = Animation.timingCurve(0.22, 0.9, 0.28, 1, duration: 0.34)
     private static let tabFade = Animation.easeInOut(duration: 0.2)
+    static let fold = Animation.timingCurve(0.22, 0.9, 0.28, 1, duration: 0.28)
 
     func openRange(account id: String, from: String, to: String) {
         accountId = id

@@ -29,7 +29,9 @@ struct FilterFormView: View {
             }
             PanelCard(title: copy.time) {
                 ChoiceRow(labels: [copy.today, copy.thisMonth, copy.customRange], index: modeIndex) { index in
-                    mode = index == 0 ? .today : (index == 1 ? .month : .range)
+                    withAnimation(LedgerScreen.fold) {
+                        mode = index == 0 ? .today : (index == 1 ? .month : .range)
+                    }
                 }
                 if mode == .range {
                     HStack(spacing: 8) {
@@ -40,6 +42,7 @@ struct FilterFormView: View {
                         DateField(copy: copy, iso: $to, label: copy.rangeEnd)
                     }
                     .padding(.top, 8)
+                    .transition(.opacity)
                 }
             }
             PillButton(title: copy.done) { pageBack() }

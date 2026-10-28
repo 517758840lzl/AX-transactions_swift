@@ -29,15 +29,20 @@ struct AccountFormView: View {
             LedgerField(text: $name, placeholder: copy.accountNamePh)
             FieldLabel(text: copy.accountKindLabel)
             ChoiceRow(labels: AccountKind.order.map { copy.accountKind($0) }, index: AccountKind.order.firstIndex(of: kind) ?? 0) { index in
-                kind = AccountKind.order[index]
+                withAnimation(LedgerScreen.fold) {
+                    kind = AccountKind.order[index]
+                }
             }
             FieldLabel(text: copy.accountBalance)
             LedgerField(text: $opening, placeholder: "0.00", decimal: true)
             if kind == .card {
-                FieldLabel(text: copy.cardStatementDay)
-                LedgerField(text: $statementDay, placeholder: "1–28", decimal: true)
-                FieldLabel(text: copy.cardDueDay)
-                LedgerField(text: $dueDay, placeholder: "1–28", decimal: true)
+                VStack(alignment: .leading, spacing: 14) {
+                    FieldLabel(text: copy.cardStatementDay)
+                    LedgerField(text: $statementDay, placeholder: "1–28", decimal: true)
+                    FieldLabel(text: copy.cardDueDay)
+                    LedgerField(text: $dueDay, placeholder: "1–28", decimal: true)
+                }
+                .transition(.opacity)
             }
             Button { countsInWorth.toggle() } label: {
                 HStack(spacing: 8) {

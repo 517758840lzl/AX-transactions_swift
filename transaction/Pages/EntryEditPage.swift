@@ -35,7 +35,9 @@ struct EntryFormView: View {
         let suggestions = BookMath.titleSuggestions(store.book.entries, localeID: copy.localeID, transferCategory: copy.transferCategory)
         FormPage(title: existing == nil ? copy.entryNew : copy.entryEdit, back: copy.back) {
             ChoiceRow(labels: [copy.periodSpend, copy.monthIncome], index: direction == .out ? 0 : 1) { index in
-                direction = index == 0 ? .out : .income
+                withAnimation(LedgerScreen.fold) {
+                    direction = index == 0 ? .out : .income
+                }
             }
             FieldLabel(text: copy.amount)
             LedgerField(text: $amount, placeholder: "0.00", decimal: true)
@@ -59,14 +61,19 @@ struct EntryFormView: View {
             FieldLabel(text: copy.category)
             ChipWrap(names: store.book.categories, selected: category) { category = $0 }
             if existing == nil {
-                checkRow(copy.splitMark, on: splitOn) { splitOn.toggle() }
+                checkRow(copy.splitMark, on: splitOn) {
+                    withAnimation(LedgerScreen.fold) { splitOn.toggle() }
+                }
             }
             if splitOn && existing == nil {
-                FieldLabel(text: copy.splitAmount)
-                LedgerField(text: $otherAmount, placeholder: "0.00", decimal: true)
-                FieldLabel(text: copy.category)
-                ChipWrap(names: store.book.categories, selected: otherCategory) { otherCategory = $0 }
-                checkRow(copy.shared, on: otherShared) { otherShared.toggle() }
+                VStack(alignment: .leading, spacing: 14) {
+                    FieldLabel(text: copy.splitAmount)
+                    LedgerField(text: $otherAmount, placeholder: "0.00", decimal: true)
+                    FieldLabel(text: copy.category)
+                    ChipWrap(names: store.book.categories, selected: otherCategory) { otherCategory = $0 }
+                    checkRow(copy.shared, on: otherShared) { otherShared.toggle() }
+                }
+                .transition(.opacity)
             }
             FieldLabel(text: copy.date)
             DateField(copy: copy, iso: $date, label: copy.date)
@@ -78,6 +85,7 @@ struct EntryFormView: View {
             }
             if direction == .out, !splitOn, !store.book.goals.isEmpty {
                 goalField
+                    .transition(.opacity)
             }
             sharedBox(copy)
             checkRow(copy.countBudget, on: countsInBudget) { countsInBudget.toggle() }
@@ -85,6 +93,7 @@ struct EntryFormView: View {
                 checkRow(claim == .done ? copy.claimDone : copy.claimMark, on: claim != .none) {
                     claim = claim == .none ? .waiting : .none
                 }
+                .transition(.opacity)
             }
             PillButton(title: copy.save, enabled: canSave) { save(existing: existing) }
             if let existing, existing.isOut, existing.refundOf.isEmpty {

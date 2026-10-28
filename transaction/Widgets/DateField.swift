@@ -138,9 +138,9 @@ private struct DatePop: View {
         } label: {
             Text(day.map(String.init) ?? "")
                 .font(.system(size: 14))
-                .foregroundStyle(selected ? Color.white : (blocked ? Palette.faint : Palette.ink))
+                .foregroundStyle(blocked ? Palette.faint : Palette.ink)
                 .frame(maxWidth: .infinity, minHeight: 36)
-                .background(selected ? Palette.ink : Color.clear, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .background(selected ? Palette.pink : Color.clear, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .buttonStyle(.plain)
         .disabled(day == nil || blocked)

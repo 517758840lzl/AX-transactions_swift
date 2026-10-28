@@ -46,40 +46,44 @@ struct TransactionsView: View {
             }
             flowStrip(copy, spend: spend, income: income)
             toolbar(copy, accountName: accountName)
-            if screen.showCalendar {
-                CalendarMonth(copy: copy, spend: spendByDay, selected: screen.calendarDay ?? LedgerDay.today()) { day in
-                    screen.calendarDay = day
+            VStack(alignment: .leading, spacing: 12) {
+                if screen.showCalendar {
+                    CalendarMonth(copy: copy, spend: spendByDay, selected: screen.calendarDay ?? LedgerDay.today()) { day in
+                        screen.calendarDay = day
+                    }
+                    .transition(.opacity)
                 }
-            }
-            PanelCard(title: listTitle) {
-                if listed.isEmpty {
-                    Text(copy.txEmpty).font(.system(size: 13)).foregroundStyle(Palette.muted)
-                } else {
-                    rows(listed, copy: copy)
-                }
-            }
-            if !parts.isEmpty {
-                PanelCard(
-                    title: "\(copy.category) · \(copy.periodChip(mode: screen.txMode, from: screen.txFrom, to: screen.txTo))",
-                    titleSize: 15,
-                    card: true
-                ) {
-                    HStack(alignment: .top, spacing: 12) {
-                        SpendDonut(parts: parts, total: total, mark: store.book.mark, caption: copy.periodSpend, active: screen.category) { name in
-                            screen.category = screen.category == name ? nil : name
-                        }
-                        VStack(alignment: .leading, spacing: 0) {
-                            ForEach(parts) { part in
-                                rankRow(part, total: total, previous: previous[part.name] ?? 0, copy: copy)
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                PanelCard(title: listTitle) {
+                    if listed.isEmpty {
+                        Text(copy.txEmpty).font(.system(size: 13)).foregroundStyle(Palette.muted)
+                    } else {
+                        rows(listed, copy: copy)
                     }
                 }
+                if !parts.isEmpty {
+                    PanelCard(
+                        title: "\(copy.category) · \(copy.periodChip(mode: screen.txMode, from: screen.txFrom, to: screen.txTo))",
+                        titleSize: 15,
+                        card: true
+                    ) {
+                        HStack(alignment: .top, spacing: 12) {
+                            SpendDonut(parts: parts, total: total, mark: store.book.mark, caption: copy.periodSpend, active: screen.category) { name in
+                                screen.category = screen.category == name ? nil : name
+                            }
+                            VStack(alignment: .leading, spacing: 0) {
+                                ForEach(parts) { part in
+                                    rankRow(part, total: total, previous: previous[part.name] ?? 0, copy: copy)
+                                }
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+                }
+                if showSample {
+                    SampleBanner(title: copy.sampleBanner, actionTitle: copy.sampleClear) { store.clearSample() }
+                }
             }
-            if showSample {
-                SampleBanner(title: copy.sampleBanner, actionTitle: copy.sampleClear) { store.clearSample() }
-            }
+            .animation(LedgerScreen.fold, value: screen.showCalendar)
         }
     }
 

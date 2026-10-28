@@ -35,13 +35,13 @@ struct CalendarMonth: View {
                         VStack(spacing: 2) {
                             Text("\(day)")
                                 .font(.system(size: 13, weight: .semibold))
-                                .foregroundStyle(iso == selected ? Color.white : Palette.ink)
+                                .foregroundStyle(Palette.ink)
                             Circle()
-                                .fill((spend[iso] ?? 0) > 0 ? (iso == selected ? Color.white : Palette.pink) : Color.clear)
+                                .fill((spend[iso] ?? 0) > 0 ? (iso == selected ? Palette.down : Palette.pink) : Color.clear)
                                 .frame(width: 4, height: 4)
                         }
                         .frame(maxWidth: .infinity, minHeight: 32)
-                        .background(iso == selected ? Palette.ink : Color.clear, in: RoundedRectangle(cornerRadius: 8))
+                        .background(iso == selected ? Palette.pink : Color.clear, in: RoundedRectangle(cornerRadius: 8))
                     }
                     .buttonStyle(.plain)
                 }
