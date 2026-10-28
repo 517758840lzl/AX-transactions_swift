@@ -1,3 +1,10 @@
+//
+//  Kinds.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/5.
+//
+
 import Foundation
 
 enum BookLocale: String, CaseIterable {

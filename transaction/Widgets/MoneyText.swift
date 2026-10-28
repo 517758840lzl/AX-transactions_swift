@@ -1,3 +1,10 @@
+//
+//  MoneyText.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/9.
+//
+
 import SwiftUI
 
 struct MoneyText: View {

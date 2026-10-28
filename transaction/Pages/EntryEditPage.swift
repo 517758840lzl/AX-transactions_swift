@@ -1,3 +1,10 @@
+//
+//  EntryEditPage.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/9.
+//
+
 import Combine
 import SwiftUI
 

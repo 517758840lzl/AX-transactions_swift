@@ -1,3 +1,10 @@
+//
+//  BookMath.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/6.
+//
+
 import Foundation
 
 struct WindowSnapshot {

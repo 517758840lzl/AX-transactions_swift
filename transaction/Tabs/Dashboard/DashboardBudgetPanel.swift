@@ -1,3 +1,10 @@
+//
+//  DashboardBudgetPanel.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/16.
+//
+
 import Combine
 import SwiftUI
 

@@ -1,3 +1,10 @@
+//
+//  Page.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/2.
+//
+
 import Foundation
 
 enum Page: Hashable {

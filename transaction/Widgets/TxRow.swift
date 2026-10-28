@@ -1,3 +1,10 @@
+//
+//  TxRow.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/13.
+//
+
 import SwiftUI
 
 /// Shared by the overview review list and the transactions list.

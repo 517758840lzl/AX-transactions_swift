@@ -1,3 +1,10 @@
+//
+//  LedgerCopyAsia.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/27.
+//
+
 import Foundation
 
 let traditionalCopy = LedgerCopy(

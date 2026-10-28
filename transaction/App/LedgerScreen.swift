@@ -1,3 +1,10 @@
+//
+//  LedgerScreen.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/2.
+//
+
 import Combine
 import SwiftUI
 

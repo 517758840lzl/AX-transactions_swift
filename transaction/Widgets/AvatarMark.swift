@@ -1,3 +1,10 @@
+//
+//  AvatarMark.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/23.
+//
+
 import SwiftUI
 
 enum LedgerAvatar {

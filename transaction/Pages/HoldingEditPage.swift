@@ -1,3 +1,10 @@
+//
+//  HoldingEditPage.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/22.
+//
+
 import Combine
 import SwiftUI
 

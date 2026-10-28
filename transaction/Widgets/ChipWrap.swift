@@ -1,3 +1,10 @@
+//
+//  ChipWrap.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/12.
+//
+
 import SwiftUI
 
 /// Wrapping capsules from `.ledger-chips`. The selected chip is pink, and the word stays ink.

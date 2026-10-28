@@ -1,3 +1,10 @@
+//
+//  SpendDonut.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/14.
+//
+
 import SwiftUI
 
 struct SpendDonut: View {

@@ -1,3 +1,10 @@
+//
+//  ChoiceRow.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/12.
+//
+
 import SwiftUI
 
 /// Language stays one row. Currency uses five equal columns, matching `.ledger-choice-row--wrap`.

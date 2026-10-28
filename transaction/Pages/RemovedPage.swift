@@ -1,3 +1,10 @@
+//
+//  RemovedPage.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/28.
+//
+
 import SwiftUI
 
 struct RemovedListView: View {

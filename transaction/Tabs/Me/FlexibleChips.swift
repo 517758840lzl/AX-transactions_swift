@@ -1,3 +1,10 @@
+//
+//  FlexibleChips.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/26.
+//
+
 import SwiftUI
 
 /// Category chips hug their text and wrap, matching `.ledger-chips`.

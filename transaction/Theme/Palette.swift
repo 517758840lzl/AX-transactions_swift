@@ -1,3 +1,10 @@
+//
+//  Palette.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/1.
+//
+
 import Combine
 import SwiftUI
 

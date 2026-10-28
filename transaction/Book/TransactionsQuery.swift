@@ -1,3 +1,10 @@
+//
+//  TransactionsQuery.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/13.
+//
+
 import Foundation
 
 extension BookMath {

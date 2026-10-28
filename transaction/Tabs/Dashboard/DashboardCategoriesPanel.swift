@@ -1,3 +1,10 @@
+//
+//  DashboardCategoriesPanel.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/19.
+//
+
 import SwiftUI
 
 struct DashboardCategoriesPanel: View {

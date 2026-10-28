@@ -1,3 +1,10 @@
+//
+//  PanelCard.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/9.
+//
+
 import SwiftUI
 
 /// White block used by both `.ledger-panel` and `.ledger-card`.

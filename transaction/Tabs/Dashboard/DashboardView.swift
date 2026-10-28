@@ -1,3 +1,10 @@
+//
+//  DashboardView.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/15.
+//
+
 import Combine
 import SwiftUI
 

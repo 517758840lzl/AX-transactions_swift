@@ -1,3 +1,10 @@
+//
+//  SegmentControl.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/19.
+//
+
 import SwiftUI
 
 /// `.ledger-segment`. Wash track on a light page, translucent track on the dark hero.

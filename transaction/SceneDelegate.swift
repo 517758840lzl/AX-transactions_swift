@@ -1,3 +1,10 @@
+//
+//  SceneDelegate.swift
+//  transaction
+//
+//  Created by Lzl on 2026/9/28.
+//
+
 import UIKit
 import SwiftUI
 

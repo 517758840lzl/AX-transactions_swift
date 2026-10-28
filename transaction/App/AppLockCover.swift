@@ -1,3 +1,10 @@
+//
+//  AppLockCover.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/28.
+//
+
 import LocalAuthentication
 import SwiftUI
 
