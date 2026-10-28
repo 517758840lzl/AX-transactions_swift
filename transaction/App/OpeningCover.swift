@@ -34,7 +34,7 @@ struct OpeningCover: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 VStack(spacing: 0) {
                     BrandSlot(size: 112, reveal: reveal, fade: fade, scaleT: scaleT, glow: glow)
-                    Text("SpendLogBook")
+                    Text(BundleTitle.current)
                         .font(.system(size: 26, weight: .semibold))
                         .foregroundColor(Palette.ink)
                         .padding(.top, 28)

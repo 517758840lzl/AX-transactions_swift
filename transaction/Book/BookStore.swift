@@ -8,6 +8,22 @@
 import Combine
 import Foundation
 
+enum BundleTitle {
+    /// Display name from the target settings, then the product name, then the app bundle file name.
+    static var current: String {
+        let bundle = Bundle.main
+        let display = bundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
+        let product = bundle.object(forInfoDictionaryKey: "CFBundleName") as? String
+        let raw = [display, product]
+            .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .first { !$0.isEmpty }
+            ?? bundle.bundleURL.deletingPathExtension().lastPathComponent
+        let cleaned = raw.replacingOccurrences(of: "/", with: "")
+        if !cleaned.isEmpty { return cleaned }
+        return bundle.bundleURL.deletingPathExtension().lastPathComponent
+    }
+}
+
 final class BookStore: ObservableObject {
     @Published private(set) var book: Book
     @Published var note: String?
@@ -23,7 +39,7 @@ final class BookStore: ObservableObject {
     static func open() -> BookStore {
         let directory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? FileManager.default.temporaryDirectory
-        let folder = directory.appendingPathComponent("SpendLogBook", isDirectory: true)
+        let folder = directory.appendingPathComponent(BundleTitle.current, isDirectory: true)
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         let fileURL = folder.appendingPathComponent("ledger-book-v1.json")
         let book: Book
