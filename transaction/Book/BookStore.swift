@@ -291,11 +291,6 @@ final class BookStore: ObservableObject {
         persist()
     }
 
-    func setLockOnOpen(_ on: Bool) {
-        book.lockOnOpen = on
-        persist()
-    }
-
     func toggleChecked(_ id: String) {
         guard let index = book.entries.firstIndex(where: { $0.id == id }) else { return }
         book.entries[index].checked.toggle()

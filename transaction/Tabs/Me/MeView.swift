@@ -72,10 +72,6 @@ struct MeView: View {
                     store.setHideAmounts(!store.book.hideAmounts)
                 }
                 divider
-                settingsRow(copy.lockOnOpen, trailing: store.book.lockOnOpen ? copy.lockOnWord : copy.lockOffWord) {
-                    store.setLockOnOpen(!store.book.lockOnOpen)
-                }
-                divider
                 settingsRow(copy.language, trailing: languageName, opens: true) { screen.open(.language) }
                 divider
                 settingsRow(copy.currency, trailing: "\(store.book.currency.rawValue) \(store.book.mark)", opens: true) { screen.open(.currency) }
