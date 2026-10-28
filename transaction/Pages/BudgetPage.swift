@@ -55,7 +55,13 @@ struct BudgetFormView: View {
             if let value = Double(clean), value > 0 { next[name] = LedgerMoney.cents(value) }
         }
         let clear = monthlyValue == nil && next.isEmpty
-        store.saveBudget(monthly: monthlyValue.map(LedgerMoney.cents), caps: next, clear: clear)
+        let rounded: Double?
+        if let monthlyValue {
+            rounded = LedgerMoney.cents(monthlyValue)
+        } else {
+            rounded = nil
+        }
+        store.saveBudget(monthly: rounded, caps: next, clear: clear)
         pageBack()
     }
 }

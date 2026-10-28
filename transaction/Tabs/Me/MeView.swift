@@ -12,17 +12,12 @@ struct MeView: View {
         let streak = BookMath.streakDays(store.book.entries)
         let logged = BookMath.loggedToday(store.book.entries)
         let name = store.book.nickname.isEmpty ? copy.unsetName : store.book.nickname
-        let initial = store.book.nickname.isEmpty ? copy.unsetMark : String(store.book.nickname.prefix(1))
         PageScroll(bottom: 16) {
             Text(copy.me).font(.system(size: 26, weight: .bold)).tracking(-0.4).foregroundStyle(Palette.ink)
             PanelCard(card: true) {
                 Button { screen.open(.profile) } label: {
                     HStack(spacing: 14) {
-                        Text(initial)
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundStyle(Palette.ink)
-                            .frame(width: 56, height: 56)
-                            .background(Palette.pink, in: Circle())
+                        AvatarMark(gender: store.book.gender, size: 56)
                         VStack(alignment: .leading, spacing: 2) {
                             HStack(spacing: 6) {
                                 Text(name)
@@ -45,6 +40,8 @@ struct MeView: View {
                         }
                         Spacer(minLength: 0)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
             }
@@ -132,7 +129,8 @@ struct MeView: View {
                     .font(.system(size: value ? 14 : 20, weight: value ? .bold : .regular))
                     .foregroundStyle(Palette.muted)
             }
-            .frame(minHeight: 44)
+            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }

@@ -145,6 +145,7 @@ struct LedgerCopy {
     var importInvalid: String
     var importFile: String
     var nicknameTitle: String
+    var avatarTitle: String
     var profileTitle: String
     var gender: String
     var genderFemale: String
@@ -334,7 +335,7 @@ private let chinese = LedgerCopy(
     clearBookConfirm: "清除后，账户、流水、持仓和预算都会去掉，并且不会再填回示例。", clearBookDone: "账本数据已清除",
     importData: "导入账本", importPaste: "粘贴导出的 JSON", importDone: "导入成功", importInvalid: "JSON 无效，请检查内容",
     importFile: "选择 JSON 文件",
-    nicknameTitle: "昵称", profileTitle: "昵称与性别", gender: "性别", genderFemale: "女", genderMale: "男", genderSecret: "保密",
+    nicknameTitle: "昵称", avatarTitle: "头像", profileTitle: "昵称与性别", gender: "性别", genderFemale: "女", genderMale: "男", genderSecret: "保密",
     entryEdit: "改一笔", shared: "记入家庭", entryNew: "记一笔", amount: "金额", name: "名称", namePh: "午饭、工资、房租",
     category: "分类", date: "日期", account: "账户", titleSuggestions: "常用备注", newCategory: "新分类", deleteEntry: "删除",
     todayWord: "今天", yesterdayWord: "昨天", fundShare: "份", stockShare: "股",
@@ -396,7 +397,7 @@ private let englishCopy = LedgerCopy(
     clearBookDone: "Book data cleared",
     importData: "Import book", importPaste: "Paste exported JSON", importDone: "Import complete",
     importInvalid: "Invalid JSON. Check the contents.", importFile: "Choose JSON file",
-    nicknameTitle: "Nickname", profileTitle: "Nickname & gender", gender: "Gender",
+    nicknameTitle: "Nickname", avatarTitle: "Avatar", profileTitle: "Nickname & gender", gender: "Gender",
     genderFemale: "Female", genderMale: "Male", genderSecret: "Private",
     entryEdit: "Edit transaction", shared: "Household", entryNew: "Add transaction",
     amount: "Amount", name: "Name", namePh: "Lunch, salary, rent", category: "Category", date: "Date", account: "Account",
