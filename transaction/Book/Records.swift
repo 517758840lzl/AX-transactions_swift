@@ -1,5 +1,12 @@
 import Foundation
 
+struct YearColumn: Identifiable {
+    var month: Int
+    var spend: Double
+    var income: Double
+    var id: Int { month }
+}
+
 struct PeriodBounds {
     var start: String
     var end: String
@@ -10,6 +17,7 @@ struct Account: Identifiable, Equatable {
     var name: String
     var opening: Double
     var kind: AccountKind
+    var countsInWorth: Bool
 }
 
 struct Holding: Identifiable, Equatable {
@@ -34,8 +42,41 @@ struct Entry: Identifiable, Equatable {
     var accountId: String
     var checked: Bool
     var shared: Bool
+    var countsInBudget: Bool
+    var claim: ClaimMark
 
     var isOut: Bool { direction == .out }
+}
+
+enum ClaimMark: String {
+    case none
+    case waiting
+    case done
+
+    static func read(_ raw: Any?) -> ClaimMark {
+        guard let value = raw as? String, let mark = ClaimMark(rawValue: value) else { return .none }
+        return mark
+    }
+}
+
+struct SavingGoal: Identifiable, Equatable {
+    var id: String
+    var title: String
+    var target: Double
+    var saved: Double
+}
+
+struct RepeatPlan: Identifiable, Equatable {
+    var id: String
+    var title: String
+    var amount: Double
+    var direction: Direction
+    var category: String
+    var accountId: String
+    var shared: Bool
+    var countsInBudget: Bool
+    var day: Int
+    var lastMonth: String
 }
 
 struct EntryTemplate: Identifiable, Equatable {
@@ -60,6 +101,9 @@ struct Book {
     var accounts: [Account]
     var holdings: [Holding]
     var entries: [Entry]
+    var repeats: [RepeatPlan]
+    var goals: [SavingGoal]
+    var hideAmounts: Bool
     var sampleCleared: Bool
 
     var mark: String { currency.mark }
@@ -77,6 +121,9 @@ struct Book {
             accounts: [],
             holdings: [],
             entries: [],
+            repeats: [],
+            goals: [],
+            hideAmounts: false,
             sampleCleared: false
         )
     }

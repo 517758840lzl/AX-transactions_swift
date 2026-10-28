@@ -8,6 +8,10 @@ private struct KeyboardDoneKey: EnvironmentKey {
     static let defaultValue = "Done"
 }
 
+private struct AmountsHiddenKey: EnvironmentKey {
+    static let defaultValue = false
+}
+
 extension EnvironmentValues {
     var pageBack: () -> Void {
         get { self[PageBackKey.self] }
@@ -17,5 +21,10 @@ extension EnvironmentValues {
     var keyboardDone: String {
         get { self[KeyboardDoneKey.self] }
         set { self[KeyboardDoneKey.self] = newValue }
+    }
+
+    var amountsHidden: Bool {
+        get { self[AmountsHiddenKey.self] }
+        set { self[AmountsHiddenKey.self] = newValue }
     }
 }

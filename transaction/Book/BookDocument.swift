@@ -24,6 +24,7 @@ enum BookDocument {
     static func jsonObject(_ book: Book) -> [String: Any] {
         [
             "sampleCleared": book.sampleCleared,
+            "hideAmounts": book.hideAmounts,
             "monthly": book.monthlyBudget as Any? ?? NSNull(),
             "categoryCaps": book.categoryCaps,
             "categories": book.categories,
@@ -44,6 +45,7 @@ enum BookDocument {
                     "name": account.name,
                     "opening": account.opening,
                     "kind": account.kind.rawValue,
+                    "countsInWorth": account.countsInWorth,
                 ] as [String: Any]
             },
             "holdings": book.holdings.map { holding in
@@ -70,6 +72,30 @@ enum BookDocument {
                     "accountId": entry.accountId,
                     "checked": entry.checked,
                     "shared": entry.shared,
+                    "countsInBudget": entry.countsInBudget,
+                    "claim": entry.claim.rawValue,
+                ] as [String: Any]
+            },
+            "goals": book.goals.map { goal in
+                [
+                    "id": goal.id,
+                    "title": goal.title,
+                    "target": goal.target,
+                    "saved": goal.saved,
+                ] as [String: Any]
+            },
+            "repeats": book.repeats.map { plan in
+                [
+                    "id": plan.id,
+                    "title": plan.title,
+                    "amount": plan.amount,
+                    "direction": plan.direction.rawValue,
+                    "category": plan.category,
+                    "accountId": plan.accountId,
+                    "shared": plan.shared,
+                    "countsInBudget": plan.countsInBudget,
+                    "day": plan.day,
+                    "lastMonth": plan.lastMonth,
                 ] as [String: Any]
             },
             "nickname": book.nickname,
@@ -83,9 +109,12 @@ enum BookDocument {
         let sampleCleared = map["sampleCleared"] as? Bool ?? false
         var book = Book.empty()
         book.sampleCleared = sampleCleared
+        book.hideAmounts = map["hideAmounts"] as? Bool ?? false
+        book.goals = goals(map["goals"])
+        book.repeats = repeats(map["repeats"])
         book.nickname = map["nickname"] as? String ?? ""
         book.gender = Gender.read(map["gender"])
-        book.locale = map["locale"] as? String == "en" ? .en : .zh
+        book.locale = BookLocale.read(map["locale"])
         book.currency = CurrencyCode.read(map["currency"])
         book.monthlyBudget = money(map["monthly"]) ?? money(map["budget"])
         if let caps = map["categoryCaps"] as? [String: Any] {
@@ -111,7 +140,8 @@ enum BookDocument {
                 id: "\(map["id"] ?? "")",
                 name: "\(map["name"] ?? "")",
                 opening: money(map["opening"]) ?? 0,
-                kind: AccountKind.read(map["kind"])
+                kind: AccountKind.read(map["kind"]),
+                countsInWorth: map["countsInWorth"] as? Bool ?? true
             )
         }
     }
@@ -151,7 +181,42 @@ enum BookDocument {
                 accountName: "\(map["accountName"] ?? "")",
                 accountId: "\(map["accountId"] ?? "")",
                 checked: map["checked"] as? Bool ?? false,
-                shared: map["shared"] as? Bool ?? false
+                shared: map["shared"] as? Bool ?? false,
+                countsInBudget: map["countsInBudget"] as? Bool ?? true,
+                claim: ClaimMark.read(map["claim"])
+            )
+        }
+    }
+
+    private static func goals(_ raw: Any?) -> [SavingGoal] {
+        guard let list = raw as? [Any] else { return [] }
+        return list.compactMap { item in
+            guard let map = item as? [String: Any] else { return nil }
+            return SavingGoal(
+                id: "\(map["id"] ?? "")",
+                title: "\(map["title"] ?? "")",
+                target: money(map["target"]) ?? 0,
+                saved: money(map["saved"]) ?? 0
+            )
+        }
+    }
+
+    private static func repeats(_ raw: Any?) -> [RepeatPlan] {
+        guard let list = raw as? [Any] else { return [] }
+        return list.compactMap { item in
+            guard let map = item as? [String: Any] else { return nil }
+            let day = map["day"] as? Int ?? 1
+            return RepeatPlan(
+                id: "\(map["id"] ?? "")",
+                title: "\(map["title"] ?? "")",
+                amount: money(map["amount"]) ?? 0,
+                direction: map["direction"] as? String == "in" ? .income : .out,
+                category: "\(map["category"] ?? "")",
+                accountId: "\(map["accountId"] ?? "")",
+                shared: map["shared"] as? Bool ?? false,
+                countsInBudget: map["countsInBudget"] as? Bool ?? true,
+                day: min(max(day, 1), 28),
+                lastMonth: "\(map["lastMonth"] ?? "")"
             )
         }
     }

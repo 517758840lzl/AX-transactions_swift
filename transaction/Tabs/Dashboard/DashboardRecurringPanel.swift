@@ -5,45 +5,39 @@ struct DashboardRecurringPanel: View {
     @ObservedObject var store: BookStore
     @ObservedObject var screen: LedgerScreen
     var copy: LedgerCopy
-    var items: [RecurringItem]
 
     var body: some View {
-        if items.isEmpty {
-            PanelCard(title: copy.recurringTitle, trailing: {
-                Button(copy.entryNew) { screen.open(.entry(id: nil)) }
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundStyle(Palette.ink)
-            }) {
+        let month = LedgerDay.yearMonth(Date())
+        PanelCard(title: copy.recurringTitle, trailing: {
+            Button(copy.add) { screen.open(.repeatPlan(id: nil)) }
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(Palette.ink)
+        }) {
+            if store.book.repeats.isEmpty {
                 Text(copy.recurringEmpty)
                     .font(.system(size: 13))
                     .foregroundStyle(Palette.muted)
                     .fixedSize(horizontal: false, vertical: true)
-            }
-        } else {
-            PanelCard(title: copy.recurringTitle, trailing: {
-                Text(copy.recurringHint)
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Palette.muted)
-                    .multilineTextAlignment(.trailing)
-            }) {
-                ForEach(items) { item in
+            } else {
+                ForEach(store.book.repeats) { plan in
                     Button {
-                        if let entry = store.book.entries.first(where: { $0.title == item.title && $0.amount == item.amount }) {
-                            screen.open(.entry(id: entry.id))
-                        }
+                        screen.open(.repeatPlan(id: plan.id))
                     } label: {
                         HStack(spacing: 8) {
-                            Text(item.title)
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundStyle(Palette.ink)
-                                .lineLimit(1)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(plan.title)
+                                    .font(.system(size: 16, weight: .bold))
+                                    .foregroundStyle(Palette.ink)
+                                    .lineLimit(1)
+                                Text("\(plan.day) · \(plan.lastMonth == month ? copy.repeatPosted : copy.repeatWaiting)")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundStyle(Palette.muted)
+                            }
                             Spacer(minLength: 8)
-                            Text("\(item.times)× · ")
-                                .font(.system(size: 13, weight: .semibold))
-                                .foregroundStyle(Palette.muted)
-                            MoneyText(value: item.amount, mark: store.book.mark, size: 13)
+                            MoneyText(value: plan.direction == .out ? -plan.amount : plan.amount, mark: store.book.mark, size: 13, signed: true)
                         }
                         .padding(.vertical, 10)
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                 }

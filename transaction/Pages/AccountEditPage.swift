@@ -8,6 +8,7 @@ struct AccountFormView: View {
     @State private var name = ""
     @State private var opening = ""
     @State private var kind = AccountKind.cash
+    @State private var countsInWorth = true
     @State private var ready = false
 
     var body: some View {
@@ -22,6 +23,25 @@ struct AccountFormView: View {
             }
             FieldLabel(text: copy.accountBalance)
             LedgerField(text: $opening, placeholder: "0.00", decimal: true)
+            Button { countsInWorth.toggle() } label: {
+                HStack(spacing: 8) {
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                        .fill(countsInWorth ? Palette.pink : Color.white)
+                        .overlay(RoundedRectangle(cornerRadius: 4, style: .continuous).stroke(countsInWorth ? Palette.pink : Palette.line, lineWidth: 1.5))
+                        .overlay {
+                            if countsInWorth {
+                                Image(systemName: "checkmark")
+                                    .font(.system(size: 12, weight: .bold))
+                                    .foregroundStyle(Palette.ink)
+                            }
+                        }
+                        .frame(width: 22, height: 22)
+                    Text(copy.countWorth)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Palette.ink)
+                }
+            }
+            .buttonStyle(.plain)
             PillButton(title: copy.save, enabled: canSave) { save() }
             if editing {
                 Button(copy.deleteAccount) {
@@ -42,6 +62,7 @@ struct AccountFormView: View {
             name = account.name
             opening = LedgerMoney.fixed(account.opening, fraction: 2)
             kind = account.kind
+            countsInWorth = account.countsInWorth
         }
     }
 
@@ -55,7 +76,8 @@ struct AccountFormView: View {
             id: accountID ?? LedgerID.make(),
             name: name.trimmingCharacters(in: .whitespacesAndNewlines),
             opening: LedgerMoney.cents(value),
-            kind: kind
+            kind: kind,
+            countsInWorth: countsInWorth
         ))
         pageBack()
     }

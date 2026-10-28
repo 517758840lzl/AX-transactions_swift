@@ -16,6 +16,15 @@ struct LedgerCopy {
     var budgetUnset: String
     var budgetHint: String
     var budgetClear: String
+    var countBudget: String
+    var countWorth: String
+    var worthLeftOut: String
+    var hideAmounts: String
+    var hideAmountsOn: String
+    var hideAmountsOff: String
+    var repeatDay: String
+    var repeatPosted: String
+    var repeatWaiting: String
     var categoryBudget: String
     var categoryBudgetHint: String
     var edit: String
@@ -30,6 +39,19 @@ struct LedgerCopy {
     var unchecked: String
     var monthCategories: String
     var report: String
+    var yearReport: String
+    var yearSpend: String
+    var yearIncome: String
+    var yearBalance: String
+    var savingGoals: String
+    var savingTarget: String
+    var savingSaved: String
+    var claimTitle: String
+    var claimMark: String
+    var claimPaid: String
+    var claimDone: String
+    var claimEmpty: String
+    var claimBackFormat: String
     var spendChartEmpty: String
     var sampleBanner: String
     var sampleClear: String
@@ -103,6 +125,7 @@ struct LedgerCopy {
     var transferCategory: String
     var accountPeriodNet: String
     var accountsTrend: String
+    var accountMix: String
     var accountsWindow7: String
     var accountsWindow30: String
     var accountPeriodDelta: String
@@ -113,6 +136,7 @@ struct LedgerCopy {
     var filterDone: String
     var periodSpend: String
     var periodIncome: String
+    var periodBalance: String
     var txEmpty: String
     var rankUp: String
     var rankDown: String
@@ -123,6 +147,9 @@ struct LedgerCopy {
     var weekdays: [String]
     var calendarWeek: [String]
     var me: String
+    var meLedger: String
+    var meDisplay: String
+    var meData: String
     var categories: String
     var profileHint: String
     var privacy: String
@@ -143,6 +170,7 @@ struct LedgerCopy {
     var importPaste: String
     var importDone: String
     var importInvalid: String
+    var importConfirm: String
     var importFile: String
     var nicknameTitle: String
     var avatarTitle: String
@@ -214,6 +242,10 @@ struct LedgerCopy {
             "monthName": LedgerDay.monthName(month, wide: false, localeID: localeID),
             "day": String(day),
         ])
+    }
+
+    func claimBack(_ title: String) -> String {
+        fill(claimBackFormat, ["title": title])
     }
 
     func categoryAdded(_ name: String) -> String {
@@ -289,7 +321,18 @@ struct LedgerCopy {
     }
 
     static func resolve(_ locale: BookLocale) -> LedgerCopy {
-        locale == .en ? englishCopy : chinese
+        switch locale {
+        case .zh: return chinese
+        case .zhHant: return traditionalCopy
+        case .en: return englishCopy
+        case .ja: return japaneseCopy
+        case .ko: return koreanCopy
+        case .es: return spanishCopy
+        case .pt: return portugueseCopy
+        case .fr: return frenchCopy
+        case .de: return germanCopy
+        case .it: return italianCopy
+        }
     }
 }
 
@@ -298,13 +341,22 @@ private let chinese = LedgerCopy(
     netAssets: "净资产", monthSpend: "本月支出", monthIncome: "收入", monthBalance: "本月结余",
     monthlyBudget: "本月预算", budgetRemaining: "剩余", safeToSpend: "今日还可花", budgetOver: "已超支",
     budgetUnset: "设置预算", budgetHint: "设置本月支出上限，便于在总览查看剩余额度", budgetClear: "清除预算",
+    countBudget: "计入预算", countWorth: "计入净资产", worthLeftOut: "不计入净资产",
+    hideAmounts: "隐藏金额", hideAmountsOn: "已隐藏", hideAmountsOff: "显示中",
+    repeatDay: "每月几号", repeatPosted: "本月已记", repeatWaiting: "本月待记",
     categoryBudget: "分类预算", categoryBudgetHint: "可为各分类单独设上限，留空表示不设限",
     edit: "编辑", done: "完成", save: "保存", cancel: "取消", add: "添加", back: "返回",
     toReview: "待核对", markAllReviewed: "全部核对", checked: "已核对", unchecked: "未核对",
-    monthCategories: "本月分类", report: "报表", spendChartEmpty: "记一笔后，这里会出现本月曲线。",
+    monthCategories: "本月分类", report: "报表",
+    yearReport: "年报", yearSpend: "今年支出", yearIncome: "今年收入", yearBalance: "今年结余",
+    savingGoals: "存钱目标", savingTarget: "目标金额", savingSaved: "已经存下",
+    claimTitle: "待报销", claimMark: "待报销", claimPaid: "报销到账", claimDone: "已报销",
+    claimEmpty: "把一笔支出标成待报销。到账后点这里，同样的金额会记回账户。",
+    claimBackFormat: "{title} 报销",
+    spendChartEmpty: "记一笔后，这里会出现本月曲线。",
     sampleBanner: "示例账可点开修改", sampleClear: "清空", paceWarning: "按当前节奏，本月可能超预算",
     spendPace: "本月支出节奏", toTransactions: "流水",
-    recurringTitle: "固定扣款", recurringHint: "相同名称与金额的重复支出", recurringEmpty: "同一名称和金额记满两笔后，会出现在这里。",
+    recurringTitle: "周期记账", recurringHint: "到日子自动记入", recurringEmpty: "设好房租或工资，到了每月这一天会自动记一笔。",
     scopeChipMine: "我的", scopeChipFamily: "家庭", filter: "筛选", filterScope: "范围",
     scopeMine: "只看我的", scopeFamily: "家庭", time: "时间", today: "今日", thisMonth: "本月",
     customRange: "自定义", rangeStart: "开始", rangeEnd: "结束", rangeTo: "至",
@@ -321,19 +373,20 @@ private let chinese = LedgerCopy(
     holdingCodeStock: "NVDA", holdingNameStock: "英伟达", holdingCodeEtf: "SPY", holdingNameEtf: "标普500",
     holdingCodeFund: "VFIAX", holdingNameFund: "先锋500",
     transfer: "转账", transferTitle: "账户转账", transferFrom: "转出", transferTo: "转入", transferCategory: "转账",
-    accountPeriodNet: "区间净流入", accountsTrend: "净资产走势", accountsWindow7: "7 天", accountsWindow30: "1 月",
+    accountPeriodNet: "区间净流入", accountsTrend: "净资产走势", accountMix: "构成", accountsWindow7: "7 天", accountsWindow30: "1 月",
     accountPeriodDelta: "区间变动",
     transactions: "流水", searchPlaceholder: "搜名称、分类或账户", filterAll: "全部", filterOpen: "未核对", filterDone: "已核对",
-    periodSpend: "支出", periodIncome: "收入", txEmpty: "这个时间段里没有匹配的流水。",
+    periodSpend: "支出", periodIncome: "收入", periodBalance: "结余", txEmpty: "这个时间段里没有匹配的流水。",
     rankUp: "升", rankDown: "降", rankFlat: "平", vsLastMonth: "较上月",
     txViewList: "列表", txViewCalendar: "日历",
     weekdays: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
     calendarWeek: ["日", "一", "二", "三", "四", "五", "六"],
-    me: "我的", categories: "分类", profileHint: "点击填写昵称", privacy: "隐私协议", language: "语言", currency: "货币",
+    me: "我的", meLedger: "账本", meDisplay: "显示", meData: "数据", categories: "分类", profileHint: "点击填写昵称", privacy: "隐私协议", language: "语言", currency: "货币",
     streakDays: "连续记账", streakToday: "今日已记", streakNone: "今天还没记", privacyTitle: "隐私协议",
     exportBackup: "导出 JSON 备份", dataExportNote: "账户、流水、持仓和预算都会写进这一份 JSON。", exportBook: "导出账本", dataManage: "数据管理", clearBook: "清除数据",
     clearBookConfirm: "清除后，账户、流水、持仓和预算都会去掉，并且不会再填回示例。", clearBookDone: "账本数据已清除",
     importData: "导入账本", importPaste: "粘贴导出的 JSON", importDone: "导入成功", importInvalid: "JSON 无效，请检查内容",
+    importConfirm: "这份文件会换掉现在的账本，包括账户、流水和持仓。",
     importFile: "选择 JSON 文件",
     nicknameTitle: "昵称", avatarTitle: "头像", profileTitle: "昵称与性别", gender: "性别", genderFemale: "女", genderMale: "男", genderSecret: "保密",
     entryEdit: "改一笔", shared: "记入家庭", entryNew: "记一笔", amount: "金额", name: "名称", namePh: "午饭、工资、房租",
@@ -354,14 +407,23 @@ private let englishCopy = LedgerCopy(
     netAssets: "Net worth", monthSpend: "Spent", monthIncome: "Income", monthBalance: "Month balance",
     monthlyBudget: "Monthly budget", budgetRemaining: "Left", safeToSpend: "Safe today", budgetOver: "Over budget",
     budgetUnset: "Set budget", budgetHint: "Cap this month’s spending", budgetClear: "Clear budget",
+    countBudget: "Count in budget", countWorth: "Count in net worth", worthLeftOut: "Outside net worth",
+    hideAmounts: "Hide amounts", hideAmountsOn: "Hidden", hideAmountsOff: "Visible",
+    repeatDay: "Day of month", repeatPosted: "Posted", repeatWaiting: "Waiting",
     categoryBudget: "Category caps", categoryBudgetHint: "Set a cap per category; leave blank for no limit",
     edit: "Edit", done: "Done", save: "Save", cancel: "Cancel", add: "Add", back: "Back",
     toReview: "To review", markAllReviewed: "Mark all reviewed", checked: "Reviewed", unchecked: "Review",
-    monthCategories: "Categories", report: "Report", spendChartEmpty: "Add a transaction to see this month’s curve.",
+    monthCategories: "Categories", report: "Report",
+    yearReport: "Year", yearSpend: "Spent this year", yearIncome: "Income this year", yearBalance: "Year balance",
+    savingGoals: "Savings goals", savingTarget: "Target", savingSaved: "Saved",
+    claimTitle: "To reimburse", claimMark: "Waiting for reimbursement", claimPaid: "Money arrived", claimDone: "Reimbursed",
+    claimEmpty: "Mark an expense as waiting. When the money arrives, tap here and it is written back to the account.",
+    claimBackFormat: "{title} reimbursed",
+    spendChartEmpty: "Add a transaction to see this month’s curve.",
     sampleBanner: "Sample entries can be edited", sampleClear: "Clear",
     paceWarning: "At this pace you may exceed budget", spendPace: "Spending pace", toTransactions: "Activity",
-    recurringTitle: "Recurring", recurringHint: "Same title & amount repeating",
-    recurringEmpty: "Shows here after two expenses with the same title and amount.",
+    recurringTitle: "Repeating", recurringHint: "Posts on its day",
+    recurringEmpty: "Set rent or pay once. It posts itself on that day each month.",
     scopeChipMine: "Mine", scopeChipFamily: "Household", filter: "Filter", filterScope: "Scope",
     scopeMine: "Mine only", scopeFamily: "Household", time: "Time", today: "Today", thisMonth: "This month",
     customRange: "Custom", rangeStart: "Start", rangeEnd: "End", rangeTo: "to",
@@ -380,23 +442,25 @@ private let englishCopy = LedgerCopy(
     holdingCodeStock: "NVDA", holdingNameStock: "NVIDIA", holdingCodeEtf: "SPY", holdingNameEtf: "S&P 500",
     holdingCodeFund: "VFIAX", holdingNameFund: "Vanguard 500",
     transfer: "Transfer", transferTitle: "Transfer", transferFrom: "From", transferTo: "To", transferCategory: "Transfer",
-    accountPeriodNet: "Net inflow", accountsTrend: "Net worth trend", accountsWindow7: "7D", accountsWindow30: "1M",
+    accountPeriodNet: "Net inflow", accountsTrend: "Net worth trend", accountMix: "Split", accountsWindow7: "7D", accountsWindow30: "1M",
     accountPeriodDelta: "Period change",
     transactions: "Activity", searchPlaceholder: "Search name, category, or account",
     filterAll: "All", filterOpen: "Review", filterDone: "Reviewed",
-    periodSpend: "Spent", periodIncome: "Income", txEmpty: "No transactions match this period.",
+    periodSpend: "Spent", periodIncome: "Income", periodBalance: "Balance", txEmpty: "No transactions match this period.",
     rankUp: "up", rankDown: "down", rankFlat: "flat", vsLastMonth: "vs last mo.",
     txViewList: "List", txViewCalendar: "Calendar",
     weekdays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     calendarWeek: ["S", "M", "T", "W", "T", "F", "S"],
-    me: "Me", categories: "Categories", profileHint: "Tap to set nickname", privacy: "Privacy",
+    me: "Me", meLedger: "Book", meDisplay: "Display", meData: "Data", categories: "Categories", profileHint: "Tap to set nickname", privacy: "Privacy",
     language: "Language", currency: "Currency",
     streakDays: "Streak", streakToday: "Logged today", streakNone: "Not logged today", privacyTitle: "Privacy",
     exportBackup: "Export JSON backup", dataExportNote: "Accounts, activity, holdings and budgets go into this JSON.", exportBook: "Export book", dataManage: "Data", clearBook: "Clear data",
     clearBookConfirm: "Accounts, transactions, holdings and budgets will be removed, and the sample book will not come back.",
     clearBookDone: "Book data cleared",
     importData: "Import book", importPaste: "Paste exported JSON", importDone: "Import complete",
-    importInvalid: "Invalid JSON. Check the contents.", importFile: "Choose JSON file",
+    importInvalid: "Invalid JSON. Check the contents.",
+    importConfirm: "This file replaces the current book, including accounts, transactions and holdings.",
+    importFile: "Choose JSON file",
     nicknameTitle: "Nickname", avatarTitle: "Avatar", profileTitle: "Nickname & gender", gender: "Gender",
     genderFemale: "Female", genderMale: "Male", genderSecret: "Private",
     entryEdit: "Edit transaction", shared: "Household", entryNew: "Add transaction",

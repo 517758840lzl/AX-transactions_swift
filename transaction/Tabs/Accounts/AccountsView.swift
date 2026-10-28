@@ -34,11 +34,18 @@ struct AccountsView: View {
                 Text(copy.accountsEmpty).font(.system(size: 15)).foregroundStyle(Palette.muted).padding(.top, 24)
             } else {
                 hero(copy, snapshot: snapshot)
+                mix(copy, priorISO: priorISO, stocks: stocks, funds: funds)
                 ForEach(AccountKind.order, id: \.self) { kind in
-                    accountGroup(kind, priorISO: priorISO, copy: copy)
+                    if shows(kind.rawValue) {
+                        accountGroup(kind, priorISO: priorISO, copy: copy)
+                    }
                 }
-                holdingGroup(copy.holdingsStock, stocks, toneOffset: 2, copy: copy)
-                holdingGroup(copy.holdingsFund, funds, toneOffset: 5, copy: copy)
+                if shows("stock") {
+                    holdingGroup(copy.holdingsStock, stocks, toneOffset: 2, copy: copy)
+                }
+                if shows("fund") {
+                    holdingGroup(copy.holdingsFund, funds, toneOffset: 5, copy: copy)
+                }
             }
             if store.book.accounts.count >= 2 {
                 PillButton(title: copy.transfer, filled: false) { screen.open(.transfer) }
@@ -97,6 +104,77 @@ struct AccountsView: View {
         .id(screen.windowIndex)
     }
 
+    private func shows(_ id: String) -> Bool {
+        screen.accountFocus == nil || screen.accountFocus == id
+    }
+
+    private func mix(_ copy: LedgerCopy, priorISO: String, stocks: [Holding], funds: [Holding]) -> some View {
+        let rows = mixRows(priorISO: priorISO, stocks: stocks, funds: funds, copy: copy)
+        let scale = rows.map { abs($0.amount) }.max() ?? 1
+        return Group {
+            if rows.count >= 2 {
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(copy.accountMix)
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(Palette.muted)
+                        .padding(.top, 8)
+                    VStack(spacing: 0) {
+                        ForEach(rows) { row in
+                            Button {
+                                screen.accountFocus = screen.accountFocus == row.id ? nil : row.id
+                            } label: {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    HStack {
+                                        Text(row.title)
+                                            .font(.system(size: 15, weight: .bold))
+                                            .foregroundStyle(Palette.ink)
+                                        Spacer(minLength: 8)
+                                        MoneyText(value: row.amount, mark: store.book.mark, size: 15)
+                                    }
+                                    GeometryReader { proxy in
+                                        let width = scale > 0 ? proxy.size.width * min(abs(row.amount) / scale, 1) : 0
+                                        ZStack(alignment: .leading) {
+                                            Capsule().fill(Palette.wash)
+                                            Capsule().fill(screen.accountFocus == row.id ? Palette.ink : Palette.pink).frame(width: max(width, 4))
+                                        }
+                                    }
+                                    .frame(height: 6)
+                                }
+                                .padding(.vertical, 10)
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 4)
+                    .background(Color.white, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Palette.line, lineWidth: 1))
+                    .padding(.top, 8)
+                }
+            }
+        }
+    }
+
+    private func mixRows(priorISO: String, stocks: [Holding], funds: [Holding], copy: LedgerCopy) -> [MixSlice] {
+        var rows: [MixSlice] = []
+        for kind in AccountKind.order {
+            let accounts = store.book.accounts.filter { $0.kind == kind }
+            if accounts.isEmpty { continue }
+            let total = accounts.reduce(0) { sum, account in
+                sum + BookMath.accountNowAndPrior(account, entries: store.book.entries, priorISO: priorISO).now
+            }
+            rows.append(MixSlice(id: kind.rawValue, title: copy.accountKind(kind), amount: total))
+        }
+        if !stocks.isEmpty {
+            rows.append(MixSlice(id: "stock", title: copy.holdingsStock, amount: stocks.reduce(0) { $0 + BookMath.holdingMarketValue($1) }))
+        }
+        if !funds.isEmpty {
+            rows.append(MixSlice(id: "fund", title: copy.holdingsFund, amount: funds.reduce(0) { $0 + BookMath.holdingMarketValue($1) }))
+        }
+        return rows
+    }
+
     @ViewBuilder
     private func accountGroup(_ kind: AccountKind, priorISO: String, copy: LedgerCopy) -> some View {
         let accounts = store.book.accounts.filter { $0.kind == kind }
@@ -121,7 +199,7 @@ struct AccountsView: View {
                     } label: {
                         ledgerLine(
                             name: row.0.name,
-                            meta: copy.accountKind(row.0.kind),
+                            meta: row.0.countsInWorth ? copy.accountKind(row.0.kind) : "\(copy.accountKind(row.0.kind)) · \(copy.worthLeftOut)",
                             tone: index + toneBase,
                             value: row.1,
                             detail: BookMath.formatPercent(delta: delta, base: row.2),
@@ -196,4 +274,10 @@ struct AccountsView: View {
         .plateShadow(opacity: 0.04, radius: 10, y: 8)
         .padding(.top, 8)
     }
+}
+
+private struct MixSlice: Identifiable {
+    var id: String
+    var title: String
+    var amount: Double
 }

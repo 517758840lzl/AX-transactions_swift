@@ -13,6 +13,8 @@ struct EntryFormView: View {
     @State private var accountID = ""
     @State private var accountName = ""
     @State private var shared = false
+    @State private var countsInBudget = true
+    @State private var claim = ClaimMark.none
     @State private var ready = false
 
     var body: some View {
@@ -42,6 +44,12 @@ struct EntryFormView: View {
                 accountField
             }
             sharedBox(copy)
+            checkRow(copy.countBudget, on: countsInBudget) { countsInBudget.toggle() }
+            if direction == .out {
+                checkRow(claim == .done ? copy.claimDone : copy.claimMark, on: claim != .none) {
+                    claim = claim == .none ? .waiting : .none
+                }
+            }
             PillButton(title: copy.save, enabled: canSave) { save(existing: existing) }
             if existing != nil {
                 Button(copy.deleteEntry) {
@@ -90,6 +98,32 @@ struct EntryFormView: View {
         .padding(.top, 6)
     }
 
+    private func checkRow(_ title: String, on: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    .fill(on ? Palette.pink : Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4, style: .continuous)
+                            .stroke(on ? Palette.pink : Palette.line, lineWidth: 1.5)
+                    )
+                    .overlay {
+                        if on {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(Palette.ink)
+                        }
+                    }
+                    .frame(width: 22, height: 22)
+                Text(title)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Palette.ink)
+            }
+        }
+        .buttonStyle(.plain)
+        .padding(.top, 6)
+    }
+
     private var canSave: Bool {
         let value = Double(amount.trimmingCharacters(in: .whitespacesAndNewlines))
         return !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && (value ?? 0) > 0
@@ -107,6 +141,8 @@ struct EntryFormView: View {
             accountID = existing.accountId
             accountName = existing.accountName
             shared = existing.shared
+            countsInBudget = existing.countsInBudget
+            claim = existing.claim
         } else {
             category = store.book.categories.first ?? store.copy.starterCategories[0]
             accountID = store.book.accounts.first?.id ?? ""
@@ -126,7 +162,9 @@ struct EntryFormView: View {
             accountName: accountName,
             accountId: accountID,
             checked: existing?.checked ?? false,
-            shared: shared
+            shared: shared,
+            countsInBudget: countsInBudget,
+            claim: direction == .out ? claim : .none
         )
         store.saveEntry(entry, creatingCashNamed: store.book.accounts.isEmpty ? accountName : nil)
         pageBack()

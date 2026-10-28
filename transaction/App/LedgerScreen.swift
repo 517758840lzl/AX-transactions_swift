@@ -14,6 +14,8 @@ final class LedgerScreen: ObservableObject {
     @Published var txTo = LedgerDay.today()
     @Published var search = ""
     @Published var status = "all"
+    @Published var txDirection = "all"
+    @Published var accountFocus: String?
     @Published var category: String?
     @Published var showCalendar = false
     @Published var calendarDay: String?
@@ -37,6 +39,7 @@ final class LedgerScreen: ObservableObject {
         txTo = LedgerDay.today()
         category = nil
         status = "all"
+        txDirection = "all"
         search = ""
         showCalendar = false
         tab = 1

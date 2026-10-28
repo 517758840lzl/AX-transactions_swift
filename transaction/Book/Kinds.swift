@@ -1,8 +1,36 @@
 import Foundation
 
-enum BookLocale: String {
+enum BookLocale: String, CaseIterable {
     case zh
+    case zhHant = "zh-Hant"
     case en
+    case ja
+    case ko
+    case es
+    case pt
+    case fr
+    case de
+    case it
+
+    var title: String {
+        switch self {
+        case .zh: return "简体中文"
+        case .zhHant: return "繁體中文"
+        case .en: return "English"
+        case .ja: return "日本語"
+        case .ko: return "한국어"
+        case .es: return "Español"
+        case .pt: return "Português"
+        case .fr: return "Français"
+        case .de: return "Deutsch"
+        case .it: return "Italiano"
+        }
+    }
+
+    static func read(_ raw: Any?) -> BookLocale {
+        guard let value = raw as? String, let locale = BookLocale(rawValue: value) else { return .zh }
+        return locale
+    }
 }
 
 enum Gender: String, CaseIterable {

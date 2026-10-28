@@ -48,11 +48,11 @@ struct ChoiceRow: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: 44)
                 .padding(.horizontal, compact ? 4 : 10)
-                .foregroundStyle(selected ? Color.white : Palette.muted)
-                .background(selected ? Palette.ink : Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .foregroundStyle(selected ? Palette.ink : Palette.muted)
+                .background(selected ? Palette.pink : Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .stroke(selected ? Palette.ink : Palette.line, lineWidth: 1)
+                        .stroke(selected ? Palette.pink : Palette.line, lineWidth: 1)
                 )
         }
         .buttonStyle(.plain)

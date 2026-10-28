@@ -9,8 +9,13 @@ enum Page: Hashable {
     case holding(id: String)
     case holdingForm(id: String?)
     case transfer
+    case repeatPlan(id: String?)
+    case yearReport
+    case savingGoals
+    case savingGoal(id: String?)
     case profile
-    case data
-    case importBook
+    case categories
+    case language
+    case currency
     case privacy
 }

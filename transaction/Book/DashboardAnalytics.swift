@@ -56,6 +56,25 @@ extension BookMath {
         let range = calendar.range(of: .day, in: .month, for: now)?.count ?? day
         return range - day + 1
     }
+    static func yearColumns(_ entries: [Entry], year: Int) -> [YearColumn] {
+        (1...12).map { month in
+            let prefix = String(format: "%04d-%02d", year, month)
+            let rows = entries.filter { $0.date.hasPrefix(prefix) }
+            let spend = rows.filter(\.isOut).reduce(0) { $0 + $1.amount }
+            let income = rows.filter { !$0.isOut }.reduce(0) { $0 + $1.amount }
+            return YearColumn(month: month, spend: LedgerMoney.cents(spend), income: LedgerMoney.cents(income))
+        }
+    }
+
+    static func monthSpan(year: Int, month: Int) -> (start: String, end: String) {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = .current
+        let start = LedgerDay.iso(year: year, month: month, day: 1)
+        let date = calendar.date(from: DateComponents(year: year, month: month, day: 1)) ?? Date()
+        let length = calendar.range(of: .day, in: .month, for: date)?.count ?? 28
+        return (start, LedgerDay.iso(year: year, month: month, day: length))
+    }
+
     static func paceOverBudget(monthOut: Double, budget: Double, now: Date = Date()) -> Bool {
         guard budget > 0 else { return false }
         let calendar = Calendar.current

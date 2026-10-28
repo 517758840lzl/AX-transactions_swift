@@ -58,6 +58,8 @@ struct RootView: View {
         .environmentObject(screen)
         .environment(\.pageBack, { screen.close() })
         .environment(\.keyboardDone, copy.done)
+        .environment(\.amountsHidden, store.book.hideAmounts)
+        .onAppear { store.settleRepeats() }
         .tint(Palette.ink)
     }
 
@@ -80,12 +82,22 @@ struct RootView: View {
             HoldingFormView(store: store, holdingID: id)
         case .transfer:
             TransferFormView(store: store)
+        case .repeatPlan(let id):
+            RepeatPlanFormView(store: store, planID: id)
+        case .yearReport:
+            YearReportPage(store: store, screen: screen)
+        case .savingGoals:
+            SavingGoalsListView(store: store, screen: screen)
+        case .savingGoal(let id):
+            SavingGoalFormView(store: store, goalID: id)
         case .profile:
             ProfileFormView(store: store)
-        case .data:
-            DataView(store: store, screen: screen)
-        case .importBook:
-            ImportView(store: store)
+        case .categories:
+            CategoryManageView(store: store)
+        case .language:
+            LanguagePickView(store: store)
+        case .currency:
+            CurrencyPickView(store: store)
         case .privacy:
             PrivacyView(title: copy.privacyTitle)
         }

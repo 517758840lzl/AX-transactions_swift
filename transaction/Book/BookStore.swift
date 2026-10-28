@@ -29,6 +29,7 @@ final class BookStore: ObservableObject {
         if !FileManager.default.fileExists(atPath: fileURL.path) {
             store.persist()
         }
+        store.settleRepeats()
         return store
     }
 
@@ -52,6 +53,12 @@ final class BookStore: ObservableObject {
     func setLocale(_ locale: BookLocale) {
         guard book.locale != locale else { return }
         book.locale = locale
+        persist()
+    }
+
+    func setHideAmounts(_ hidden: Bool) {
+        guard book.hideAmounts != hidden else { return }
+        book.hideAmounts = hidden
         persist()
     }
 
@@ -118,6 +125,7 @@ final class BookStore: ObservableObject {
     func removeAccount(_ id: String) {
         book.accounts.removeAll { $0.id == id }
         book.entries.removeAll { $0.accountId == id }
+        book.repeats.removeAll { $0.accountId == id }
         persist()
     }
 
@@ -151,7 +159,8 @@ final class BookStore: ObservableObject {
                 id: LedgerID.make(),
                 name: (name?.trimmingCharacters(in: .whitespacesAndNewlines)).flatMap { $0.isEmpty ? nil : $0 } ?? copy.accountKindCash,
                 opening: 0,
-                kind: .cash
+                kind: .cash,
+                countsInWorth: true
             )
             book.accounts.append(account)
             next.accountId = account.id
@@ -204,7 +213,9 @@ final class BookStore: ObservableObject {
             accountName: to.name,
             accountId: to.id,
             checked: true,
-            shared: false
+            shared: false,
+            countsInBudget: false,
+            claim: .none
         )
         let outgoing = Entry(
             id: "transfer-\(stamp)-out",
@@ -216,7 +227,9 @@ final class BookStore: ObservableObject {
             accountName: from.name,
             accountId: from.id,
             checked: true,
-            shared: false
+            shared: false,
+            countsInBudget: false,
+            claim: .none
         )
         book.entries.insert(contentsOf: [incoming, outgoing], at: 0)
         persist()
@@ -237,8 +250,107 @@ final class BookStore: ObservableObject {
         book.templates = []
         book.monthlyBudget = nil
         book.categoryCaps = [:]
+        book.repeats = []
+        book.goals = []
         book.sampleCleared = true
         persist()
+    }
+
+    func saveRepeat(_ plan: RepeatPlan) {
+        var next = plan
+        next.day = min(max(next.day, 1), 28)
+        next.amount = LedgerMoney.cents(next.amount)
+        if let index = book.repeats.firstIndex(where: { $0.id == next.id }) {
+            book.repeats[index] = next
+        } else {
+            book.repeats.append(next)
+        }
+        persist()
+        settleRepeats()
+    }
+
+    func saveGoal(_ goal: SavingGoal) {
+        var next = goal
+        next.target = LedgerMoney.cents(max(next.target, 0))
+        next.saved = LedgerMoney.cents(max(next.saved, 0))
+        if let index = book.goals.firstIndex(where: { $0.id == next.id }) {
+            book.goals[index] = next
+        } else {
+            book.goals.append(next)
+        }
+        persist()
+    }
+
+    func deleteGoal(_ id: String) {
+        book.goals.removeAll { $0.id == id }
+        persist()
+    }
+
+    func payClaim(_ id: String) {
+        guard let index = book.entries.firstIndex(where: { $0.id == id }), book.entries[index].claim == .waiting else { return }
+        var source = book.entries[index]
+        source.claim = .done
+        book.entries[index] = source
+        let backID = "claim-\(id)"
+        if !book.entries.contains(where: { $0.id == backID }) {
+            book.entries.insert(Entry(
+                id: backID,
+                title: copy.claimBack(source.title),
+                amount: source.amount,
+                direction: .income,
+                category: source.category,
+                date: LedgerDay.today(),
+                accountName: source.accountName,
+                accountId: source.accountId,
+                checked: true,
+                shared: source.shared,
+                countsInBudget: false,
+                claim: .none
+            ), at: 0)
+        }
+        persist()
+    }
+
+    func deleteRepeat(_ id: String) {
+        book.repeats.removeAll { $0.id == id }
+        persist()
+    }
+
+    func settleRepeats(now: Date = Date()) {
+        let month = LedgerDay.yearMonth(now)
+        let day = Calendar.current.component(.day, from: now)
+        var changed = false
+        for index in book.repeats.indices {
+            var plan = book.repeats[index]
+            guard day >= plan.day, plan.lastMonth != month else { continue }
+            let id = "repeat-\(plan.id)-\(month)"
+            if book.entries.contains(where: { $0.id == id }) {
+                plan.lastMonth = month
+                book.repeats[index] = plan
+                changed = true
+                continue
+            }
+            guard let account = book.accounts.first(where: { $0.id == plan.accountId }) else { continue }
+            let stamp = String(format: "%@-%02d", month, plan.day)
+            book.entries.insert(Entry(
+                id: id,
+                title: plan.title,
+                amount: plan.amount,
+                direction: plan.direction,
+                category: plan.category,
+                date: stamp,
+                accountName: account.name,
+                accountId: account.id,
+                checked: true,
+                shared: plan.shared,
+                countsInBudget: plan.countsInBudget,
+                claim: .none
+            ), at: 0)
+            plan.lastMonth = month
+            book.repeats[index] = plan
+            changed = true
+        }
+        if changed { persist() }
     }
 
     func importDocument(_ raw: String) -> Bool {

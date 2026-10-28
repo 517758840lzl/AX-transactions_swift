@@ -1,17 +1,21 @@
 import Combine
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct MeView: View {
     @ObservedObject var store: BookStore
     @ObservedObject var screen: LedgerScreen
-    @State private var editingCategories = false
-    @State private var newCategory = ""
+    @State private var pickingFile = false
+    @State private var pendingImport = ""
+    @State private var confirmImport = false
+    @State private var confirmClear = false
 
     var body: some View {
         let copy = store.copy
         let streak = BookMath.streakDays(store.book.entries)
         let logged = BookMath.loggedToday(store.book.entries)
         let name = store.book.nickname.isEmpty ? copy.unsetName : store.book.nickname
+        let languageName = store.book.locale.title
         PageScroll(bottom: 16) {
             Text(copy.me).font(.system(size: 26, weight: .bold)).tracking(-0.4).foregroundStyle(Palette.ink)
             PanelCard(card: true) {
@@ -46,69 +50,75 @@ struct MeView: View {
                 .buttonStyle(.plain)
             }
 
-            PanelCard(card: true) {
-                settingsRow(copy.monthlyBudget, trailing: budgetText(copy), value: true) { screen.open(.budget) }
+            PanelCard(title: copy.meLedger, titleSize: 13, card: true) {
+                settingsRow(copy.yearReport, opens: true) { screen.open(.yearReport) }
                 divider
-                settingsRow(copy.exportBook, trailing: "›") { screen.open(.data) }
+                settingsRow(copy.monthlyBudget, trailing: budgetText(copy), opens: true) { screen.open(.budget) }
                 divider
-                settingsRow(copy.importData, trailing: "›") { screen.open(.importBook) }
+                settingsRow(copy.savingGoals, trailing: store.book.goals.isEmpty ? "" : "\(store.book.goals.count)", opens: true) { screen.open(.savingGoals) }
                 divider
-                settingsRow(copy.privacy, trailing: "›") { screen.open(.privacy) }
-                divider
-                labeled(copy.language) {
-                    ChoiceRow(labels: [copy.localeZh, copy.localeEn], index: store.book.locale == .zh ? 0 : 1) { index in
-                        store.setLocale(index == 0 ? .zh : .en)
-                    }
-                }
-                divider
-                labeled(copy.currency) {
-                    ChoiceRow(labels: CurrencyCode.allCases.map(\.rawValue), index: CurrencyCode.allCases.firstIndex(of: store.book.currency) ?? 0, columns: 5) { index in
-                        store.setCurrency(CurrencyCode.allCases[index])
-                    }
-                }
+                settingsRow(copy.categories, trailing: "\(store.book.categories.count)", opens: true) { screen.open(.categories) }
             }
 
-            PanelCard(title: copy.categories, titleSize: 15, card: true, trailing: {
-                Button(editingCategories ? copy.done : copy.edit) { editingCategories.toggle() }
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(Palette.ink)
-            }) {
-                FlowChips(names: store.book.categories, editing: editingCategories, canRemove: store.book.categories.count > 1) { name in
-                    store.removeCategory(name)
+            PanelCard(title: copy.meDisplay, titleSize: 13, card: true) {
+                settingsRow(copy.hideAmounts, trailing: store.book.hideAmounts ? copy.hideAmountsOn : copy.hideAmountsOff) {
+                    store.setHideAmounts(!store.book.hideAmounts)
                 }
-                let pending = newCategory.trimmingCharacters(in: .whitespacesAndNewlines)
-                HStack(spacing: 8) {
-                    LedgerField(text: $newCategory, placeholder: copy.newCategory)
-                    Button(copy.add) {
-                        store.addCategory(pending)
-                        newCategory = ""
-                    }
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(Palette.ink)
-                    .padding(.horizontal, 18)
-                    .frame(minHeight: 48)
-                    .background(Palette.pink, in: Capsule())
-                    .opacity(pending.isEmpty ? 0.45 : 1)
-                    .disabled(pending.isEmpty)
-                }
-                .padding(.top, 12)
+                divider
+                settingsRow(copy.language, trailing: languageName, opens: true) { screen.open(.language) }
+                divider
+                settingsRow(copy.currency, trailing: "\(store.book.currency.rawValue) \(store.book.mark)", opens: true) { screen.open(.currency) }
             }
+
+            PanelCard(title: copy.meData, titleSize: 13, card: true) {
+                settingsRow(copy.exportBook, opens: true) { ShareSheet.present(store.exportText()) }
+                divider
+                settingsRow(copy.importData, opens: true) { pickingFile = true }
+                divider
+                settingsRow(copy.clearBook, opens: true, destructive: true) { confirmClear = true }
+            }
+
+            PanelCard(card: true) {
+                settingsRow(copy.privacy, opens: true) { screen.open(.privacy) }
+            }
+        }
+        .fileImporter(isPresented: $pickingFile, allowedContentTypes: [.json, .plainText]) { result in
+            guard case .success(let url) = result, url.startAccessingSecurityScopedResource() else { return }
+            defer { url.stopAccessingSecurityScopedResource() }
+            let text = (try? String(contentsOf: url, encoding: .utf8)) ?? ""
+            guard BookDocument.decode(text) != nil else {
+                store.flash(store.copy.importInvalid)
+                return
+            }
+            pendingImport = text
+            confirmImport = true
+        }
+        .confirmationDialog(copy.importData, isPresented: $confirmImport, titleVisibility: .visible) {
+            Button(copy.importData, role: .destructive) {
+                if store.importDocument(pendingImport) {
+                    store.flash(copy.importDone)
+                } else {
+                    store.flash(copy.importInvalid)
+                }
+                pendingImport = ""
+            }
+            Button(copy.cancel, role: .cancel) { pendingImport = "" }
+        } message: {
+            Text(copy.importConfirm)
+        }
+        .confirmationDialog(copy.clearBook, isPresented: $confirmClear, titleVisibility: .visible) {
+            Button(copy.clearBook, role: .destructive) {
+                store.clearBook()
+                store.flash(copy.clearBookDone)
+            }
+            Button(copy.cancel, role: .cancel) {}
+        } message: {
+            Text(copy.clearBookConfirm)
         }
     }
 
     private var divider: some View {
         Rectangle().fill(Palette.line.opacity(0.95)).frame(height: 1).padding(.vertical, 4)
-    }
-
-    private func labeled<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.system(size: 13, weight: .bold))
-                .foregroundStyle(Palette.muted)
-            content()
-        }
-        .padding(.top, 6)
-        .padding(.bottom, 4)
     }
 
     private func budgetText(_ copy: LedgerCopy) -> String {
@@ -118,16 +128,23 @@ struct MeView: View {
         return copy.budgetUnset
     }
 
-    private func settingsRow(_ title: String, trailing: String, value: Bool = false, action: @escaping () -> Void) -> some View {
+    private func settingsRow(_ title: String, trailing: String = "", opens: Bool = false, destructive: Bool = false, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack(spacing: 12) {
                 Text(title)
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(Palette.ink)
+                    .foregroundStyle(destructive ? Palette.down : Palette.ink)
                 Spacer(minLength: 8)
-                Text(trailing)
-                    .font(.system(size: value ? 14 : 20, weight: value ? .bold : .regular))
-                    .foregroundStyle(Palette.muted)
+                if !trailing.isEmpty {
+                    Text(trailing)
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(Palette.muted)
+                }
+                if opens {
+                    Text("›")
+                        .font(.system(size: 20, weight: .regular))
+                        .foregroundStyle(Palette.muted)
+                }
             }
             .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             .contentShape(Rectangle())
