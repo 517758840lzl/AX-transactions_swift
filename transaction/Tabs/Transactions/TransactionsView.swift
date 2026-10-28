@@ -7,8 +7,11 @@ struct TransactionsView: View {
 
     var body: some View {
         let copy = store.copy
-        let listed = filtered(includeCalendar: true)
-        let period = filtered(includeCalendar: false)
+        let period = matched()
+        let listed: [Entry] = {
+            guard screen.showCalendar, let day = screen.calendarDay else { return period }
+            return period.filter { $0.date == day }
+        }()
         let parts = BookMath.categoryParts(period, caps: [:]).sorted { $0.amount > $1.amount }
         let total = period.filter(\.isOut).reduce(0) { $0 + $1.amount }
         let income = period.filter { !$0.isOut }.reduce(0) { $0 + $1.amount }
@@ -57,7 +60,7 @@ struct TransactionsView: View {
                     screen.calendarDay = day
                 }
             }
-            PanelCard(title: listTitle, trailing: AnyView(summary(copy, total: total, income: income))) {
+            PanelCard(title: listTitle, trailing: { summary(copy, total: total, income: income) }) {
                 if listed.isEmpty {
                     Text(copy.txEmpty).font(.system(size: 13)).foregroundStyle(Palette.muted)
                 } else {
@@ -73,6 +76,9 @@ struct TransactionsView: View {
     private func toolbar(_ copy: LedgerCopy, accountName: String?) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             TextField(copy.searchPlaceholder, text: $screen.search)
+                .textInputAutocapitalization(.never)
+                .disableAutocorrection(true)
+                .submitLabel(.search)
                 .font(.system(size: 15))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 10)
@@ -166,11 +172,10 @@ struct TransactionsView: View {
         .buttonStyle(.plain)
     }
 
-    private func filtered(includeCalendar: Bool) -> [Entry] {
+    private func matched() -> [Entry] {
         let bounds = LedgerDay.bounds(mode: screen.txMode, from: screen.txFrom, to: screen.txTo)
         let query = screen.search.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         return BookMath.inPeriod(BookMath.byScope(store.book.entries, screen.txScope), bounds).filter { entry in
-            if includeCalendar, screen.showCalendar, let day = screen.calendarDay, entry.date != day { return false }
             if let category = screen.category, entry.category != category { return false }
             if let accountId = screen.accountId, entry.accountId != accountId { return false }
             if screen.status == "open", entry.checked { return false }

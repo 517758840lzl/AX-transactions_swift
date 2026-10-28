@@ -9,6 +9,8 @@ struct LedgerField: View {
     var body: some View {
         TextField(placeholder, text: text)
             .keyboardType(decimal ? .decimalPad : .default)
+            .textInputAutocapitalization(decimal ? .never : .sentences)
+            .disableAutocorrection(decimal)
             .font(.system(size: 16))
             .padding(.horizontal, 14)
             .frame(minHeight: 48)

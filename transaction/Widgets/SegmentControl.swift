@@ -18,6 +18,7 @@ struct SegmentControl: View {
                         .foregroundStyle(labelColor(selected: item == index))
                         .frame(maxWidth: .infinity, minHeight: 36)
                         .background(item == index ? Color.white : Color.clear, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .contentShape(Rectangle())
                         .compositingGroup()
                         .shadow(color: item == index && !onDark ? Palette.ink.opacity(0.06) : .clear, radius: 6, y: 4)
                 }

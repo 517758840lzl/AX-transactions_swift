@@ -71,11 +71,11 @@ struct MeView: View {
                 }
             }
 
-            PanelCard(title: copy.categories, trailing: AnyView(
+            PanelCard(title: copy.categories, titleSize: 15, card: true, trailing: {
                 Button(editingCategories ? copy.done : copy.edit) { editingCategories.toggle() }
                     .font(.system(size: 15, weight: .bold))
                     .foregroundStyle(Palette.ink)
-            ), titleSize: 15, card: true) {
+            }) {
                 FlowChips(names: store.book.categories, editing: editingCategories, canRemove: store.book.categories.count > 1) { name in
                     store.removeCategory(name)
                 }

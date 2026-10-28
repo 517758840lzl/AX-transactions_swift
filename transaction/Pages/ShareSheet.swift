@@ -1,8 +1,11 @@
 import UIKit
 
 enum ShareSheet {
+    /// Hands the system a real JSON file so AirDrop and Files keep the name and type.
     static func present(_ text: String) {
-        let controller = UIActivityViewController(activityItems: [text], applicationActivities: nil)
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("SpendLogBook.json")
+        try? text.write(to: url, atomically: true, encoding: .utf8)
+        let controller = UIActivityViewController(activityItems: [url], applicationActivities: nil)
         guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let root = scene.windows.first(where: \.isKeyWindow)?.rootViewController else { return }
         var top = root

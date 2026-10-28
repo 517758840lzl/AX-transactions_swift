@@ -18,7 +18,7 @@ struct EntryFormView: View {
     var body: some View {
         let copy = store.copy
         let existing = store.book.entries.first { $0.id == entryID }
-        let suggestions = BookMath.titleSuggestions(store.book.entries)
+        let suggestions = BookMath.titleSuggestions(store.book.entries, localeID: copy.localeID, transferCategory: copy.transferCategory)
         FormPage(title: existing == nil ? copy.entryNew : copy.entryEdit, back: copy.back) {
             ChoiceRow(labels: [copy.periodSpend, copy.monthIncome], index: direction == .out ? 0 : 1) { index in
                 direction = index == 0 ? .out : .income
@@ -29,53 +29,19 @@ struct EntryFormView: View {
             LedgerField(text: $title, placeholder: copy.namePh)
             if !suggestions.isEmpty {
                 FieldLabel(text: copy.titleSuggestions)
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        ForEach(suggestions, id: \.self) { item in
-                            Button(item) { title = item }
-                                .font(.system(size: 13, weight: .bold))
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 8)
-                                .foregroundStyle(title == item ? Color.white : Palette.ink)
-                                .background(title == item ? Palette.ink : Color.white, in: Capsule())
-                                .overlay(Capsule().stroke(Palette.line, lineWidth: 1))
-                        }
-                    }
-                    .immediateScroll()
-                }
+                ChipWrap(names: suggestions, selected: title) { title = $0 }
             }
             FieldLabel(text: copy.category)
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
-                    ForEach(store.book.categories, id: \.self) { name in
-                        Button(name) { category = name }
-                            .font(.system(size: 13, weight: .bold))
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .foregroundStyle(category == name ? Color.white : Palette.ink)
-                            .background(category == name ? Palette.ink : Color.white, in: Capsule())
-                            .overlay(Capsule().stroke(Palette.line, lineWidth: 1))
-                    }
-                }
-                .immediateScroll()
-            }
+            ChipWrap(names: store.book.categories, selected: category) { category = $0 }
             FieldLabel(text: copy.date)
-            DatePicker(copy.date, selection: dateBinding, in: ...Date(), displayedComponents: .date)
-                .labelsHidden()
-                .datePickerStyle(.compact)
+            DateField(copy: copy, iso: $date, label: copy.date)
             FieldLabel(text: copy.account)
             if store.book.accounts.isEmpty {
                 LedgerField(text: $accountName, placeholder: copy.accountKindCash)
             } else {
-                Picker(copy.account, selection: $accountID) {
-                    ForEach(store.book.accounts) { account in
-                        Text(account.name).tag(account.id)
-                    }
-                }
-                .pickerStyle(.menu)
+                accountField
             }
-            Toggle(copy.shared, isOn: $shared)
-                .tint(Palette.pink)
+            sharedBox(copy)
             PillButton(title: copy.save, enabled: canSave) { save(existing: existing) }
             if existing != nil {
                 Button(copy.deleteEntry) {
@@ -90,8 +56,38 @@ struct EntryFormView: View {
         .onAppear { fill(existing) }
     }
 
-    private var dateBinding: Binding<Date> {
-        Binding(get: { LedgerDay.parse(date) }, set: { date = LedgerDay.iso($0) })
+    private var accountField: some View {
+        let name = store.book.accounts.first { $0.id == accountID }?.name ?? ""
+        let options = store.book.accounts.map { ChoiceOption(id: $0.id, title: $0.name) }
+        return ChoiceField(label: store.copy.account, title: name, options: options, selectedID: accountID) {
+            accountID = $0
+        }
+    }
+
+    private func sharedBox(_ copy: LedgerCopy) -> some View {
+        Button { shared.toggle() } label: {
+            HStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    .fill(shared ? Palette.pink : Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4, style: .continuous)
+                            .stroke(shared ? Palette.pink : Palette.line, lineWidth: 1.5)
+                    )
+                    .overlay {
+                        if shared {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(Palette.ink)
+                        }
+                    }
+                    .frame(width: 22, height: 22)
+                Text(copy.shared)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Palette.ink)
+            }
+        }
+        .buttonStyle(.plain)
+        .padding(.top, 6)
     }
 
     private var canSave: Bool {

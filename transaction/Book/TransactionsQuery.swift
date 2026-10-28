@@ -10,15 +10,19 @@ extension BookMath {
         }
         return map
     }
-    static func titleSuggestions(_ entries: [Entry]) -> [String] {
+    /// Most-used titles first, then the book locale. Transfer rows are generated labels such as "转出 Visa", not memos.
+    static func titleSuggestions(_ entries: [Entry], localeID: String, transferCategory: String) -> [String] {
         var counts: [String: Int] = [:]
-        for entry in entries {
+        for entry in entries where entry.category != transferCategory {
             let title = entry.title.trimmingCharacters(in: .whitespacesAndNewlines)
             if !title.isEmpty { counts[title, default: 0] += 1 }
         }
+        let locale = Locale(identifier: localeID)
         return counts.keys.sorted { lhs, rhs in
-            let byCount = (counts[rhs] ?? 0) - (counts[lhs] ?? 0)
-            return byCount != 0 ? byCount > 0 : lhs < rhs
+            let left = counts[lhs] ?? 0
+            let right = counts[rhs] ?? 0
+            if left != right { return left > right }
+            return lhs.compare(rhs, locale: locale) == .orderedAscending
         }.prefix(6).map { $0 }
     }
     static func streakDays(_ entries: [Entry], now: Date = Date()) -> Int {

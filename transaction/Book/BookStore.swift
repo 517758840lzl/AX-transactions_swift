@@ -249,7 +249,7 @@ final class BookStore: ObservableObject {
     }
 
     func exportText() -> String {
-        BookDocument.encode(book)
+        BookDocument.encode(book, pretty: true)
     }
 
     private func persist() {

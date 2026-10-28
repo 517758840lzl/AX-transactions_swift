@@ -175,6 +175,9 @@ struct LedgerCopy {
     var monthTitleFormat: String
     var monthUnitFormat: String
     var monthDayFormat: String
+    var calendarTitleFormat: String
+    var monthPrevious: String
+    var monthNext: String
     var categoryAddedFormat: String
     var starterCategories: [String]
     var categoryHintAmounts: [String: Double]
@@ -186,6 +189,14 @@ struct LedgerCopy {
             "month": String(month),
             "monthName": LedgerDay.monthName(month, wide: true, localeID: localeID),
             "overview": monthOverview,
+        ])
+    }
+
+    func calendarTitle(year: Int, month: Int) -> String {
+        fill(calendarTitleFormat, [
+            "year": String(year),
+            "month": String(month),
+            "monthName": LedgerDay.monthName(month, wide: true, localeID: localeID),
         ])
     }
 
@@ -330,6 +341,7 @@ private let chinese = LedgerCopy(
     localeZh: "中文", localeEn: "English", unsetName: "未设置", unsetMark: "未", familyTag: "家庭",
     monthOverview: "总览",
     monthTitleFormat: "{month}月{overview}", monthUnitFormat: "{month}月", monthDayFormat: "{month}月{day}日",
+    calendarTitleFormat: "{year}年{month}月", monthPrevious: "上个月", monthNext: "下个月",
     categoryAddedFormat: "已添加分类：{name}",
     starterCategories: ["餐饮", "交通", "日用", "居住", "收入", "订阅", "娱乐"],
     categoryHintAmounts: ["餐饮": 1800, "交通": 400, "日用": 600, "居住": 3200, "收入": 8000, "订阅": 200, "娱乐": 500],
@@ -393,6 +405,7 @@ private let englishCopy = LedgerCopy(
     localeZh: "中文", localeEn: "English", unsetName: "Not set", unsetMark: "—", familyTag: "Household",
     monthOverview: "Overview",
     monthTitleFormat: "{monthName} {overview}", monthUnitFormat: "{monthName}", monthDayFormat: "{monthName} {day}",
+    calendarTitleFormat: "{monthName} {year}", monthPrevious: "Previous month", monthNext: "Next month",
     categoryAddedFormat: "Added category: {name}",
     starterCategories: ["Dining", "Transit", "Daily", "Housing", "Income", "Subscriptions", "Entertainment"],
     categoryHintAmounts: ["Dining": 1800, "Transit": 400, "Daily": 600, "Housing": 3200, "Income": 8000, "Subscriptions": 200, "Entertainment": 500],

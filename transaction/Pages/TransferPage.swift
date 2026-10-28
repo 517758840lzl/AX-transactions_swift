@@ -14,18 +14,13 @@ struct TransferFormView: View {
         let copy = store.copy
         FormPage(title: copy.transferTitle, back: copy.back) {
             FieldLabel(text: copy.transferFrom)
-            Picker(copy.transferFrom, selection: $fromID) {
-                ForEach(store.book.accounts) { account in Text(account.name).tag(account.id) }
-            }
+            accountChoice(copy.transferFrom, id: fromID) { fromID = $0 }
             FieldLabel(text: copy.transferTo)
-            Picker(copy.transferTo, selection: $toID) {
-                ForEach(store.book.accounts) { account in Text(account.name).tag(account.id) }
-            }
+            accountChoice(copy.transferTo, id: toID) { toID = $0 }
             FieldLabel(text: copy.amount)
             LedgerField(text: $amount, placeholder: "0.00", decimal: true)
             FieldLabel(text: copy.date)
-            DatePicker(copy.date, selection: Binding(get: { LedgerDay.parse(date) }, set: { date = LedgerDay.iso($0) }), in: ...Date(), displayedComponents: .date)
-                .labelsHidden()
+            DateField(copy: copy, iso: $date, label: copy.date)
             PillButton(title: copy.save, enabled: canSave) { save() }
         }
         .onAppear {
@@ -34,6 +29,12 @@ struct TransferFormView: View {
             fromID = store.book.accounts.first?.id ?? ""
             toID = store.book.accounts.dropFirst().first?.id ?? fromID
         }
+    }
+
+    private func accountChoice(_ label: String, id: String, onSelect: @escaping (String) -> Void) -> some View {
+        let name = store.book.accounts.first { $0.id == id }?.name ?? ""
+        let options = store.book.accounts.map { ChoiceOption(id: $0.id, title: $0.name) }
+        return ChoiceField(label: label, title: name, options: options, selectedID: id, onSelect: onSelect)
     }
 
     private var canSave: Bool {

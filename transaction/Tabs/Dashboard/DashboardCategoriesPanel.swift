@@ -8,11 +8,11 @@ struct DashboardCategoriesPanel: View {
 
     var body: some View {
         if !parts.isEmpty {
-            PanelCard(title: copy.monthCategories, trailing: AnyView(
+            PanelCard(title: copy.monthCategories, trailing: {
                 Button(copy.report) { screen.tab = 1 }
                     .font(.system(size: 13, weight: .bold))
                     .foregroundStyle(Palette.ink)
-            )) {
+            }) {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 10) {
                         ForEach(parts) { part in

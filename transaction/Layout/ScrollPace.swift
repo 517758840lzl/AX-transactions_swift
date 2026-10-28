@@ -13,6 +13,18 @@ extension View {
     func immediateScroll() -> some View {
         background(ScrollTouch())
     }
+
+    /// Decimal pads have no return key. A keyboard bar gives them a way to close.
+    func keyboardBar(_ title: String) -> some View {
+        toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button(title) {
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                }
+            }
+        }
+    }
 }
 
 private struct ScrollTouch: UIViewRepresentable {
@@ -20,6 +32,8 @@ private struct ScrollTouch: UIViewRepresentable {
     func updateUIView(_ view: Probe, context: Context) {}
 
     final class Probe: UIView {
+        private weak var hookedScroll: UIScrollView?
+
         override init(frame: CGRect) {
             super.init(frame: frame)
             isUserInteractionEnabled = false
@@ -30,16 +44,40 @@ private struct ScrollTouch: UIViewRepresentable {
 
         override func didMoveToWindow() {
             super.didMoveToWindow()
-            guard window != nil else { return }
+            tune()
+        }
+
+        override func didMoveToSuperview() {
+            super.didMoveToSuperview()
+            tune()
+        }
+
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            tune()
+        }
+
+        private func tune() {
             var current: UIView? = self
             while let next = current {
                 if let scroll = next as? UIScrollView {
                     scroll.delaysContentTouches = false
                     scroll.canCancelContentTouches = true
+                    scroll.keyboardDismissMode = .onDrag
                     scroll.panGestureRecognizer.delaysTouchesBegan = false
+                    guard hookedScroll !== scroll else { return }
+                    hookedScroll?.panGestureRecognizer.removeTarget(self, action: #selector(pageDrag))
+                    scroll.panGestureRecognizer.addTarget(self, action: #selector(pageDrag))
+                    hookedScroll = scroll
                     return
                 }
                 current = next.superview
+            }
+        }
+
+        @objc private func pageDrag(_ gesture: UIPanGestureRecognizer) {
+            if gesture.state == .began {
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
         }
     }

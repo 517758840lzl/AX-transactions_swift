@@ -8,6 +8,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
         UIScrollView.appearance().delaysContentTouches = false
         UIScrollView.appearance().canCancelContentTouches = true
+        UIScrollView.appearance().keyboardDismissMode = .onDrag
         let window = UIWindow(windowScene: windowScene)
         window.rootViewController = UIHostingController(rootView: RootView(store: BookStore.open()))
         window.overrideUserInterfaceStyle = .light

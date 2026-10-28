@@ -57,6 +57,7 @@ struct RootView: View {
             .background(Palette.stage)
         .environmentObject(screen)
         .environment(\.pageBack, { screen.close() })
+        .environment(\.keyboardDone, copy.done)
         .tint(Palette.ink)
     }
 

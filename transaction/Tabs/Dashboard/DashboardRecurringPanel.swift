@@ -9,23 +9,23 @@ struct DashboardRecurringPanel: View {
 
     var body: some View {
         if items.isEmpty {
-            PanelCard(title: copy.recurringTitle, trailing: AnyView(
+            PanelCard(title: copy.recurringTitle, trailing: {
                 Button(copy.entryNew) { screen.open(.entry(id: nil)) }
                     .font(.system(size: 13, weight: .bold))
                     .foregroundStyle(Palette.ink)
-            )) {
+            }) {
                 Text(copy.recurringEmpty)
                     .font(.system(size: 13))
                     .foregroundStyle(Palette.muted)
                     .fixedSize(horizontal: false, vertical: true)
             }
         } else {
-            PanelCard(title: copy.recurringTitle, trailing: AnyView(
+            PanelCard(title: copy.recurringTitle, trailing: {
                 Text(copy.recurringHint)
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(Palette.muted)
                     .multilineTextAlignment(.trailing)
-            )) {
+            }) {
                 ForEach(items) { item in
                     Button {
                         if let entry = store.book.entries.first(where: { $0.title == item.title && $0.amount == item.amount }) {

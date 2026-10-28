@@ -77,6 +77,7 @@ struct AccountsView: View {
             }
             .padding(.top, 14)
             TrendChart(amounts: snapshot.amounts, fitDataRange: true)
+                .id(screen.windowIndex)
                 .padding(.top, 12)
             (
                 Text(copy.accountPeriodDelta).foregroundColor(Palette.onDark)
@@ -93,6 +94,7 @@ struct AccountsView: View {
         .background(Palette.ink, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
         .plateShadow(opacity: 0.22, radius: 20, y: 18)
         .padding(.top, 2)
+        .id(screen.windowIndex)
     }
 
     @ViewBuilder

@@ -1,30 +1,30 @@
 import SwiftUI
 
 /// White block used by both `.ledger-panel` and `.ledger-card`.
-struct PanelCard<Content: View>: View {
+struct PanelCard<Content: View, Trailing: View>: View {
     var title: String?
-    var trailing: AnyView?
     var titleSize: CGFloat = 16
     var card = false
+    var trailing: () -> Trailing
     @ViewBuilder var content: () -> Content
 
     init(
         title: String? = nil,
-        trailing: AnyView? = nil,
         titleSize: CGFloat = 16,
         card: Bool = false,
+        @ViewBuilder trailing: @escaping () -> Trailing,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.title = title
-        self.trailing = trailing
         self.titleSize = titleSize
         self.card = card
+        self.trailing = trailing
         self.content = content
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if title != nil || trailing != nil {
+            if title != nil {
                 HStack(alignment: .center, spacing: 10) {
                     if let title {
                         Text(title)
@@ -34,7 +34,7 @@ struct PanelCard<Content: View>: View {
                             .lineLimit(1)
                     }
                     Spacer(minLength: 8)
-                    trailing
+                    trailing()
                 }
                 .padding(.bottom, 12)
             }
@@ -48,5 +48,16 @@ struct PanelCard<Content: View>: View {
                 .stroke(Palette.line.opacity(card ? 0.9 : 0.95), lineWidth: 1)
         )
         .plateShadow(opacity: card ? 0.04 : 0.05, radius: card ? 12 : 14, y: 10)
+    }
+}
+
+extension PanelCard where Trailing == EmptyView {
+    init(
+        title: String? = nil,
+        titleSize: CGFloat = 16,
+        card: Bool = false,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        self.init(title: title, titleSize: titleSize, card: card, trailing: { EmptyView() }, content: content)
     }
 }

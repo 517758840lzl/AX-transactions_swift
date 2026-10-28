@@ -25,8 +25,14 @@ struct FilterFormView: View {
                     mode = index == 0 ? .today : (index == 1 ? .month : .range)
                 }
                 if mode == .range {
-                    DatePicker(copy.rangeStart, selection: dateBinding(true), in: ...Date(), displayedComponents: .date)
-                    DatePicker(copy.rangeEnd, selection: dateBinding(false), in: ...Date(), displayedComponents: .date)
+                    HStack(spacing: 8) {
+                        DateField(copy: copy, iso: $from, label: copy.rangeStart)
+                        Text(copy.rangeTo)
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(Palette.ink)
+                        DateField(copy: copy, iso: $to, label: copy.rangeEnd)
+                    }
+                    .padding(.top, 8)
                 }
             }
             PillButton(title: copy.done) { pageBack() }
@@ -55,15 +61,6 @@ struct FilterFormView: View {
         case .month: return 1
         case .range: return 2
         }
-    }
-
-    private func dateBinding(_ start: Bool) -> Binding<Date> {
-        Binding(
-            get: { LedgerDay.parse(start ? from : to) },
-            set: { value in
-                if start { from = LedgerDay.iso(value) } else { to = LedgerDay.iso(value) }
-            }
-        )
     }
 
     private func apply() {

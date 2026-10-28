@@ -33,39 +33,47 @@ extension BookMath {
     static func windowStart(days: Int, now: Date = Date()) -> String {
         LedgerDay.iso(Calendar.current.date(byAdding: .day, value: -(days - 1), to: now) ?? now)
     }
+    /// Same series as the prototype `netWorthSeries`: each day from the window start through today.
+    /// The period change is today's net worth minus the net worth on the day before that start.
+    /// Holdings stay at the current market value on every day, so they drop out of the change.
     static func windowSnapshot(accounts: [Account], entries: [Entry], holdings: [Holding], days: Int, now: Date = Date()) -> WindowSnapshot {
         let holdingsValue = holdingsMarketTotal(holdings)
-        let opening = accounts.reduce(0) { $0 + $1.opening }
         let start = windowStart(days: days, now: now)
         let end = LedgerDay.today(now)
-        var before = opening
-        var deltas: [String: Double] = [:]
+        let priorISO = LedgerDay.adding(days: -1, to: start)
+        let opening = accounts.reduce(0) { $0 + $1.opening }
+        var throughPrior = opening
+        var later = 0.0
+        var byDay: [String: Double] = [:]
         for entry in entries {
             let value = signed(entry)
-            if entry.date < start {
-                before += value
-            } else if entry.date <= end {
-                deltas[entry.date, default: 0] += value
+            let day = dayKey(entry.date)
+            if day <= priorISO {
+                throughPrior += value
+            } else if day <= end {
+                byDay[day, default: 0] += value
+            } else {
+                later += value
             }
         }
+        var running = throughPrior
         var amounts: [Double] = []
-        var running = before
-        var cursor = LedgerDay.parse(start)
-        let last = LedgerDay.parse(end)
-        let calendar = Calendar.current
-        while cursor <= last {
-            let day = LedgerDay.iso(cursor, calendar: calendar)
-            running += deltas[day] ?? 0
+        for day in LedgerDay.eachDay(from: start, to: end) {
+            running += byDay[day] ?? 0
             amounts.append(LedgerMoney.cents(running + holdingsValue))
-            cursor = calendar.date(byAdding: .day, value: 1, to: cursor) ?? last.addingTimeInterval(86_400)
         }
+        let cash = running + later
         return WindowSnapshot(
             amounts: amounts,
-            prior: LedgerMoney.cents(before + holdingsValue),
-            netWorth: LedgerMoney.cents(running + holdingsValue),
-            cashBalance: LedgerMoney.cents(running),
+            prior: LedgerMoney.cents(throughPrior + holdingsValue),
+            netWorth: LedgerMoney.cents(cash + holdingsValue),
+            cashBalance: LedgerMoney.cents(cash),
             holdingsTotal: holdingsValue
         )
+    }
+
+    private static func dayKey(_ date: String) -> String {
+        date.count >= 10 ? String(date.prefix(10)) : date
     }
     static func formatPercent(delta: Double, base: Double) -> String {
         if base == 0 { return delta == 0 ? "0%" : "—" }

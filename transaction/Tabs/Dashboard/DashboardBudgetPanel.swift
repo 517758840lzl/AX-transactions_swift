@@ -13,11 +13,11 @@ struct DashboardBudgetPanel: View {
 
     var body: some View {
         if let budget, budget > 0, let left {
-            PanelCard(title: copy.monthlyBudget, trailing: AnyView(
+            PanelCard(title: copy.monthlyBudget, trailing: {
                 Button(copy.edit) { screen.open(.budget) }
                     .font(.system(size: 13, weight: .bold))
                     .foregroundStyle(Palette.ink)
-            )) {
+            }) {
                 filled(budget: budget, left: left)
             }
         } else {

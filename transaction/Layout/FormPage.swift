@@ -20,5 +20,8 @@ struct FormPage<Content: View>: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Color.white)
+        .keyboardBar(keyboardDone)
     }
+
+    @Environment(\.keyboardDone) private var keyboardDone
 }

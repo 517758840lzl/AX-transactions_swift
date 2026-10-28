@@ -7,11 +7,11 @@ struct DashboardSpendPacePanel: View {
     var series: [Double]
 
     var body: some View {
-        PanelCard(title: copy.spendPace, trailing: AnyView(
+        PanelCard(title: copy.spendPace, trailing: {
             Button(copy.toTransactions) { screen.tab = 1 }
                 .font(.system(size: 13, weight: .bold))
                 .foregroundStyle(Palette.ink)
-        )) {
+        }) {
             if monthOut > 0 {
                 TrendChart(amounts: series)
             } else {

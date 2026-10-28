@@ -1,9 +1,11 @@
 import Foundation
 
 enum BookDocument {
-    static func encode(_ book: Book) -> String {
+    static func encode(_ book: Book, pretty: Bool = false) -> String {
         let object = jsonObject(book)
-        guard let data = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted, .sortedKeys]),
+        var options: JSONSerialization.WritingOptions = [.sortedKeys]
+        if pretty { options.insert(.prettyPrinted) }
+        guard let data = try? JSONSerialization.data(withJSONObject: object, options: options),
               let text = String(data: data, encoding: .utf8) else {
             return "{}"
         }

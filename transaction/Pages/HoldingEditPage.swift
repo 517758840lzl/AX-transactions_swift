@@ -33,8 +33,7 @@ struct HoldingFormView: View {
             FieldLabel(text: copy.holdingPrice)
             LedgerField(text: $price, placeholder: "0.00", decimal: true)
             FieldLabel(text: copy.holdingPriceAsOf)
-            DatePicker(copy.holdingPriceAsOf, selection: Binding(get: { LedgerDay.parse(priceDate) }, set: { priceDate = LedgerDay.iso($0) }), in: ...Date(), displayedComponents: .date)
-                .labelsHidden()
+            DateField(copy: copy, iso: $priceDate, label: copy.holdingPriceAsOf)
             PillButton(title: copy.save, enabled: canSave) { save() }
             if editing {
                 Button(copy.deleteHolding) {
