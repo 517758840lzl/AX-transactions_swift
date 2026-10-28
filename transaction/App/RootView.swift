@@ -109,6 +109,8 @@ struct RootView: View {
             CurrencyPickView(store: store)
         case .privacy:
             PrivacyView(title: copy.privacyTitle)
+        case .export:
+            BookExportPage(store: store, screen: screen)
         case .removed:
             RemovedListView(store: store)
         case .worthTrend:

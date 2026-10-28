@@ -78,7 +78,7 @@ struct MeView: View {
             }
 
             PanelCard(title: copy.meData, titleSize: 13, card: true) {
-                settingsRow(copy.exportBook, opens: true) { ShareSheet.present(store.exportText()) }
+                settingsRow(copy.exportBook, opens: true) { screen.open(.export) }
                 divider
                 settingsRow(copy.importData, opens: true) { pickingFile = true }
                 divider

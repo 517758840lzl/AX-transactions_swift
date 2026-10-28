@@ -25,6 +25,7 @@ enum Page: Hashable {
     case language
     case currency
     case privacy
+    case export
     case removed
     case worthTrend
 }
