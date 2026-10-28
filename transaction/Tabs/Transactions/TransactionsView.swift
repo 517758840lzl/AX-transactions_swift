@@ -15,17 +15,17 @@ struct TransactionsView: View {
     var body: some View {
         let copy = store.copy
         let span = inSpan()
-        let spend = span.filter(\.isOut).reduce(0) { $0 + $1.amount }
-        let income = span.filter { !$0.isOut }.reduce(0) { $0 + $1.amount }
+        let spend = span.filter { $0.isOut && !$0.isTransfer }.reduce(0) { $0 + $1.amount }
+        let income = span.filter { !$0.isOut && !$0.isTransfer }.reduce(0) { $0 + $1.amount }
         let period = directed(span)
         let listed: [Entry] = {
             guard screen.showCalendar, let day = screen.calendarDay else { return period }
             return period.filter { $0.date == day }
         }()
         let parts = BookMath.categoryParts(period, caps: [:]).sorted { $0.amount > $1.amount }
-        let total = period.filter(\.isOut).reduce(0) { $0 + $1.amount }
+        let total = period.filter { $0.isOut && !$0.isTransfer }.reduce(0) { $0 + $1.amount }
         let previous = BookMath.prevMonthOutByCategory(store.book.entries)
-        let spendByDay = Dictionary(grouping: period.filter(\.isOut), by: \.date).mapValues { $0.reduce(0) { $0 + $1.amount } }
+        let spendByDay = Dictionary(grouping: period.filter { $0.isOut && !$0.isTransfer }, by: \.date).mapValues { $0.reduce(0) { $0 + $1.amount } }
         let showSample = !store.book.sampleCleared && store.book.entries.contains { $0.id.hasPrefix("sample-") }
         let accountName = store.book.accounts.first { $0.id == screen.accountId }?.name
         let listTitle = screen.showCalendar ? copy.dayChip(screen.calendarDay ?? LedgerDay.today()) : copy.periodChip(mode: screen.txMode, from: screen.txFrom, to: screen.txTo)
@@ -207,8 +207,8 @@ struct TransactionsView: View {
     }
 
     private func dayHead(_ day: String, entries: [Entry], copy: LedgerCopy) -> some View {
-        let out = entries.filter(\.isOut).reduce(0) { $0 + $1.amount }
-        let income = entries.filter { !$0.isOut }.reduce(0) { $0 + $1.amount }
+        let out = entries.filter { $0.isOut && !$0.isTransfer }.reduce(0) { $0 + $1.amount }
+        let income = entries.filter { !$0.isOut && !$0.isTransfer }.reduce(0) { $0 + $1.amount }
         return Button {
             screen.calendarDay = day
             screen.showCalendar = true

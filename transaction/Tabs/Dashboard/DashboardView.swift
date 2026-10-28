@@ -17,9 +17,10 @@ struct DashboardView: View {
         let scoped = BookMath.byScope(store.book.entries, screen.dashScope)
         let bounds = LedgerDay.bounds(mode: screen.dashMode, from: screen.dashFrom, to: screen.dashTo)
         let period = BookMath.inPeriod(scoped, bounds)
-        let monthOut = period.filter(\.isOut).reduce(0) { $0 + $1.amount }
-        let budgetOut = period.filter { $0.isOut && $0.countsInBudget }.reduce(0) { $0 + $1.amount }
-        let monthIn = period.filter { !$0.isOut }.reduce(0) { $0 + $1.amount }
+        let refunded = Set(store.book.entries.compactMap { $0.refundOf.isEmpty ? nil : $0.refundOf })
+        let monthOut = period.filter { $0.isOut && !$0.isTransfer }.reduce(0) { $0 + $1.amount }
+        let budgetOut = period.filter { $0.isOut && $0.countsInBudget && !$0.isTransfer && !refunded.contains($0.id) }.reduce(0) { $0 + $1.amount }
+        let monthIn = period.filter { !$0.isOut && !$0.isTransfer }.reduce(0) { $0 + $1.amount }
         let net = BookMath.netWorth(accounts: store.book.accounts, entries: store.book.entries, holdings: store.book.holdings)
         let parts = BookMath.categoryParts(period, caps: store.book.categoryCaps)
         let queue = BookMath.reviewQueue(scoped)

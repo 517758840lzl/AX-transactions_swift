@@ -18,7 +18,7 @@ extension BookMath {
         let start = LedgerDay.monthStart(now)
         let end = LedgerDay.today(now)
         var byDay: [String: Double] = [:]
-        for entry in entries where entry.isOut && entry.date >= start && entry.date <= end {
+        for entry in entries where entry.isOut && !entry.isTransfer && entry.date >= start && entry.date <= end {
             byDay[entry.date, default: 0] += entry.amount
         }
         return LedgerDay.eachDay(from: start, to: end).map { byDay[$0] ?? 0 }
@@ -26,7 +26,7 @@ extension BookMath {
     /// Color index follows the category name's alphabetical place. Callers that rank by amount keep that index.
     static func categoryParts(_ entries: [Entry], caps: [String: Double]) -> [CategoryPart] {
         var totals: [String: Double] = [:]
-        for entry in entries where entry.isOut {
+        for entry in entries where entry.isOut && !entry.isTransfer {
             totals[entry.category, default: 0] += entry.amount
         }
         return totals.keys.sorted().enumerated().compactMap { index, name in
@@ -47,7 +47,7 @@ extension BookMath {
             var dates: Set<String>
         }
         var groups: [String: Bucket] = [:]
-        for entry in entries where entry.isOut && entry.date >= minISO {
+        for entry in entries where entry.isOut && !entry.isTransfer && entry.date >= minISO {
             let key = "\(entry.title.trimmingCharacters(in: .whitespacesAndNewlines))|\(entry.amount)"
             var bucket = groups[key] ?? Bucket(title: entry.title, amount: entry.amount, dates: [])
             bucket.dates.insert(entry.date)
@@ -67,8 +67,8 @@ extension BookMath {
         (1...12).map { month in
             let prefix = String(format: "%04d-%02d", year, month)
             let rows = entries.filter { $0.date.hasPrefix(prefix) }
-            let spend = rows.filter(\.isOut).reduce(0) { $0 + $1.amount }
-            let income = rows.filter { !$0.isOut }.reduce(0) { $0 + $1.amount }
+            let spend = rows.filter { $0.isOut && !$0.isTransfer }.reduce(0) { $0 + $1.amount }
+            let income = rows.filter { !$0.isOut && !$0.isTransfer }.reduce(0) { $0 + $1.amount }
             return YearColumn(month: month, spend: LedgerMoney.cents(spend), income: LedgerMoney.cents(income))
         }
     }

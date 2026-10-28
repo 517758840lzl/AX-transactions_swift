@@ -63,6 +63,8 @@ struct Entry: Identifiable, Equatable {
     var splitGroup: String = ""
 
     var isOut: Bool { direction == .out }
+    /// Both legs of a move between the user's own accounts. Household spend and income skip these.
+    var isTransfer: Bool { id.hasPrefix("transfer-") }
 }
 
 struct RemovedEntry: Equatable, Identifiable {

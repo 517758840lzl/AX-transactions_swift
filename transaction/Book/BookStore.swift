@@ -135,10 +135,27 @@ final class BookStore: ObservableObject {
     }
 
     func removeAccount(_ id: String) {
+        let owned = book.entries.filter { $0.accountId == id }
+        var gone = Set(owned.map(\.id))
+        for entry in owned {
+            if let mate = Self.transferMate(entry.id) { gone.insert(mate) }
+        }
+        let today = LedgerDay.today()
+        for entry in book.entries where gone.contains(entry.id) {
+            book.removed.insert(RemovedEntry(entry: entry, removedOn: today), at: 0)
+        }
+        book.entries.removeAll { gone.contains($0.id) }
         book.accounts.removeAll { $0.id == id }
-        book.entries.removeAll { $0.accountId == id }
         book.repeats.removeAll { $0.accountId == id }
         persist()
+    }
+
+    /// `transfer-{stamp}-in` pairs with `transfer-{stamp}-out`.
+    private static func transferMate(_ id: String) -> String? {
+        guard id.hasPrefix("transfer-") else { return nil }
+        if id.hasSuffix("-in") { return String(id.dropLast(3)) + "-out" }
+        if id.hasSuffix("-out") { return String(id.dropLast(4)) + "-in" }
+        return nil
     }
 
     func upsertHolding(_ holding: Holding) -> Bool {

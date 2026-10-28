@@ -12,7 +12,7 @@ extension BookMath {
         let previous = Calendar.current.date(byAdding: .month, value: -1, to: now) ?? now
         let prefix = LedgerDay.yearMonth(previous)
         var map: [String: Double] = [:]
-        for entry in entries where entry.isOut && entry.date.hasPrefix(prefix) {
+        for entry in entries where entry.isOut && !entry.isTransfer && entry.date.hasPrefix(prefix) {
             map[entry.category, default: 0] += entry.amount
         }
         return map
