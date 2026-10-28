@@ -5,6 +5,7 @@
 //  Created by Lzl on 2026/10/28.
 //
 
+import Lottie
 import SwiftUI
 
 /// Opening sequence. Drop a `BrandMark` image into the asset catalog to fill the mark.
@@ -22,8 +23,6 @@ struct OpeningCover: View {
             let fade = unit(master, from: 0.1, to: 0.4)
             let scaleT = unit(master, from: 0.15, to: 0.55)
             let text = unit(master, from: 0.45, to: 0.85)
-            let pulse = triangle(elapsed, period: 1.4)
-            let glow = 0.35 + pulse * 0.25
 
             ZStack {
                 LinearGradient(
@@ -33,7 +32,7 @@ struct OpeningCover: View {
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 VStack(spacing: 0) {
-                    BrandSlot(size: 112, reveal: reveal, fade: fade, scaleT: scaleT, glow: glow)
+                    BrandSlot(size: 112, reveal: reveal, fade: fade, scaleT: scaleT)
                     Text(BundleTitle.current)
                         .font(.system(size: 26, weight: .semibold))
                         .foregroundColor(Palette.ink)
@@ -69,11 +68,6 @@ struct OpeningCover: View {
         let t = (value - start) / (end - start)
         return t * t * (3 - 2 * t)
     }
-
-    private func triangle(_ elapsed: Double, period: Double) -> Double {
-        let phase = elapsed.truncatingRemainder(dividingBy: period) / period
-        return phase < 0.5 ? phase * 2 : (1 - phase) * 2
-    }
 }
 
 struct BrandSlot: View {
@@ -81,16 +75,15 @@ struct BrandSlot: View {
     var reveal: Double
     var fade: Double
     var scaleT: Double
-    var glow: Double
 
     var body: some View {
         let popped = 0.82 + 0.18 * easeOutBack(scaleT)
         let shown = min(max(fade, 0), 1) * min(max(reveal, 0), 1)
         ZStack {
-            Circle()
-                .fill(Palette.down.opacity(0.28 * glow))
-                .frame(width: size * 0.92, height: size * 0.92)
-                .blur(radius: 16)
+            LottieView(animation: .named("OpeningMark"))
+                .playing(loopMode: .loop)
+                .frame(width: size, height: size)
+                .allowsHitTesting(false)
             mark
                 .frame(width: size * 0.88, height: size * 0.88)
                 .clipShape(RoundedRectangle(cornerRadius: size * 0.22, style: .continuous))

@@ -5,6 +5,7 @@
 //  Created by Lzl on 2026/10/19.
 //
 
+import DGCharts
 import SwiftUI
 
 /// Web `SpendLine` / Flutter `LedgerTrendLinePainter`.
@@ -16,59 +17,65 @@ struct TrendChart: View {
     var plotHeight: CGFloat = 120
 
     var body: some View {
-        Canvas { context, size in
-            guard !amounts.isEmpty else { return }
-            let minValue = amounts.min() ?? 0
-            let maxValue = amounts.max() ?? 0
-            let padX: CGFloat = 8
-            let padY: CGFloat = 12
-            let step = amounts.count <= 1 ? 0 : (size.width - padX * 2) / CGFloat(amounts.count - 1)
-            func yValue(_ value: Double) -> CGFloat {
-                let plotH = size.height - padY * 2
-                if fitDataRange {
-                    if abs(maxValue - minValue) < 0.000_000_001 { return padY + plotH / 2 }
-                    let t = (value - minValue) / (maxValue - minValue)
-                    return padY + (1 - CGFloat(t)) * plotH
-                }
-                let max = CGFloat(max(maxValue, 1))
-                return size.height - padY - (CGFloat(value) / max) * plotH
-            }
-            let points = amounts.indices.map { index in
-                CGPoint(x: padX + CGFloat(index) * step, y: yValue(amounts[index]))
-            }
-            context.stroke(
-                curve(points),
-                with: .color(line),
-                style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round)
-            )
-            if let last = points.last {
-                let radius: CGFloat = 4
-                let dot = Path(ellipseIn: CGRect(x: last.x - radius, y: last.y - radius, width: radius * 2, height: radius * 2))
-                context.fill(dot, with: .color(line))
-            }
-        }
-        .frame(height: plotHeight)
+        TrendLine(amounts: amounts, fitDataRange: fitDataRange, line: UIColor(line))
+            .frame(height: plotHeight)
+    }
+}
+
+private struct TrendLine: UIViewRepresentable {
+    var amounts: [Double]
+    var fitDataRange: Bool
+    var line: UIColor
+
+    func makeUIView(context: Context) -> LineChartView {
+        let chart = LineChartView()
+        chart.legend.enabled = false
+        chart.chartDescription.enabled = false
+        chart.xAxis.enabled = false
+        chart.leftAxis.enabled = false
+        chart.rightAxis.enabled = false
+        chart.drawGridBackgroundEnabled = false
+        chart.highlightPerTapEnabled = false
+        chart.highlightPerDragEnabled = false
+        chart.doubleTapToZoomEnabled = false
+        chart.pinchZoomEnabled = false
+        chart.setScaleEnabled(false)
+        chart.dragEnabled = false
+        chart.minOffset = 0
+        chart.setExtraOffsets(left: 8, top: 12, right: 8, bottom: 12)
+        chart.noDataText = ""
+        chart.backgroundColor = .clear
+        chart.isUserInteractionEnabled = false
+        return chart
     }
 
-    /// Catmull-Rom through each sample, so a long range stays one curve instead of a chain of corners.
-    private func curve(_ points: [CGPoint]) -> Path {
-        var path = Path()
-        guard let first = points.first else { return path }
-        path.move(to: first)
-        guard points.count > 1 else { return path }
-        if points.count == 2 {
-            path.addLine(to: points[1])
-            return path
+    func updateUIView(_ chart: LineChartView, context: Context) {
+        guard !amounts.isEmpty else {
+            chart.data = nil
+            return
         }
-        for index in 0..<(points.count - 1) {
-            let p0 = points[max(index - 1, 0)]
-            let p1 = points[index]
-            let p2 = points[index + 1]
-            let p3 = points[min(index + 2, points.count - 1)]
-            let control1 = CGPoint(x: p1.x + (p2.x - p0.x) / 6, y: p1.y + (p2.y - p0.y) / 6)
-            let control2 = CGPoint(x: p2.x - (p3.x - p1.x) / 6, y: p2.y - (p3.y - p1.y) / 6)
-            path.addCurve(to: p2, control1: control1, control2: control2)
+        let minValue = amounts.min() ?? 0
+        let maxValue = amounts.max() ?? 0
+        if fitDataRange {
+            chart.leftAxis.axisMinimum = minValue
+            chart.leftAxis.axisMaximum = abs(maxValue - minValue) < 0.000_000_001 ? minValue + 1 : maxValue
+        } else {
+            chart.leftAxis.axisMinimum = 0
+            chart.leftAxis.axisMaximum = max(maxValue, 1)
         }
-        return path
+        let entries = amounts.enumerated().map { ChartDataEntry(x: Double($0.offset), y: $0.element) }
+        let set = LineChartDataSet(entries: entries, label: "")
+        set.mode = .cubicBezier
+        set.cubicIntensity = 0.16
+        set.lineWidth = 2
+        set.setColor(line)
+        set.drawFilledEnabled = false
+        set.drawValuesEnabled = false
+        set.drawCirclesEnabled = true
+        set.drawCircleHoleEnabled = false
+        set.circleRadius = 4
+        set.circleColors = amounts.indices.map { $0 == amounts.count - 1 ? line : .clear }
+        set.highlightEnabled = false
+        chart.data = LineChartData(dataSet: set)
     }
 }

@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A1C4E005309188F0003AEC1C /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = A1C4E003309188F0003AEC1C /* DGCharts */; };
+		A1C4E006309188F0003AEC1C /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = A1C4E004309188F0003AEC1C /* Lottie */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		52E4490A309188F0003AEC1C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -65,6 +70,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1C4E005309188F0003AEC1C /* DGCharts in Frameworks */,
+				A1C4E006309188F0003AEC1C /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,6 +132,8 @@
 			);
 			name = transaction;
 			packageProductDependencies = (
+				A1C4E003309188F0003AEC1C /* DGCharts */,
+				A1C4E004309188F0003AEC1C /* Lottie */,
 			);
 			productName = transaction;
 			productReference = 52E448F3309188EF003AEC1C /* transaction.app */;
@@ -208,6 +217,10 @@
 			);
 			mainGroup = 52E448EA309188EF003AEC1C;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A1C4E001309188F0003AEC1C /* XCRemoteSwiftPackageReference "Charts" */,
+				A1C4E002309188F0003AEC1C /* XCRemoteSwiftPackageReference "lottie-spm" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 52E448F4309188EF003AEC1C /* Products */;
 			projectDirPath = "";
@@ -603,6 +616,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A1C4E001309188F0003AEC1C /* XCRemoteSwiftPackageReference "Charts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ChartsOrg/Charts.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.0;
+			};
+		};
+		A1C4E002309188F0003AEC1C /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-spm.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A1C4E003309188F0003AEC1C /* DGCharts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1C4E001309188F0003AEC1C /* XCRemoteSwiftPackageReference "Charts" */;
+			productName = DGCharts;
+		};
+		A1C4E004309188F0003AEC1C /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1C4E002309188F0003AEC1C /* XCRemoteSwiftPackageReference "lottie-spm" */;
+			productName = Lottie;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 52E448EB309188EF003AEC1C /* Project object */;
 }
