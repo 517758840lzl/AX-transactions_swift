@@ -41,7 +41,7 @@ final class LedgerScreen: ObservableObject {
     func close() {
         guard !path.isEmpty else { return }
         withAnimation(Self.pageSlide) {
-            path.removeLast()
+            _ = path.removeLast()
         }
     }
 
