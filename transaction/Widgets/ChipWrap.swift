@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Wrapping capsules from `.ledger-chips`. The selected chip is pink, and the word stays ink.
+/// Chips wrap. The selected one is pink, and the word stays dark.
 struct ChipWrap: View {
     var names: [String]
     var selected: String

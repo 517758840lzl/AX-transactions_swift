@@ -13,7 +13,7 @@ struct ChoiceOption: Identifiable {
     var title: String
 }
 
-/// Account box stays on the page. The list sits just above that box, with no dim layer.
+/// The list opens just above the field. No dimmer behind it.
 struct ChoiceField: View {
     var label: String
     var title: String

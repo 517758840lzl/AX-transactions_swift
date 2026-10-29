@@ -8,8 +8,7 @@
 import SwiftUI
 import UIKit
 
-/// Closed state is the prototype date trigger: the ISO day in a ledger field.
-/// Opening it shows the same month grid used by the prototype and the Flutter app.
+/// The day, as a field. Tap it for the month grid.
 struct DateField: View {
     var copy: LedgerCopy
     @Binding var iso: String
@@ -194,7 +193,7 @@ private struct DayCell: Identifiable {
     var day: Int?
 }
 
-/// fullScreenCover paints an opaque page behind the dialog. This clears that page so the dim sits on the form.
+/// fullScreenCover paints a solid page behind this. Clear it so the dim sits on the form.
 struct CoverBackdrop: UIViewRepresentable {
     func makeUIView(context: Context) -> UIView {
         let view = UIView()

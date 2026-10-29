@@ -11,15 +11,30 @@ import SwiftUI
 struct AccountFormView: View {
     @ObservedObject var store: BookStore
     var accountID: String?
+    var chooseKind: Bool
     @Environment(\.pageBack) private var pageBack
-    @State private var name = ""
-    @State private var opening = ""
-    @State private var kind = AccountKind.cash
-    @State private var countsInWorth = true
-    @State private var archived = false
-    @State private var statementDay = ""
-    @State private var dueDay = ""
-    @State private var ready = false
+    @State private var name: String
+    @State private var opening: String
+    @State private var kind: AccountKind?
+    @State private var countsInWorth: Bool
+    @State private var archived: Bool
+    @State private var statementDay: String
+    @State private var dueDay: String
+    @State private var ready: Bool
+
+    init(store: BookStore, accountID: String?, chooseKind: Bool) {
+        self._store = ObservedObject(wrappedValue: store)
+        self.accountID = accountID
+        self.chooseKind = chooseKind
+        _name = State(initialValue: "")
+        _opening = State(initialValue: "")
+        _kind = State(initialValue: accountID == nil && chooseKind ? nil : .cash)
+        _countsInWorth = State(initialValue: true)
+        _archived = State(initialValue: false)
+        _statementDay = State(initialValue: "")
+        _dueDay = State(initialValue: "")
+        _ready = State(initialValue: false)
+    }
 
     var body: some View {
         let copy = store.copy
@@ -28,7 +43,7 @@ struct AccountFormView: View {
             FieldLabel(text: copy.accountName)
             LedgerField(text: $name, placeholder: copy.accountNamePh)
             FieldLabel(text: copy.accountKindLabel)
-            ChoiceRow(labels: AccountKind.order.map { copy.accountKind($0) }, index: AccountKind.order.firstIndex(of: kind) ?? 0) { index in
+            ChoiceRow(labels: AccountKind.order.map { copy.accountKind($0) }, index: kind.flatMap { AccountKind.order.firstIndex(of: $0) } ?? -1) { index in
                 withAnimation(LedgerScreen.fold) {
                     kind = AccountKind.order[index]
                 }
@@ -99,11 +114,11 @@ struct AccountFormView: View {
     }
 
     private var canSave: Bool {
-        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && Double(opening.trimmingCharacters(in: .whitespacesAndNewlines)) != nil
+        kind != nil && !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && Double(opening.trimmingCharacters(in: .whitespacesAndNewlines)) != nil
     }
 
     private func save(archived nextArchived: Bool) {
-        guard canSave, let value = Double(opening.trimmingCharacters(in: .whitespacesAndNewlines)) else { return }
+        guard canSave, let kind, let value = Double(opening.trimmingCharacters(in: .whitespacesAndNewlines)) else { return }
         store.upsertAccount(Account(
             id: accountID ?? LedgerID.make(),
             name: name.trimmingCharacters(in: .whitespacesAndNewlines),

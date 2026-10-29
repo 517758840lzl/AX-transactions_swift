@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// `.ledger-segment`. Wash track on a light page, translucent track on the dark hero.
+/// Wash track on a light page. Translucent track on the dark hero.
 struct SegmentControl: View {
     var labels: [String]
     var index: Int
@@ -23,6 +23,9 @@ struct SegmentControl: View {
                     Text(labels[item])
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(labelColor(selected: item == index))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                        .padding(.horizontal, 6)
                         .frame(maxWidth: .infinity, minHeight: 36)
                         .background(item == index ? Color.white : Color.clear, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                         .contentShape(Rectangle())

@@ -12,7 +12,7 @@ enum Page: Hashable {
     case filter(which: String)
     case budget
     case account(id: String)
-    case accountForm(id: String?)
+    case accountForm(id: String?, chooseKind: Bool)
     case transfer
     case repeatPlan(id: String?)
     case yearReport

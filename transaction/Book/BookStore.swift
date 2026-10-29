@@ -9,7 +9,7 @@ import Combine
 import Foundation
 
 enum BundleTitle {
-    /// Display name from the target settings, then the product name, then the app bundle file name.
+    /// Display name from the target, then the product name, then the bundle file name.
     static var current: String {
         let bundle = Bundle.main
         let display = bundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
@@ -42,14 +42,28 @@ final class BookStore: ObservableObject {
         let folder = directory.appendingPathComponent(BundleTitle.current, isDirectory: true)
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         let fileURL = folder.appendingPathComponent("ledger-book-v1.json")
-        let book: Book
+        var book: Book
+        var shortened = false
         if let raw = try? String(contentsOf: fileURL, encoding: .utf8), let decoded = BookDocument.decode(raw) {
             book = decoded
+            if Self.onlySample(book) {
+                let seeded = SampleBook.seed()
+                let same = book.categories == seeded.categories
+                    && book.accounts.map(\.name) == seeded.accounts.map(\.name)
+                    && book.entries.map(\.title) == seeded.entries.map(\.title)
+                    && book.entries.count == seeded.entries.count
+                if !same {
+                    book.accounts = seeded.accounts
+                    book.entries = seeded.entries
+                    book.categories = seeded.categories
+                    shortened = true
+                }
+            }
         } else {
             book = SampleBook.seed()
         }
         let store = BookStore(book: book, fileURL: fileURL)
-        if !FileManager.default.fileExists(atPath: fileURL.path) {
+        if shortened || !FileManager.default.fileExists(atPath: fileURL.path) {
             store.persist()
         }
         store.settleRepeats()
@@ -166,7 +180,7 @@ final class BookStore: ObservableObject {
         persist()
     }
 
-    /// `transfer-{stamp}-in` pairs with `transfer-{stamp}-out`.
+    /// transfer-{stamp}-in pairs with transfer-{stamp}-out.
     private static func transferMate(_ id: String) -> String? {
         guard id.hasPrefix("transfer-") else { return nil }
         if id.hasSuffix("-in") { return String(id.dropLast(3)) + "-out" }
@@ -338,10 +352,16 @@ final class BookStore: ObservableObject {
     }
 
     func clearSample() {
-        book.accounts.removeAll { $0.id.hasPrefix("sample-") }
-        book.entries.removeAll { $0.id.hasPrefix("sample-") }
-        book.sampleCleared = true
-        persist()
+        clearBook()
+        flash(copy.clearBookDone)
+    }
+
+    private static func onlySample(_ book: Book) -> Bool {
+        !book.sampleCleared
+            && !book.accounts.isEmpty
+            && !book.entries.isEmpty
+            && book.accounts.allSatisfy { $0.id.hasPrefix("sample-") }
+            && book.entries.allSatisfy { $0.id.hasPrefix("sample-") }
     }
 
     func clearBook() {

@@ -55,7 +55,7 @@ struct AccountDetailView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                PillButton(title: copy.editAccount) { screen.open(.accountForm(id: account.id)) }
+                PillButton(title: copy.editAccount) { screen.open(.accountForm(id: account.id, chooseKind: false)) }
                 PillButton(title: copy.accountDetailActivity, filled: false) { screen.openAccountFeed(id: account.id) }
             }
         } else {

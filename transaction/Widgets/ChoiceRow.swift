@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Language stays one row. Currency uses five equal columns, matching `.ledger-choice-row--wrap`.
+/// Language stays on one row. Currency is five equal columns.
 struct ChoiceRow: View {
     var labels: [String]
     var index: Int
@@ -51,7 +51,7 @@ struct ChoiceRow: View {
             Text(labels[item])
                 .font(.system(size: compact ? 12 : 13, weight: .semibold))
                 .lineLimit(1)
-                .minimumScaleFactor(0.8)
+                .minimumScaleFactor(0.65)
                 .frame(maxWidth: .infinity)
                 .frame(height: 44)
                 .padding(.horizontal, compact ? 4 : 10)

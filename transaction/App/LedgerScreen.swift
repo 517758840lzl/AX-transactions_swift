@@ -16,7 +16,7 @@ final class LedgerScreen: ObservableObject {
     @Published var dashFrom = LedgerDay.monthStart()
     @Published var dashTo = LedgerDay.today()
     @Published var txScope = LedgerScope.mine
-    /// Account pages count every movement on the account, including ones marked household.
+    /// Account pages count every movement, household ones included.
     @Published var txUnscoped = false
     @Published var txMode = PeriodMode.month
     @Published var txFrom = LedgerDay.monthStart()
@@ -31,7 +31,7 @@ final class LedgerScreen: ObservableObject {
     @Published var accountId: String?
     @Published var windowIndex = 1
     @Published var worthSpan = WorthSpan.month
-    /// "" | "out" | "in" | "other". Set when a stats row opens the activity list.
+    /// "", "out", "in", or "other". Set when a stats row opens the list.
     @Published var feedKind = ""
 
     var windowDays: Int { BookMath.windowDays[min(max(windowIndex, 0), 1)] }
@@ -62,7 +62,7 @@ final class LedgerScreen: ObservableObject {
         }
     }
 
-    /// Leaves the current page and shows a tab underneath.
+    /// Leave this page and land on a tab.
     func reveal(tab index: Int) {
         withAnimation(Self.pageSlide) {
             tab = index

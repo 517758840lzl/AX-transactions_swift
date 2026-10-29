@@ -17,7 +17,7 @@ extension BookMath {
         }
         return map
     }
-    /// Most-used titles first, then the book locale. Transfer rows are generated labels such as "转出 Visa", not memos.
+    /// Frequent titles first. Generated transfer labels are not memos.
     static func titleSuggestions(_ entries: [Entry], localeID: String, transferCategory: String) -> [String] {
         var counts: [String: Int] = [:]
         for entry in entries where entry.category != transferCategory {

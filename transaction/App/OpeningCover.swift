@@ -8,7 +8,7 @@
 import Lottie
 import SwiftUI
 
-/// Opening sequence. Drop a `BrandMark` image into the asset catalog to fill the mark.
+/// Splash. Put a BrandMark image in the asset catalog if you want it to fill the mark.
 struct OpeningCover: View {
     var line: String
     var onComplete: () -> Void

@@ -16,9 +16,9 @@ struct BillNotice: Equatable {
     var accountID: String
     var name: String
     var kind: BillKind
-    /// Local morning the notice should appear.
+    /// Morning it should show up, local time.
     var fire: Date
-    /// The period that closed for this notice. Statement morning uses the cycle that ends the day before; due morning uses the bill issued on the statement day before that due date.
+    /// Which cycle this notice is for. Statement morning: the cycle that ended yesterday. Due morning: the bill from the statement day before this due date.
     var amount: Double
 }
 
@@ -81,14 +81,14 @@ enum BillPlan {
         ))
     }
 
-    /// Spend from the previous statement morning through the day before this one.
+    /// Spend from the last statement morning through the day before this one.
     private static func closingSpan(statementMorning: Date, calendar: Calendar) -> (start: String, end: String)? {
         guard let startDate = calendar.date(byAdding: .month, value: -1, to: statementMorning),
               let endDate = calendar.date(byAdding: .day, value: -1, to: statementMorning) else { return nil }
         return (LedgerDay.iso(startDate, calendar: calendar), LedgerDay.iso(endDate, calendar: calendar))
     }
 
-    /// Latest statement morning strictly before this due morning.
+    /// The statement morning just before this due date.
     private static func statementMorning(before due: Date, statementDay: Int, calendar: Calendar) -> Date? {
         let parts = calendar.dateComponents([.year, .month], from: due)
         guard let year = parts.year, let month = parts.month,

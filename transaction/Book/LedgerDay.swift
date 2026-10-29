@@ -27,7 +27,7 @@ enum LedgerDay {
         calendar.component(.month, from: date)
     }
 
-    /// Localized month name. Callers pass the book's `localeID`; they do not pick a language here.
+    /// Month name in the book's language.
     static func monthName(_ month: Int, wide: Bool, localeID: String, calendar: Calendar = .current) -> String {
         let date = calendar.date(from: DateComponents(year: 2026, month: month, day: 1)) ?? Date()
         let style: Date.FormatStyle.Symbol.Month = wide ? .wide : .abbreviated
@@ -77,7 +77,7 @@ enum LedgerDay {
         return days
     }
 
-    /// Matches `DateTime(year, month + offset, day)`, which rolls extra days into the next month.
+    /// Adding months the DateTime way: leftover days spill into the next month.
     static func dateInMonth(offset: Int, day: Int, now: Date = Date(), calendar: Calendar = .current) -> String {
         let parts = calendar.dateComponents([.year, .month], from: now)
         let first = calendar.date(from: DateComponents(year: parts.year, month: (parts.month ?? 1) + offset, day: 1)) ?? now

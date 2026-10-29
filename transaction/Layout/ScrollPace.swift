@@ -9,19 +9,19 @@ import SwiftUI
 import UIKit
 
 extension View {
-    /// Flatten the card into one layer, then blur that layer once.
-    /// A shadow on the raw tree re-blurs every child on each scroll frame.
+    /// Flatten the card, then blur once.
+    /// A shadow on the raw tree blurs every child again on each scroll frame.
     func plateShadow(opacity: Double = 0.05, radius: CGFloat = 14, y: CGFloat = 10) -> some View {
         compositingGroup()
             .shadow(color: Palette.ink.opacity(opacity), radius: radius, y: y)
     }
 
-    /// Let a drag start immediately instead of waiting to see if it was a button tap.
+    /// Start the drag immediately. Don't wait to see if it was a tap.
     func immediateScroll() -> some View {
         background(ScrollTouch())
     }
 
-    /// Decimal pads have no return key. A keyboard bar gives them a way to close.
+    /// Decimal pads have no return key, so the bar closes the keyboard.
     func keyboardBar(_ title: String) -> some View {
         toolbar {
             ToolbarItemGroup(placement: .keyboard) {

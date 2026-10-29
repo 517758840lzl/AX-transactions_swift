@@ -8,7 +8,7 @@
 import UIKit
 
 enum ShareSheet {
-    /// Hands the system a real JSON file so AirDrop and Files keep the name and type.
+    /// A real JSON file, so AirDrop and Files keep the name.
     static func present(_ text: String) {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(BundleTitle.current).json")
         try? text.write(to: url, atomically: true, encoding: .utf8)

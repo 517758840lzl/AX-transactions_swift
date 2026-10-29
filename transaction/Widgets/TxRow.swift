@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Shared by the overview review list and the transactions list.
+/// Review rows on the overview, and rows in the activity list.
 struct TxRow: View {
     var entry: Entry
     var mark: String
@@ -64,7 +64,7 @@ struct TxRow: View {
         entry.category.isEmpty ? "?" : String(entry.category.prefix(1))
     }
 
-    /// Same slice as the prototype: the category's first code unit.
+    /// First character of the category.
     private var colorIndex: Int {
         let unit = entry.category.utf16.first.map(Int.init) ?? 0
         return unit % SliceColors.values.count

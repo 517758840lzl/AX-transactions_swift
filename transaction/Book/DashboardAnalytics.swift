@@ -23,7 +23,7 @@ extension BookMath {
         }
         return LedgerDay.eachDay(from: start, to: end).map { byDay[$0] ?? 0 }
     }
-    /// Color index follows the category name's alphabetical place. Callers that rank by amount keep that index.
+    /// Color follows the name, alphabetically. Ranking by amount doesn't recolor it.
     static func categoryParts(_ entries: [Entry], caps: [String: Double]) -> [CategoryPart] {
         var totals: [String: Double] = [:]
         for entry in entries where entry.isOut && !entry.isTransfer {

@@ -50,7 +50,7 @@ enum BookLocale: String, CaseIterable {
     }
 
     static func read(_ raw: Any?) -> BookLocale {
-        guard let value = raw as? String, let locale = BookLocale(rawValue: value) else { return .zh }
+        guard let value = raw as? String, let locale = BookLocale(rawValue: value) else { return .en }
         return locale
     }
 }

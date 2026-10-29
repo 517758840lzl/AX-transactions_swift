@@ -82,7 +82,7 @@ struct DashboardCategoriesPanel: View {
         }
     }
 
-    /// `color-mix(in srgb, tint share%, base)`.
+    /// color-mix(in srgb, tint share%, base).
     private func mix(_ base: Color, with tint: Color, share: CGFloat) -> Color {
         var br: CGFloat = 0, bg: CGFloat = 0, bb: CGFloat = 0, ba: CGFloat = 0
         var tr: CGFloat = 0, tg: CGFloat = 0, tb: CGFloat = 0, ta: CGFloat = 0

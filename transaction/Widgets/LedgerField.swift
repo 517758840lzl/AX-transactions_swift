@@ -14,7 +14,7 @@ struct LedgerField: View {
     var decimal = false
 
     var body: some View {
-        TextField(placeholder, text: text)
+        TextField(placeholder, text: decimal ? decimalText : text)
             .keyboardType(decimal ? .decimalPad : .default)
             .textInputAutocapitalization(decimal ? .never : .sentences)
             .disableAutocorrection(decimal)
@@ -23,5 +23,12 @@ struct LedgerField: View {
             .frame(minHeight: 48)
             .background(Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Palette.line, lineWidth: 1))
+    }
+
+    private var decimalText: Binding<String> {
+        Binding(
+            get: { text.wrappedValue },
+            set: { text.wrappedValue = LedgerMoney.typing($0) }
+        )
     }
 }

@@ -19,17 +19,28 @@ struct DashboardView: View {
         let showSample = !store.book.sampleCleared && store.book.entries.contains { $0.id.hasPrefix("sample-") }
 
         PageScroll(bottom: 88) {
-            HStack {
-                Text(copy.monthTitle()).font(.system(size: 26, weight: .bold)).tracking(-0.4).foregroundStyle(Palette.ink)
-                Spacer()
-                Button(screen.dashScope == .mine ? copy.scopeChipMine : copy.scopeChipFamily) {
+            HStack(spacing: 8) {
+                Text(copy.monthTitle())
+                    .font(.system(size: 26, weight: .bold))
+                    .tracking(-0.4)
+                    .foregroundStyle(Palette.ink)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+                Spacer(minLength: 8)
+                Button {
                     screen.open(.filter(which: "dashboard"))
+                } label: {
+                    Text(screen.dashScope == .mine ? copy.scopeChipMine : copy.scopeChipFamily)
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(Palette.ink)
+                        .lineLimit(1)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color.white, in: Capsule())
+                        .overlay(Capsule().stroke(Palette.line, lineWidth: 1))
                 }
-                .font(.system(size: 13, weight: .bold))
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(Color.white, in: Capsule())
-                .overlay(Capsule().stroke(Palette.line, lineWidth: 1))
+                .buttonStyle(.plain)
+                .fixedSize(horizontal: true, vertical: true)
             }
             DashboardStatsPanel(store: store, screen: screen, copy: copy, entries: scoped)
             DashboardClaimPanel(store: store, screen: screen, copy: copy)

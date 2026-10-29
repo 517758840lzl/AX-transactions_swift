@@ -10,6 +10,7 @@ import SwiftUI
 
 struct EntryFormView: View {
     @ObservedObject var store: BookStore
+    @ObservedObject var screen: LedgerScreen
     var entryID: String?
     @Environment(\.pageBack) private var pageBack
     @State private var direction = Direction.out
@@ -72,6 +73,25 @@ struct EntryFormView: View {
             } else {
                 accountField
             }
+            if needsAccountGuide {
+                Button {
+                    screen.open(.accountForm(id: nil, chooseKind: true))
+                } label: {
+                    HStack(spacing: 8) {
+                        Text(copy.accountGuide)
+                            .font(.system(size: 14, weight: .semibold))
+                            .multilineTextAlignment(.leading)
+                        Spacer(minLength: 8)
+                        Text("›")
+                            .font(.system(size: 18, weight: .semibold))
+                    }
+                    .foregroundColor(Palette.ink)
+                    .padding(.horizontal, 14)
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .background(Palette.wash, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                }
+                .buttonStyle(.plain)
+            }
             if direction == .out, !splitOn, !store.book.goals.isEmpty {
                 goalField
                     .transition(.opacity)
@@ -112,6 +132,16 @@ struct EntryFormView: View {
             }
         }
         .onAppear { fill(existing) }
+        .onChange(of: store.book.accounts.map(\.id).joined(separator: ",")) { _ in
+            guard entryID == nil || accountID.isEmpty else { return }
+            let own = store.openAccounts().filter { !$0.id.hasPrefix("sample-") }
+            guard let latest = own.last, !own.contains(where: { $0.id == accountID }) else { return }
+            accountID = latest.id
+        }
+    }
+
+    private var needsAccountGuide: Bool {
+        store.openAccounts(keeping: accountID).allSatisfy { $0.id.hasPrefix("sample-") }
     }
 
     private var accountField: some View {

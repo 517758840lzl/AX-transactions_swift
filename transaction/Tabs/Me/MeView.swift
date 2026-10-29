@@ -145,11 +145,15 @@ struct MeView: View {
                 Text(title)
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(destructive ? Palette.down : Palette.ink)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
                 Spacer(minLength: 8)
                 if !trailing.isEmpty {
                     Text(trailing)
                         .font(.system(size: 14, weight: .bold))
                         .foregroundStyle(Palette.muted)
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
                 }
                 if opens {
                     Text("›")

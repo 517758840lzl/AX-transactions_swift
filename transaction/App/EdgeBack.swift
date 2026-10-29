@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Left-edge drag that pops the current page. Taps still reach the back button.
+/// Drag in from the left edge to go back. Taps still hit the button.
 struct EdgeBack: UIViewRepresentable {
     var onChange: (CGFloat) -> Void
     var onEnd: (_ translation: CGFloat, _ velocity: CGFloat) -> Void

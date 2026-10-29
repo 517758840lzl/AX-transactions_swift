@@ -20,13 +20,17 @@ struct AccountsView: View {
         let showSample = !store.book.sampleCleared && store.book.accounts.contains { $0.id.hasPrefix("sample-") }
 
         PageScroll(bottom: 16) {
-            HStack {
-                Text(copy.accounts).font(.system(size: 26, weight: .bold)).tracking(-0.4).foregroundStyle(Palette.ink)
-                Spacer()
-                Text(copy.accountCountText(store.book.accounts.count))
-                    .font(.system(size: 13, weight: .semibold))
+            HStack(alignment: .center, spacing: 0) {
+                Text(copy.accounts)
+                    .font(.system(size: 26, weight: .bold))
+                    .tracking(-0.4)
+                    .foregroundStyle(Palette.ink)
+                Text("(\(store.book.accounts.count))")
+                    .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(Palette.muted)
             }
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
             if empty {
                 Text(copy.accountsEmpty).font(.system(size: 15)).foregroundStyle(Palette.muted).padding(.top, 24)
             } else {
@@ -43,7 +47,7 @@ struct AccountsView: View {
             if store.book.accounts.count >= 2 {
                 PillButton(title: copy.transfer, filled: false) { screen.open(.transfer) }
             }
-            PillButton(title: copy.addAccount) { screen.open(.accountForm(id: nil)) }
+            PillButton(title: copy.addAccount) { screen.open(.accountForm(id: nil, chooseKind: false)) }
             if showSample {
                 SampleBanner(title: copy.sampleBanner, actionTitle: copy.sampleClear) { store.clearSample() }
             }
@@ -83,7 +87,7 @@ struct AccountsView: View {
                             flowStat(copy.accountPeriodNet, income - spent, Palette.ink, signed: true)
                         }
                     }
-                    .padding(.bottom, 12)
+                    .padding(.bottom, 16)
                 }
                 .buttonStyle(.plain)
                 ForEach(accounts) { account in
@@ -91,7 +95,7 @@ struct AccountsView: View {
                     let spent = LedgerMoney.cents(mine.filter(\.isOut).reduce(0) { $0 + $1.amount })
                     let income = LedgerMoney.cents(mine.filter { !$0.isOut }.reduce(0) { $0 + $1.amount })
                     Button { openMonth(account: account.id) } label: {
-                        HStack(spacing: 8) {
+                        HStack(alignment: .center, spacing: 8) {
                             Text(String(account.name.prefix(1)))
                                 .font(.system(size: 13, weight: .bold))
                                 .foregroundColor(Palette.ink)
@@ -104,7 +108,7 @@ struct AccountsView: View {
                             MoneyText(value: income - spent, mark: store.book.mark, size: 13, signed: true)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                        .padding(.vertical, 8)
+                        .frame(minHeight: 56, alignment: .center)
                         .overlay(alignment: .top) {
                             Rectangle().fill(Palette.line).frame(height: 1)
                         }
@@ -113,7 +117,9 @@ struct AccountsView: View {
                     .accessibilityLabel(account.name)
                 }
             }
-            .padding(14)
+            .padding(.horizontal, 14)
+            .padding(.top, 14)
+            .padding(.bottom, 4)
             .background(Color.white, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Palette.line, lineWidth: 1))
             .padding(.top, 12)
@@ -121,10 +127,12 @@ struct AccountsView: View {
     }
 
     private func flowStat(_ title: String, _ value: Double, _ color: Color, signed: Bool) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundColor(Palette.muted)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
             MoneyText(value: value, mark: store.book.mark, size: 13, signed: signed, color: color)
         }
         .frame(maxWidth: .infinity, alignment: .leading)

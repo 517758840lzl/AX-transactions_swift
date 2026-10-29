@@ -15,7 +15,7 @@ private struct YearBucket: Identifiable {
     var count: Int
 }
 
-/// Annual classification, month comparison, large entries, and per-account totals.
+/// Where the year went: categories, months, the big spends, each account.
 struct YearReportPage: View {
     @ObservedObject var store: BookStore
     @ObservedObject var screen: LedgerScreen
@@ -314,40 +314,40 @@ struct YearReportPage: View {
 
     private func topCard(copy: LedgerCopy, kindName: String, rows: [Entry], expanded: Bool, more: Bool) -> some View {
         card(copy.yearTop(kindName)) {
+            let scale = rows.first?.amount ?? 1
             ForEach(Array(rows.enumerated()), id: \.element.id) { index, entry in
                 let paidBack = refunded(entry.id)
                 Button {
                     screen.open(.entry(id: entry.id))
                 } label: {
-                    HStack(alignment: .top, spacing: 10) {
-                        Text("\(index + 1)")
-                            .font(.system(size: 13, weight: .bold))
-                            .foregroundColor(Palette.faint)
-                            .frame(width: 16, alignment: .leading)
-                        VStack(alignment: .leading, spacing: 2) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(alignment: .firstTextBaseline, spacing: 8) {
+                            Text("\(index + 1)")
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundColor(Palette.faint)
+                                .frame(width: 16, alignment: .leading)
                             Text(entry.title)
                                 .font(.system(size: 15, weight: .semibold))
                                 .foregroundColor(Palette.ink)
                                 .lineLimit(1)
-                            Text(entry.category)
-                                .font(.system(size: 12, weight: .semibold))
-                                .foregroundColor(Palette.muted)
-                            if paidBack > 0 {
-                                HStack(spacing: 4) {
-                                    Text(copy.yearRefunded)
-                                    MoneyText(value: paidBack, mark: store.book.mark, size: 12, color: Palette.down)
-                                }
-                                .font(.system(size: 12, weight: .semibold))
-                                .foregroundColor(Palette.down)
-                            }
-                        }
-                        Spacer(minLength: 8)
-                        VStack(alignment: .trailing, spacing: 2) {
                             MoneyText(value: entry.amount, mark: store.book.mark, size: 15)
-                            Text(shortDate(entry.date))
-                                .font(.system(size: 11, weight: .semibold))
-                                .foregroundColor(Palette.faint)
+                            Spacer(minLength: 0)
                         }
+                        Text("\(entry.category) · \(shortDate(entry.date))")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(Palette.muted)
+                            .padding(.leading, 24)
+                        if paidBack > 0 {
+                            HStack(spacing: 4) {
+                                Text(copy.yearRefunded)
+                                MoneyText(value: paidBack, mark: store.book.mark, size: 12, color: Palette.down)
+                            }
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(Palette.down)
+                            .padding(.leading, 24)
+                        }
+                        PortionBar(fraction: scale > 0 ? entry.amount / scale : 0, tint: Palette.pink, height: 6)
+                            .padding(.leading, 24)
                     }
                     .padding(.vertical, 6)
                 }
@@ -412,13 +412,20 @@ struct YearReportPage: View {
 
     private func kindPill(_ title: String, id: String) -> some View {
         let on = kind == id
-        return Button(title) {
+        return Button {
             kind = id
             openCategory = ""
             showAllTops = false
+        } label: {
+            Text(title)
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(on ? Palette.ink : Palette.muted)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 8)
         }
-        .font(.system(size: 14, weight: .bold))
-        .foregroundColor(on ? Palette.ink : Palette.muted)
+        .buttonStyle(.plain)
         .frame(maxWidth: .infinity)
         .frame(height: 34)
         .background(on ? Palette.pink : Color.white, in: Capsule())

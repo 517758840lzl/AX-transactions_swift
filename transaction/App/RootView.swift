@@ -44,12 +44,12 @@ struct RootView: View {
                     Button {
                         screen.open(.entry(id: nil))
                     } label: {
-                        Image(systemName: "plus")
-                            .font(.system(size: 22, weight: .bold))
-                            .foregroundStyle(Palette.ink)
+                        EntryMark()
+                            .frame(width: 34, height: 34)
                             .frame(width: 56, height: 56)
                             .background(Palette.pink, in: Circle())
                     }
+                    .buttonStyle(.plain)
                     .padding(.trailing, 18)
                     .padding(.bottom, 78)
                     .accessibilityLabel(copy.entryNew)
@@ -148,15 +148,15 @@ struct RootView: View {
     private func destination(_ page: Page, copy: LedgerCopy) -> some View {
         switch page {
         case .entry(let id):
-            EntryFormView(store: store, entryID: id)
+            EntryFormView(store: store, screen: screen, entryID: id)
         case .filter(let which):
             FilterFormView(store: store, screen: screen, which: which)
         case .budget:
             BudgetFormView(store: store)
         case .account(let id):
             AccountDetailView(store: store, screen: screen, accountID: id)
-        case .accountForm(let id):
-            AccountFormView(store: store, accountID: id)
+        case .accountForm(let id, let chooseKind):
+            AccountFormView(store: store, accountID: id, chooseKind: chooseKind)
         case .transfer:
             TransferFormView(store: store)
         case .repeatPlan(let id):
@@ -203,6 +203,8 @@ struct RootView: View {
                         Text(labels[index])
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundStyle(screen.tab == index ? Palette.ink : Palette.muted)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 6)

@@ -8,8 +8,7 @@
 import DGCharts
 import SwiftUI
 
-/// Web `SpendLine` / Flutter `LedgerTrendLinePainter`.
-/// Spending scales from 0 to the max. Net worth uses `fitDataRange`.
+/// Spend starts at zero. Net worth just fits whatever is on screen.
 struct TrendChart: View {
     var amounts: [Double]
     var fitDataRange = false
@@ -81,7 +80,7 @@ private struct TrendLine: UIViewRepresentable {
     }
 }
 
-/// One Catmull-Rom stroke, the same curve as before the chart library. The library curve clipped the flat run.
+/// Catmull-Rom. The chart library was clipping the flat stretch.
 private final class ContinuousLineRenderer: LineChartRenderer {
     nonisolated override init(dataProvider: LineChartDataProvider, animator: Animator, viewPortHandler: ViewPortHandler) {
         super.init(dataProvider: dataProvider, animator: animator, viewPortHandler: viewPortHandler)

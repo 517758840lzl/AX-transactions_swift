@@ -26,7 +26,7 @@ struct Account: Identifiable, Equatable {
     var kind: AccountKind
     var countsInWorth: Bool
     var archived: Bool = false
-    /// 1...28. Zero means the card has no statement cycle yet.
+    /// 1...28. Zero means no statement day yet.
     var statementDay: Int = 0
     var dueDay: Int = 0
 }
@@ -44,15 +44,15 @@ struct Entry: Identifiable, Equatable {
     var shared: Bool
     var countsInBudget: Bool
     var claim: ClaimMark
-    /// Set on the money that came back. Empty on the original spend.
+    /// Set on the money that came back. Blank on the original spend.
     var refundOf: String = ""
-    /// Saving goal this outflow counts toward.
+    /// Goal this spend counts toward.
     var goalId: String = ""
-    /// Shared by the two halves of one purchase.
+    /// Ties the two halves of one purchase.
     var splitGroup: String = ""
 
     var isOut: Bool { direction == .out }
-    /// Both legs of a move between the user's own accounts. Household spend and income skip these.
+    /// Both sides of a transfer between your own accounts. Household spend and income skip these.
     var isTransfer: Bool { id.hasPrefix("transfer-") }
 }
 
@@ -134,12 +134,12 @@ struct Book {
         Book(
             nickname: "",
             gender: .secret,
-            locale: .zh,
+            locale: .en,
             currency: .USD,
             monthlyBudget: nil,
             categoryCaps: [:],
             templates: [],
-            categories: LedgerCopy.resolve(.zh).starterCategories,
+            categories: LedgerCopy.resolve(.en).starterCategories,
             accounts: [],
             entries: [],
             repeats: [],

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Category chips hug their text and wrap, matching `.ledger-chips`.
+/// Category chips hug their text and wrap.
 struct FlexibleChips: View {
     var names: [String]
     var editing: Bool

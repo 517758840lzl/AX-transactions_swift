@@ -54,8 +54,8 @@ extension BookMath {
     static func windowStart(days: Int, now: Date = Date()) -> String {
         LedgerDay.iso(Calendar.current.date(byAdding: .day, value: -(days - 1), to: now) ?? now)
     }
-    /// Same series as the prototype `netWorthSeries`: each day from the window start through today.
-    /// The period change is today's net worth minus the net worth on the day before that start.
+    /// One point a day, from the start of the window through today.
+    /// Change is today minus the day before that start.
     static func windowSnapshot(accounts: [Account], entries: [Entry], days: Int, now: Date = Date()) -> WindowSnapshot {
         let kept = accounts.filter { $0.countsInWorth && !$0.archived }
         let ids = Set(kept.map(\.id))
@@ -106,7 +106,7 @@ extension BookMath {
         return LedgerMoney.cents(goal.saved + linked)
     }
 
-    /// Statement window for a card. `statementDay` and `dueDay` are 1...28.
+    /// One card cycle. Days are 1...28.
     static func cardCycle(_ account: Account, entries: [Entry], now: Date = Date()) -> CardCycle? {
         guard account.kind == .card, account.statementDay >= 1 else { return nil }
         let today = LedgerDay.today(now)

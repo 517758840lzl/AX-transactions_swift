@@ -6,8 +6,9 @@
 //
 
 import SwiftUI
+import UIKit
 
-/// Month and year totals, a comparison bar, category mix, and a top-10 title list.
+/// Totals, the comparison, the mix, and the top 10.
 struct DashboardStatsPanel: View {
     @ObservedObject var store: BookStore
     @ObservedObject var screen: LedgerScreen
@@ -17,6 +18,7 @@ struct DashboardStatsPanel: View {
     @State private var annual = false
     @State private var kind = "out"
     @State private var cursor = LedgerDay.yearMonth(Date())
+    @State private var toolsWidth: CGFloat = 0
 
     var body: some View {
         let current = LedgerDay.yearMonth(Date())
@@ -36,26 +38,21 @@ struct DashboardStatsPanel: View {
                 spanTab(copy.statsMonthly, on: !annual) { annual = false }
                 spanTab(copy.statsAnnual, on: annual) { annual = true }
             }
-            HStack(spacing: 8) {
-                HStack(spacing: 0) {
-                    stepButton(copy.statsPrev, system: "chevron.left", enabled: canStep(shown, by: -1, current: current)) {
-                        cursor = stepped(shown, by: -1, current: current)
+            Group {
+                if kindsOverflow(copy) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        dateControl(shown: shown, current: current, copy: copy)
+                        kindRow(copy)
                     }
-                    Text(annual ? String(shown.prefix(4)) : shown.replacingOccurrences(of: "-", with: "/"))
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(Palette.ink)
-                        .frame(minWidth: annual ? 52 : 64)
-                    stepButton(copy.statsNext, system: "chevron.right", enabled: canStep(shown, by: 1, current: current)) {
-                        cursor = stepped(shown, by: 1, current: current)
+                } else {
+                    HStack(spacing: 8) {
+                        dateControl(shown: shown, current: current, copy: copy)
+                        kindRow(copy)
                     }
                 }
-                .padding(.horizontal, 4)
-                .padding(.vertical, 2)
-                .background(Color.white, in: Capsule())
-                .overlay(Capsule().stroke(Palette.line, lineWidth: 1))
-                kindTab(copy.statsOut, id: "out")
-                kindTab(copy.statsIn, id: "in")
-                kindTab(copy.statsOther, id: "other")
+            }
+            .onPreferenceChange(ToolsWidthKey.self) { width in
+                if abs(width - toolsWidth) > 0.5 { toolsWidth = width }
             }
             Button {
                 screen.openStats(from: span.start, to: span.end, kind: kind, category: nil, title: nil)
@@ -117,6 +114,49 @@ struct DashboardStatsPanel: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.white, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).stroke(Palette.line, lineWidth: 1))
+        .overlay(GeometryReader { geo in
+            Color.clear.preference(key: ToolsWidthKey.self, value: max(0, geo.size.width - 32))
+        })
+    }
+
+    private func dateControl(shown: String, current: String, copy: LedgerCopy) -> some View {
+        HStack(spacing: 0) {
+            stepButton(copy.statsPrev, system: "chevron.left", enabled: canStep(shown, by: -1, current: current)) {
+                cursor = stepped(shown, by: -1, current: current)
+            }
+            Text(annual ? String(shown.prefix(4)) : shown.replacingOccurrences(of: "-", with: "/"))
+                .font(.system(size: 14, weight: .bold))
+                .foregroundStyle(Palette.ink)
+                .frame(minWidth: annual ? 52 : 64)
+            stepButton(copy.statsNext, system: "chevron.right", enabled: canStep(shown, by: 1, current: current)) {
+                cursor = stepped(shown, by: 1, current: current)
+            }
+        }
+        .padding(.horizontal, 4)
+        .padding(.vertical, 2)
+        .background(Color.white, in: Capsule())
+        .overlay(Capsule().stroke(Palette.line, lineWidth: 1))
+        .fixedSize(horizontal: true, vertical: false)
+    }
+
+    private func kindRow(_ copy: LedgerCopy) -> some View {
+        HStack(spacing: 8) {
+            kindTab(copy.statsOut, id: "out")
+            kindTab(copy.statsIn, id: "in")
+            kindTab(copy.statsOther, id: "other")
+        }
+        .fixedSize(horizontal: true, vertical: false)
+    }
+
+    /// Short labels stay with the month. Longer ones wrap whole, never clipped.
+    private func kindsOverflow(_ copy: LedgerCopy) -> Bool {
+        let width = toolsWidth > 0 ? toolsWidth : UIScreen.main.bounds.width - 52
+        let font = UIFont.systemFont(ofSize: 13, weight: .bold)
+        let pills = [copy.statsOut, copy.statsIn, copy.statsOther].reduce(CGFloat(0)) { total, label in
+            total + ceil((label as NSString).size(withAttributes: [.font: font]).width) + 26
+        }
+        let date = CGFloat(28 + 28 + (annual ? 52 : 64) + 10)
+        return date + 8 + pills + 16 > width
     }
 
     private func spanTab(_ title: String, on: Bool, action: @escaping () -> Void) -> some View {
@@ -134,13 +174,19 @@ struct DashboardStatsPanel: View {
 
     private func kindTab(_ title: String, id: String) -> some View {
         let on = kind == id
-        return Button(title) { kind = id }
-            .font(.system(size: 13, weight: .bold))
-            .foregroundStyle(Palette.ink)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 7)
-            .background(on ? Palette.pink : Color.white, in: Capsule())
-            .overlay(Capsule().stroke(on ? Palette.pink : Palette.line, lineWidth: 1))
+        return Button { kind = id } label: {
+            Text(title)
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(Palette.ink)
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 7)
+        }
+        .buttonStyle(.plain)
+        .fixedSize(horizontal: true, vertical: false)
+        .background(on ? Palette.pink : Color.white, in: Capsule())
+        .overlay(Capsule().stroke(on ? Palette.pink : Palette.line, lineWidth: 1))
     }
 
     private func stepButton(_ label: String, system: String, enabled: Bool, action: @escaping () -> Void) -> some View {
@@ -317,5 +363,12 @@ struct DashboardStatsPanel: View {
         let base = Calendar.current.date(from: comps) ?? Date()
         let next = Calendar.current.date(byAdding: .month, value: delta, to: base) ?? base
         return LedgerDay.yearMonth(next)
+    }
+}
+
+private struct ToolsWidthKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
     }
 }

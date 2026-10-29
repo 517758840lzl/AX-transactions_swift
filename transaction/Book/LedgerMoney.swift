@@ -12,7 +12,7 @@ enum LedgerMoney {
         (value * 100).rounded() / 100
     }
 
-    /// Fixed decimals for an editable field. `fraction` is 2 for money and 0 for whole shares.
+    /// Fixed decimals. 2 for money, 0 for whole shares.
     static func fixed(_ value: Double, fraction: Int) -> String {
         String(format: "%.\(fraction)f", value)
     }
@@ -36,7 +36,22 @@ enum LedgerMoney {
         return String(grouped.reversed()) + "." + fraction
     }
 
-    /// Reads a plain amount or a sum such as `12+8` or `20-3.5`.
+    /// Digits and one dot. The rest is dropped.
+    static func typing(_ raw: String) -> String {
+        var kept = ""
+        var dotted = false
+        for character in raw {
+            if character >= "0" && character <= "9" {
+                kept.append(character)
+            } else if character == ".", !dotted {
+                dotted = true
+                kept.append(character)
+            }
+        }
+        return kept
+    }
+
+    /// A plain amount, or a little sum like 12+8.
     static func solve(_ raw: String) -> Double? {
         let text = raw
             .replacingOccurrences(of: " ", with: "")

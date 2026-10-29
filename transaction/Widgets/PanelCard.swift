@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// White block used by both `.ledger-panel` and `.ledger-card`.
+/// The white card.
 struct PanelCard<Content: View, Trailing: View>: View {
     var title: String?
     var titleSize: CGFloat = 16

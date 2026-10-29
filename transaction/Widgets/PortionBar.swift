@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// A share of a full-width track. Scaled in place so a scrolling list does not measure each row.
+/// Width is a scale, not a fresh measurement. Measuring every row while scrolling stutters.
 struct PortionBar: View {
     var fraction: Double
     var tint: Color

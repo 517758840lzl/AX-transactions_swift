@@ -89,6 +89,7 @@ struct LedgerCopy {
     var accountKindCard: String
     var accountKindOther: String
     var addAccount: String
+    var accountGuide: String
     var editAccount: String
     var newAccount: String
     var accountName: String
@@ -500,7 +501,7 @@ private let chinese = LedgerCopy(
     customRange: "自定义", rangeStart: "开始", rangeEnd: "结束", rangeTo: "至",
     accounts: "账户", accountCountFormat: "{count} 个", accountsEmpty: "添加第一个账户，填入真实余额。",
     accountKindBank: "银行卡", accountKindCash: "现金", accountKindCard: "信用卡", accountKindOther: "其他",
-    addAccount: "添加账户", editAccount: "编辑账户", newAccount: "添加账户",
+    addAccount: "添加账户", accountGuide: "还没有自己的账户，去添加", editAccount: "编辑账户", newAccount: "添加账户",
     accountName: "账户名称", accountNamePh: "Visa、现金、工资卡", accountKindLabel: "账户类型",
     deleteAccount: "删除账户及流水", accountBalance: "当前余额", accountDetailActivity: "查看流水", filterAccount: "账户",
     holdingsStock: "股票", holdingsFund: "基金", holdingsLabel: "持仓", holdingKindStock: "股票", holdingKindEtf: "ETF", holdingKindFund: "基金",
@@ -591,7 +592,7 @@ private let englishCopy = LedgerCopy(
     customRange: "Custom", rangeStart: "Start", rangeEnd: "End", rangeTo: "to",
     accounts: "Accounts", accountCountFormat: "{count}", accountsEmpty: "Add your first account with the real balance.",
     accountKindBank: "Bank", accountKindCash: "Cash", accountKindCard: "Credit", accountKindOther: "Other",
-    addAccount: "Add account", editAccount: "Edit account", newAccount: "Add account",
+    addAccount: "Add account", accountGuide: "No account of your own yet. Add one", editAccount: "Edit account", newAccount: "Add account",
     accountName: "Account name", accountNamePh: "Visa, Cash, Payroll", accountKindLabel: "Account type",
     deleteAccount: "Delete account & transactions", accountBalance: "Current balance",
     accountDetailActivity: "View activity", filterAccount: "Account",
