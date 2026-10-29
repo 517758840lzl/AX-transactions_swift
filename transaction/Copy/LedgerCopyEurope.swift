@@ -87,7 +87,9 @@ let spanishCopy = LedgerCopy(
     lockOnWord: "Activado", lockOffWord: "Desactivado",     amountSolve: "Calcular",
     worthGrowth: "Variación", worthPastWeek: "Últimos 7 días", worthPastMonth: "Último mes", worthPastQuarter: "Últimos 3 meses", worthPastYear: "Último año", worthPastAll: "Todo",
     worthSpanWeek: "7d", worthSpanMonth: "1m", worthSpanQuarter: "3m", worthSpanYear: "1a", worthSpanAll: "Todo",
-    localeID: "es_ES"
+    localeID: "es_ES",
+    billStatementFormat: "Corte de {name}, este periodo {amount}",
+    billDueFormat: "{name} vence hoy, este periodo {amount}"
 )
 
 let portugueseCopy = LedgerCopy(
@@ -170,7 +172,9 @@ let portugueseCopy = LedgerCopy(
     lockOnWord: "Ligado", lockOffWord: "Desligado",     amountSolve: "Calcular",
     worthGrowth: "Variação", worthPastWeek: "Últimos 7 dias", worthPastMonth: "Último mês", worthPastQuarter: "Últimos 3 meses", worthPastYear: "Último ano", worthPastAll: "Tudo",
     worthSpanWeek: "7d", worthSpanMonth: "1m", worthSpanQuarter: "3m", worthSpanYear: "1a", worthSpanAll: "Tudo",
-    localeID: "pt_BR"
+    localeID: "pt_BR",
+    billStatementFormat: "Fatura de {name} fechou, este período {amount}",
+    billDueFormat: "{name} vence hoje, este período {amount}"
 )
 
 let frenchCopy = LedgerCopy(
@@ -253,7 +257,9 @@ let frenchCopy = LedgerCopy(
     lockOnWord: "Activé", lockOffWord: "Désactivé",     amountSolve: "Calculer",
     worthGrowth: "Variation", worthPastWeek: "7 derniers jours", worthPastMonth: "Dernier mois", worthPastQuarter: "3 derniers mois", worthPastYear: "Dernière année", worthPastAll: "Tout",
     worthSpanWeek: "7 j", worthSpanMonth: "1 m", worthSpanQuarter: "3 m", worthSpanYear: "1 a", worthSpanAll: "Tout",
-    localeID: "fr_FR"
+    localeID: "fr_FR",
+    billStatementFormat: "Arrêté de {name}, cette période {amount}",
+    billDueFormat: "{name} est dû aujourd'hui, cette période {amount}"
 )
 
 let germanCopy = LedgerCopy(
@@ -336,7 +342,9 @@ let germanCopy = LedgerCopy(
     lockOnWord: "An", lockOffWord: "Aus",     amountSolve: "Rechnen",
     worthGrowth: "Veränderung", worthPastWeek: "Letzte 7 Tage", worthPastMonth: "Letzter Monat", worthPastQuarter: "Letzte 3 Monate", worthPastYear: "Letztes Jahr", worthPastAll: "Alles",
     worthSpanWeek: "7 T", worthSpanMonth: "1 M", worthSpanQuarter: "3 M", worthSpanYear: "1 J", worthSpanAll: "Alle",
-    localeID: "de_DE"
+    localeID: "de_DE",
+    billStatementFormat: "Abrechnung {name}, dieser Zeitraum {amount}",
+    billDueFormat: "{name} ist heute fällig, dieser Zeitraum {amount}"
 )
 
 let italianCopy = LedgerCopy(
@@ -419,5 +427,7 @@ let italianCopy = LedgerCopy(
     lockOnWord: "Attivo", lockOffWord: "Spento",     amountSolve: "Calcola",
     worthGrowth: "Variazione", worthPastWeek: "Ultimi 7 giorni", worthPastMonth: "Ultimo mese", worthPastQuarter: "Ultimi 3 mesi", worthPastYear: "Ultimo anno", worthPastAll: "Tutto",
     worthSpanWeek: "7g", worthSpanMonth: "1m", worthSpanQuarter: "3m", worthSpanYear: "1a", worthSpanAll: "Tutto",
-    localeID: "it_IT"
+    localeID: "it_IT",
+    billStatementFormat: "Estratto di {name}, questo periodo {amount}",
+    billDueFormat: "{name} scade oggi, questo periodo {amount}"
 )

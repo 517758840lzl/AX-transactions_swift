@@ -7,6 +7,7 @@
 
 import UIKit
 import SwiftUI
+import UserNotifications
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
@@ -17,6 +18,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         UIScrollView.appearance().canCancelContentTouches = true
         UIScrollView.appearance().keyboardDismissMode = .onDrag
         let window = UIWindow(windowScene: windowScene)
+        if let response = connectionOptions.notificationResponse {
+            BillReminder.shared.remember(response)
+        }
         window.rootViewController = UIHostingController(rootView: RootView(store: BookStore.open()))
         window.overrideUserInterfaceStyle = .light
         self.window = window

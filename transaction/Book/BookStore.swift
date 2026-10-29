@@ -493,5 +493,6 @@ final class BookStore: ObservableObject {
     private func persist() {
         let text = BookDocument.encode(book)
         try? text.write(to: fileURL, atomically: true, encoding: .utf8)
+        BillReminder.shared.refresh(book: book)
     }
 }

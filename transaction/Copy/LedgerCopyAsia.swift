@@ -80,7 +80,9 @@ let traditionalCopy = LedgerCopy(
     lockOnWord: "已開啟", lockOffWord: "未開啟",     amountSolve: "計算",
     worthGrowth: "區間淨增長", worthPastWeek: "過去7天", worthPastMonth: "過去1個月", worthPastQuarter: "過去3個月", worthPastYear: "過去1年", worthPastAll: "全部",
     worthSpanWeek: "7天", worthSpanMonth: "1月", worthSpanQuarter: "3月", worthSpanYear: "1年", worthSpanAll: "全部",
-    localeID: "zh_TW"
+    localeID: "zh_TW",
+    billStatementFormat: "{name} 出帳了，本期 {amount}",
+    billDueFormat: "{name} 今天該還，本期 {amount}"
 )
 
 let japaneseCopy = LedgerCopy(
@@ -156,7 +158,9 @@ let japaneseCopy = LedgerCopy(
     lockOnWord: "オン", lockOffWord: "オフ",     amountSolve: "計算",
     worthGrowth: "期間の増減", worthPastWeek: "過去7日", worthPastMonth: "過去1か月", worthPastQuarter: "過去3か月", worthPastYear: "過去1年", worthPastAll: "すべて",
     worthSpanWeek: "7日", worthSpanMonth: "1か月", worthSpanQuarter: "3か月", worthSpanYear: "1年", worthSpanAll: "すべて",
-    localeID: "ja_JP"
+    localeID: "ja_JP",
+    billStatementFormat: "{name} の締め日です。今回 {amount}",
+    billDueFormat: "{name} の支払日です。今回 {amount}"
 )
 
 let koreanCopy = LedgerCopy(
@@ -232,5 +236,7 @@ let koreanCopy = LedgerCopy(
     lockOnWord: "켜짐", lockOffWord: "꺼짐",     amountSolve: "계산",
     worthGrowth: "구간 순증", worthPastWeek: "최근 7일", worthPastMonth: "최근 1개월", worthPastQuarter: "최근 3개월", worthPastYear: "최근 1년", worthPastAll: "전체",
     worthSpanWeek: "7일", worthSpanMonth: "1개월", worthSpanQuarter: "3개월", worthSpanYear: "1년", worthSpanAll: "전체",
-    localeID: "ko_KR"
+    localeID: "ko_KR",
+    billStatementFormat: "{name} 결제일입니다. 이번 {amount}",
+    billDueFormat: "{name} 납부일입니다. 이번 {amount}"
 )

@@ -254,6 +254,8 @@ struct LedgerCopy {
     var worthSpanYear: String
     var worthSpanAll: String
     var localeID: String
+    var billStatementFormat: String
+    var billDueFormat: String
 
     func monthTitle(now: Date = Date()) -> String {
         let month = LedgerDay.month(of: now)
@@ -293,6 +295,14 @@ struct LedgerCopy {
 
     func refundBack(_ title: String) -> String {
         fill(refundBackFormat, ["title": title])
+    }
+
+    func billStatement(_ name: String, amount: String) -> String {
+        fill(billStatementFormat, ["name": name, "amount": amount])
+    }
+
+    func billDue(_ name: String, amount: String) -> String {
+        fill(billDueFormat, ["name": name, "amount": amount])
     }
 
     func worthPast(_ span: WorthSpan) -> String {
@@ -476,7 +486,9 @@ private let chinese = LedgerCopy(
     lockOnWord: "已开启", lockOffWord: "未开启",     amountSolve: "计算",
     worthGrowth: "区间净增长", worthPastWeek: "过去7天", worthPastMonth: "过去1个月", worthPastQuarter: "过去3个月", worthPastYear: "过去1年", worthPastAll: "全部",
     worthSpanWeek: "7天", worthSpanMonth: "1月", worthSpanQuarter: "3月", worthSpanYear: "1年", worthSpanAll: "全部",
-    localeID: "zh_CN"
+    localeID: "zh_CN",
+    billStatementFormat: "{name} 出账了，本期 {amount}",
+    billDueFormat: "{name} 今天该还，本期 {amount}"
 )
 
 private let englishCopy = LedgerCopy(
@@ -561,5 +573,7 @@ private let englishCopy = LedgerCopy(
     lockOnWord: "On", lockOffWord: "Off",     amountSolve: "Calculate",
     worthGrowth: "Net change", worthPastWeek: "Past 7 days", worthPastMonth: "Past month", worthPastQuarter: "Past 3 months", worthPastYear: "Past year", worthPastAll: "All",
     worthSpanWeek: "7D", worthSpanMonth: "1M", worthSpanQuarter: "3M", worthSpanYear: "1Y", worthSpanAll: "All",
-    localeID: "en_US"
+    localeID: "en_US",
+    billStatementFormat: "{name} statement posted, this period {amount}",
+    billDueFormat: "{name} is due today, this period {amount}"
 )

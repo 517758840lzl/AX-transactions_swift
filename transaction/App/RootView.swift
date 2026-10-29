@@ -11,6 +11,7 @@ import SwiftUI
 struct RootView: View {
     @StateObject private var store: BookStore
     @StateObject private var screen = LedgerScreen()
+    @Environment(\.scenePhase) private var scenePhase
     @State private var opening = true
 
     init(store: BookStore) {
@@ -84,8 +85,24 @@ struct RootView: View {
         .environment(\.amountsHidden, store.book.hideAmounts)
         .onAppear {
             store.settleRepeats()
+            BillReminder.shared.refresh(book: store.book)
+            openPendingBill()
+        }
+        .onChange(of: scenePhase) { phase in
+            if phase == .active {
+                BillReminder.shared.refresh(book: store.book)
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .billReminderOpened)) { _ in
+            openPendingBill()
         }
         .tint(Palette.ink)
+    }
+
+    private func openPendingBill() {
+        guard let id = BillReminder.shared.takePendingAccountID() else { return }
+        if case .account(let showing) = screen.path.last, showing == id { return }
+        screen.open(.account(id: id))
     }
 
     @ViewBuilder
