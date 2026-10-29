@@ -7,10 +7,12 @@
 
 import Combine
 import SwiftUI
+import UIKit
 
 struct TransactionsView: View {
     @ObservedObject var store: BookStore
     @ObservedObject var screen: LedgerScreen
+    @State private var filterWidth: CGFloat = 320
 
     var body: some View {
         let copy = store.copy
@@ -103,23 +105,7 @@ struct TransactionsView: View {
                 screen.showCalendar = index == 1
                 if index == 1, screen.calendarDay == nil { screen.calendarDay = LedgerDay.today() }
             }
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    statusChip(copy.filterAll, "all")
-                    statusChip(copy.filterOpen, "open")
-                    statusChip(copy.filterDone, "done")
-                    if !screen.feedKind.isEmpty {
-                        statusChip("\(copy.statsKindName(screen.feedKind)) ×", "feed")
-                    }
-                    if let name = screen.category {
-                        statusChip("\(copy.category) \(name) ×", "category")
-                    }
-                    if let accountName, screen.accountId != nil {
-                        statusChip("\(copy.filterAccount) \(accountName) ×", "account")
-                    }
-                }
-                .immediateScroll()
-            }
+            filterRow(copy, accountName: accountName)
         }
         .padding(12)
         .background(Palette.neutral, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
@@ -262,6 +248,62 @@ struct TransactionsView: View {
         }
     }
 
+    private func filterRow(_ copy: LedgerCopy, accountName: String?) -> some View {
+        var items: [(title: String, value: String)] = [
+            (copy.filterAll, "all"),
+            (copy.filterOpen, "open"),
+            (copy.filterDone, "done"),
+        ]
+        if !screen.feedKind.isEmpty {
+            items.append(("\(copy.statsKindName(screen.feedKind)) ×", "feed"))
+        }
+        if let name = screen.category {
+            items.append(("\(copy.category) \(name) ×", "category"))
+        }
+        if let accountName, screen.accountId != nil {
+            items.append(("\(copy.filterAccount) \(accountName) ×", "account"))
+        }
+        let rows = wrappedFilters(items, width: filterWidth)
+        return VStack(alignment: .leading, spacing: 8) {
+            ForEach(rows.indices, id: \.self) { index in
+                HStack(spacing: 8) {
+                    ForEach(rows[index], id: \.value) { item in
+                        statusChip(item.title, item.value)
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(GeometryReader { proxy in
+            Color.clear.preference(key: FilterWidthKey.self, value: proxy.size.width)
+        })
+        .onPreferenceChange(FilterWidthKey.self) { next in
+            if abs(next - filterWidth) > 0.5 { filterWidth = next }
+        }
+    }
+
+    private func wrappedFilters(_ items: [(title: String, value: String)], width: CGFloat) -> [[(title: String, value: String)]] {
+        var rows: [[(title: String, value: String)]] = []
+        var row: [(title: String, value: String)] = []
+        var used: CGFloat = 0
+        let limit = max(width, 1)
+        let font = UIFont.systemFont(ofSize: 13, weight: .semibold)
+        for item in items {
+            let chip = ceil((item.title as NSString).size(withAttributes: [.font: font]).width) + 24
+            let next = row.isEmpty ? chip : used + 8 + chip
+            if !row.isEmpty, next > limit {
+                rows.append(row)
+                row = [item]
+                used = chip
+            } else {
+                row.append(item)
+                used = next
+            }
+        }
+        if !row.isEmpty { rows.append(row) }
+        return rows
+    }
+
     private func statusChip(_ title: String, _ value: String) -> some View {
         let selected = value == "category" || value == "account" || value == "feed" || screen.status == value
         return Button(title) {
@@ -274,6 +316,8 @@ struct TransactionsView: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 7)
         .foregroundStyle(selected ? Palette.ink : Palette.muted)
+        .lineLimit(1)
+        .fixedSize(horizontal: true, vertical: false)
         .background(selected ? Palette.pink : Color.white, in: Capsule())
         .overlay(Capsule().stroke(selected ? Palette.pink : Palette.line, lineWidth: 1))
     }
@@ -300,5 +344,12 @@ struct TransactionsView: View {
             grouped[entry.date, default: []].append(entry)
         }
         return grouped.keys.sorted(by: >).map { ($0, grouped[$0] ?? []) }
+    }
+}
+
+private struct FilterWidthKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
     }
 }
