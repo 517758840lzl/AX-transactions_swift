@@ -41,18 +41,10 @@ struct RootView: View {
                     tabBar(copy)
                 }
                 if screen.tab == 0 || screen.tab == 1 {
-                    Button {
+                    EntryButton(title: copy.entryNew) {
                         screen.open(.entry(id: nil))
-                    } label: {
-                        EntryMark()
-                            .frame(width: 34, height: 34)
-                            .frame(width: 56, height: 56)
-                            .background(Palette.pink, in: Circle())
                     }
-                    .buttonStyle(.plain)
-                    .padding(.trailing, 18)
-                    .padding(.bottom, 78)
-                    .accessibilityLabel(copy.entryNew)
+                    .zIndex(5)
                 }
                 if let note = store.note {
                     Text(note)
