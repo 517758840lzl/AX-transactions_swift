@@ -256,6 +256,35 @@ struct LedgerCopy {
     var localeID: String
     var billStatementFormat: String
     var billDueFormat: String
+    var statsMonthly: String
+    var statsAnnual: String
+    var statsOut: String
+    var statsIn: String
+    var statsOther: String
+    var statsCountFormat: String
+    var statsCompareMonthFormat: String
+    var statsCompareYearFormat: String
+    var statsComposeFormat: String
+    var statsRankFormat: String
+    var statsEmpty: String
+    var statsThisMonth: String
+    var statsThisYear: String
+    var statsPrev: String
+    var statsNext: String
+    var yearClassify: String
+    var yearCompare: String
+    var yearTopFormat: String
+    var yearAccountOut: String
+    var yearAccountIn: String
+    var yearMostFormat: String
+    var yearAverageFormat: String
+    var yearCountFormat: String
+    var yearExpand: String
+    var yearFold: String
+    var yearRefunded: String
+    var yearPrev: String
+    var yearNext: String
+    var accountMonthFlow: String
 
     func monthTitle(now: Date = Date()) -> String {
         let month = LedgerDay.month(of: now)
@@ -303,6 +332,50 @@ struct LedgerCopy {
 
     func billDue(_ name: String, amount: String) -> String {
         fill(billDueFormat, ["name": name, "amount": amount])
+    }
+
+    func statsKindName(_ kind: String) -> String {
+        switch kind {
+        case "in": return statsIn
+        case "other": return statsOther
+        default: return statsOut
+        }
+    }
+
+    func statsCount(_ count: Int, kind: String) -> String {
+        fill(statsCountFormat, ["count": String(count), "kind": kind])
+    }
+
+    func statsCompare(annual: Bool, kind: String) -> String {
+        fill(annual ? statsCompareYearFormat : statsCompareMonthFormat, ["kind": kind])
+    }
+
+    func statsCompose(_ when: String, kind: String) -> String {
+        fill(statsComposeFormat, ["when": when, "kind": kind])
+    }
+
+    func statsRank(_ when: String, kind: String) -> String {
+        fill(statsRankFormat, ["when": when, "kind": kind])
+    }
+
+    func yearTop(_ kind: String) -> String {
+        fill(yearTopFormat, ["kind": kind])
+    }
+
+    func yearAccount(out: Bool) -> String {
+        out ? yearAccountOut : yearAccountIn
+    }
+
+    func yearMost(_ when: String) -> String {
+        fill(yearMostFormat, ["when": when])
+    }
+
+    func yearAverage(_ kind: String) -> String {
+        fill(yearAverageFormat, ["kind": kind])
+    }
+
+    func yearCount(_ count: Int) -> String {
+        fill(yearCountFormat, ["count": String(count)])
     }
 
     func worthPast(_ span: WorthSpan) -> String {
@@ -377,18 +450,6 @@ struct LedgerCopy {
         }
     }
 
-    func holdingKind(_ kind: HoldingKind) -> String {
-        switch kind {
-        case .stock: return holdingKindStock
-        case .etf: return holdingKindEtf
-        case .fund: return holdingKindFund
-        }
-    }
-
-    func shareUnit(_ kind: HoldingKind) -> String {
-        kind == .fund ? fundShare : stockShare
-    }
-
     func genderName(_ gender: Gender) -> String {
         switch gender {
         case .female: return genderFemale
@@ -460,10 +521,10 @@ private let chinese = LedgerCopy(
     calendarWeek: ["日", "一", "二", "三", "四", "五", "六"],
     me: "我的", meLedger: "账本", meDisplay: "显示", meData: "数据", categories: "分类", profileHint: "点击填写昵称", privacy: "隐私协议", language: "语言", currency: "货币",
     streakDays: "连续记账", streakToday: "今日已记", streakNone: "今天还没记", privacyTitle: "隐私协议",
-    exportBackup: "导出 JSON 备份", dataExportNote: "账户、流水、持仓和预算都会写进这一份 JSON。", exportBook: "导出账本", dataManage: "数据管理", clearBook: "清除数据",
-    clearBookConfirm: "清除后，账户、流水、持仓和预算都会去掉，并且不会再填回示例。", clearBookDone: "账本数据已清除",
+    exportBackup: "导出 JSON 备份", dataExportNote: "账户、流水和预算都会写进这一份 JSON。", exportBook: "导出账本", dataManage: "数据管理", clearBook: "清除数据",
+    clearBookConfirm: "清除后，账户、流水和预算都会去掉，并且不会再填回示例。", clearBookDone: "账本数据已清除",
     importData: "导入账本", importPaste: "粘贴导出的 JSON", importDone: "导入成功", importInvalid: "JSON 无效，请检查内容",
-    importConfirm: "这份文件会换掉现在的账本，包括账户、流水和持仓。",
+    importConfirm: "这份文件会换掉现在的账本，包括账户和流水。",
     importFile: "选择 JSON 文件",
     nicknameTitle: "昵称", avatarTitle: "头像", profileTitle: "昵称与性别", gender: "性别", genderFemale: "女", genderMale: "男", genderSecret: "保密",
     entryEdit: "改一笔", shared: "记入家庭", entryNew: "记一笔", amount: "金额", name: "名称", namePh: "午饭、工资、房租",
@@ -488,7 +549,19 @@ private let chinese = LedgerCopy(
     worthSpanWeek: "7天", worthSpanMonth: "1月", worthSpanQuarter: "3月", worthSpanYear: "1年", worthSpanAll: "全部",
     localeID: "zh_CN",
     billStatementFormat: "{name} 出账了，本期 {amount}",
-    billDueFormat: "{name} 今天该还，本期 {amount}"
+    billDueFormat: "{name} 今天该还，本期 {amount}",
+    statsMonthly: "月账单", statsAnnual: "年账单", statsOut: "支出", statsIn: "收入", statsOther: "其他",
+    statsCountFormat: "{count} 笔{kind}，合计",
+    statsCompareMonthFormat: "月{kind}对比", statsCompareYearFormat: "年{kind}对比",
+    statsComposeFormat: "{when} {kind}构成", statsRankFormat: "{when} {kind}排行（前 10）",
+    statsEmpty: "这段还没有这类记录", statsThisMonth: "本月", statsThisYear: "本年",
+    statsPrev: "上一期", statsNext: "下一期",
+    yearClassify: "分类", yearCompare: "月对比", yearTopFormat: "大额{kind}",
+    yearAccountOut: "支出方式", yearAccountIn: "入账账户",
+    yearMostFormat: "{when} 最多", yearAverageFormat: "月均{kind}", yearCountFormat: "{count} 笔",
+    yearExpand: "展开", yearFold: "收起", yearRefunded: "已退",
+    yearPrev: "上一年", yearNext: "下一年",
+    accountMonthFlow: "本月进出"
 )
 
 private let englishCopy = LedgerCopy(
@@ -543,12 +616,12 @@ private let englishCopy = LedgerCopy(
     me: "Me", meLedger: "Book", meDisplay: "Display", meData: "Data", categories: "Categories", profileHint: "Tap to set nickname", privacy: "Privacy",
     language: "Language", currency: "Currency",
     streakDays: "Streak", streakToday: "Logged today", streakNone: "Not logged today", privacyTitle: "Privacy",
-    exportBackup: "Export JSON backup", dataExportNote: "Accounts, activity, holdings and budgets go into this JSON.", exportBook: "Export book", dataManage: "Data", clearBook: "Clear data",
-    clearBookConfirm: "Accounts, transactions, holdings and budgets will be removed, and the sample book will not come back.",
+    exportBackup: "Export JSON backup", dataExportNote: "Accounts, activity and budgets go into this JSON.", exportBook: "Export book", dataManage: "Data", clearBook: "Clear data",
+    clearBookConfirm: "Accounts, transactions and budgets will be removed, and the sample book will not come back.",
     clearBookDone: "Book data cleared",
     importData: "Import book", importPaste: "Paste exported JSON", importDone: "Import complete",
     importInvalid: "Invalid JSON. Check the contents.",
-    importConfirm: "This file replaces the current book, including accounts, transactions and holdings.",
+    importConfirm: "This file replaces the current book, including accounts and transactions.",
     importFile: "Choose JSON file",
     nicknameTitle: "Nickname", avatarTitle: "Avatar", profileTitle: "Nickname & gender", gender: "Gender",
     genderFemale: "Female", genderMale: "Male", genderSecret: "Private",
@@ -575,5 +648,17 @@ private let englishCopy = LedgerCopy(
     worthSpanWeek: "7D", worthSpanMonth: "1M", worthSpanQuarter: "3M", worthSpanYear: "1Y", worthSpanAll: "All",
     localeID: "en_US",
     billStatementFormat: "{name} statement posted, this period {amount}",
-    billDueFormat: "{name} is due today, this period {amount}"
+    billDueFormat: "{name} is due today, this period {amount}",
+    statsMonthly: "Monthly", statsAnnual: "Annual", statsOut: "Expenditures", statsIn: "Incomes", statsOther: "Others",
+    statsCountFormat: "{count} {kind}, total",
+    statsCompareMonthFormat: "Monthly {kind} comparison", statsCompareYearFormat: "Annual {kind} comparison",
+    statsComposeFormat: "{when} {kind} mix", statsRankFormat: "{when} {kind} ranking (top 10)",
+    statsEmpty: "Nothing in this period", statsThisMonth: "This month", statsThisYear: "This year",
+    statsPrev: "Previous", statsNext: "Next",
+    yearClassify: "Classification", yearCompare: "Monthly comparison", yearTopFormat: "Top {kind}",
+    yearAccountOut: "Payment method", yearAccountIn: "Received into",
+    yearMostFormat: "{when} most", yearAverageFormat: "Average monthly {kind}", yearCountFormat: "{count} in total",
+    yearExpand: "Expand", yearFold: "Collapse", yearRefunded: "Refunded",
+    yearPrev: "Previous year", yearNext: "Next year",
+    accountMonthFlow: "This month"
 )

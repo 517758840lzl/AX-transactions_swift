@@ -29,21 +29,12 @@ extension BookMath {
         }
         return (now, prior)
     }
-    static func holdingMarketValue(_ holding: Holding) -> Double {
-        LedgerMoney.cents(holding.qty * holding.price)
-    }
-    static func holdingsMarketTotal(_ holdings: [Holding]) -> Double {
-        holdings.reduce(0) { $0 + holdingMarketValue($1) }
-    }
-    static func holdingPnl(_ holding: Holding) -> Double {
-        LedgerMoney.cents(holdingMarketValue(holding) - holding.costTotal)
-    }
-    static func netWorth(accounts: [Account], entries: [Entry], holdings: [Holding]) -> Double {
+    static func netWorth(accounts: [Account], entries: [Entry]) -> Double {
         let kept = accounts.filter { $0.countsInWorth && !$0.archived }
         let ids = Set(kept.map(\.id))
         let keptEntries = entries.filter { $0.accountId.isEmpty || ids.contains($0.accountId) }
         let cash = kept.reduce(0) { $0 + accountTotal($1, entries: keptEntries) }
-        return LedgerMoney.cents(cash + holdingsMarketTotal(holdings))
+        return LedgerMoney.cents(cash)
     }
     static func worthDays(_ span: WorthSpan, entries: [Entry], now: Date = Date()) -> Int {
         switch span {
@@ -65,12 +56,10 @@ extension BookMath {
     }
     /// Same series as the prototype `netWorthSeries`: each day from the window start through today.
     /// The period change is today's net worth minus the net worth on the day before that start.
-    /// Holdings stay at the current market value on every day, so they drop out of the change.
-    static func windowSnapshot(accounts: [Account], entries: [Entry], holdings: [Holding], days: Int, now: Date = Date()) -> WindowSnapshot {
+    static func windowSnapshot(accounts: [Account], entries: [Entry], days: Int, now: Date = Date()) -> WindowSnapshot {
         let kept = accounts.filter { $0.countsInWorth && !$0.archived }
         let ids = Set(kept.map(\.id))
         let keptEntries = entries.filter { $0.accountId.isEmpty || ids.contains($0.accountId) }
-        let holdingsValue = holdingsMarketTotal(holdings)
         let start = windowStart(days: days, now: now)
         let end = LedgerDay.today(now)
         let priorISO = LedgerDay.adding(days: -1, to: start)
@@ -93,15 +82,14 @@ extension BookMath {
         var amounts: [Double] = []
         for day in LedgerDay.eachDay(from: start, to: end) {
             running += byDay[day] ?? 0
-            amounts.append(LedgerMoney.cents(running + holdingsValue))
+            amounts.append(LedgerMoney.cents(running))
         }
         let cash = running + later
         return WindowSnapshot(
             amounts: amounts,
-            prior: LedgerMoney.cents(throughPrior + holdingsValue),
-            netWorth: LedgerMoney.cents(cash + holdingsValue),
-            cashBalance: LedgerMoney.cents(cash),
-            holdingsTotal: holdingsValue
+            prior: LedgerMoney.cents(throughPrior),
+            netWorth: LedgerMoney.cents(cash),
+            cashBalance: LedgerMoney.cents(cash)
         )
     }
 

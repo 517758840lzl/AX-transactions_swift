@@ -26,7 +26,7 @@ struct AccountDetailView: View {
             let windowEntries = store.book.entries.filter { $0.accountId == account.id && $0.date >= from && $0.date <= today }
             let inflow = windowEntries.filter { !$0.isOut }.reduce(0) { $0 + $1.amount }
             let outflow = windowEntries.filter(\.isOut).reduce(0) { $0 + $1.amount }
-            let series = BookMath.windowSnapshot(accounts: [account], entries: store.book.entries, holdings: [], days: days).amounts
+            let series = BookMath.windowSnapshot(accounts: [account], entries: store.book.entries, days: days).amounts
             FormPage(title: account.name, back: copy.back) {
                 hero(copy, account: account, total: total, delta: delta, prior: prior, series: series)
                 Button { screen.openAccountFeed(id: account.id) } label: {

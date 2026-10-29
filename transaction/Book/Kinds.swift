@@ -85,17 +85,6 @@ enum AccountKind: String, CaseIterable {
     }
 }
 
-enum HoldingKind: String, CaseIterable {
-    case stock
-    case etf
-    case fund
-
-    static func read(_ raw: Any?) -> HoldingKind {
-        guard let value = raw as? String, let kind = HoldingKind(rawValue: value) else { return .stock }
-        return kind
-    }
-}
-
 enum CurrencyCode: String, CaseIterable {
     case USD, EUR, JPY, GBP, HKD, TWD, SGD, AUD, KRW, CAD
 

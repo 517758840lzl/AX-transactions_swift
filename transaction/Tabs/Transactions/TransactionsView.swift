@@ -22,8 +22,9 @@ struct TransactionsView: View {
             guard screen.showCalendar, let day = screen.calendarDay else { return period }
             return period.filter { $0.date == day }
         }()
-        let parts = BookMath.categoryParts(period, caps: [:]).sorted { $0.amount > $1.amount }
-        let total = period.filter { $0.isOut && !$0.isTransfer }.reduce(0) { $0 + $1.amount }
+        let chartSpan = directed(inSpan(keepingCategory: false))
+        let parts = BookMath.categoryParts(chartSpan, caps: [:]).sorted { $0.amount > $1.amount }
+        let total = parts.reduce(0) { $0 + $1.amount }
         let previous = BookMath.prevMonthOutByCategory(store.book.entries)
         let spendByDay = Dictionary(grouping: period.filter { $0.isOut && !$0.isTransfer }, by: \.date).mapValues { $0.reduce(0) { $0 + $1.amount } }
         let showSample = !store.book.sampleCleared && store.book.entries.contains { $0.id.hasPrefix("sample-") }
@@ -47,19 +48,6 @@ struct TransactionsView: View {
             flowStrip(copy, spend: spend, income: income)
             toolbar(copy, accountName: accountName)
             VStack(alignment: .leading, spacing: 12) {
-                if screen.showCalendar {
-                    CalendarMonth(copy: copy, spend: spendByDay, selected: screen.calendarDay ?? LedgerDay.today()) { day in
-                        screen.calendarDay = day
-                    }
-                    .transition(.opacity)
-                }
-                PanelCard(title: listTitle) {
-                    if listed.isEmpty {
-                        Text(copy.txEmpty).font(.system(size: 13)).foregroundStyle(Palette.muted)
-                    } else {
-                        rows(listed, copy: copy)
-                    }
-                }
                 if !parts.isEmpty {
                     PanelCard(
                         title: "\(copy.category) · \(copy.periodChip(mode: screen.txMode, from: screen.txFrom, to: screen.txTo))",
@@ -77,6 +65,19 @@ struct TransactionsView: View {
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                         }
+                    }
+                }
+                if screen.showCalendar {
+                    CalendarMonth(copy: copy, spend: spendByDay, selected: screen.calendarDay ?? LedgerDay.today()) { day in
+                        screen.calendarDay = day
+                    }
+                    .transition(.opacity)
+                }
+                PanelCard(title: listTitle) {
+                    if listed.isEmpty {
+                        Text(copy.txEmpty).font(.system(size: 13)).foregroundStyle(Palette.muted)
+                    } else {
+                        rows(listed, copy: copy)
                     }
                 }
                 if showSample {
@@ -107,6 +108,9 @@ struct TransactionsView: View {
                     statusChip(copy.filterAll, "all")
                     statusChip(copy.filterOpen, "open")
                     statusChip(copy.filterDone, "done")
+                    if !screen.feedKind.isEmpty {
+                        statusChip("\(copy.statsKindName(screen.feedKind)) ×", "feed")
+                    }
                     if let name = screen.category {
                         statusChip("\(copy.category) \(name) ×", "category")
                     }
@@ -235,11 +239,15 @@ struct TransactionsView: View {
         .buttonStyle(.plain)
     }
 
-    private func inSpan() -> [Entry] {
+    private func inSpan(keepingCategory: Bool = true) -> [Entry] {
         let bounds = LedgerDay.bounds(mode: screen.txMode, from: screen.txFrom, to: screen.txTo)
         let query = screen.search.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        return BookMath.inPeriod(BookMath.byScope(store.book.entries, screen.txScope), bounds).filter { entry in
-            if let category = screen.category, entry.category != category { return false }
+        let pool = screen.txUnscoped ? store.book.entries : BookMath.byScope(store.book.entries, screen.txScope)
+        return BookMath.inPeriod(pool, bounds).filter { entry in
+            if screen.feedKind == "out", entry.isTransfer || !entry.isOut { return false }
+            if screen.feedKind == "in", entry.isTransfer || entry.isOut { return false }
+            if screen.feedKind == "other", !entry.isTransfer || !entry.isOut { return false }
+            if keepingCategory, let category = screen.category, entry.category != category { return false }
             if let accountId = screen.accountId, entry.accountId != accountId { return false }
             if screen.status == "open", entry.checked { return false }
             if screen.status == "done", !entry.checked { return false }
@@ -258,9 +266,10 @@ struct TransactionsView: View {
     }
 
     private func statusChip(_ title: String, _ value: String) -> some View {
-        let selected = value == "category" || value == "account" || screen.status == value
+        let selected = value == "category" || value == "account" || value == "feed" || screen.status == value
         return Button(title) {
-            if value == "category" { screen.category = nil }
+            if value == "feed" { screen.feedKind = "" }
+            else if value == "category" { screen.category = nil }
             else if value == "account" { screen.accountId = nil }
             else { screen.status = value }
         }

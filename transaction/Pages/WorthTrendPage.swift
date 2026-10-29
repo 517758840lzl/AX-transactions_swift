@@ -18,7 +18,6 @@ struct WorthSummary: View {
         let snapshot = BookMath.windowSnapshot(
             accounts: store.book.accounts,
             entries: store.book.entries,
-            holdings: store.book.holdings,
             days: days
         )
         let tone = snapshot.delta == 0 ? Palette.muted : Palette.down
@@ -109,7 +108,6 @@ struct WorthTrendPage: View {
         let snapshot = BookMath.windowSnapshot(
             accounts: store.book.accounts,
             entries: store.book.entries,
-            holdings: store.book.holdings,
             days: days
         )
         FormPage(title: copy.netAssets, back: copy.back) {

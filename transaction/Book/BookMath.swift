@@ -12,7 +12,6 @@ struct WindowSnapshot {
     var prior: Double
     var netWorth: Double
     var cashBalance: Double
-    var holdingsTotal: Double
 
     var delta: Double { netWorth - prior }
 }

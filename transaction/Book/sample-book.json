@@ -5,17 +5,6 @@
     { "id": "sample-cash", "name": "现金", "opening": 860, "kind": "cash" },
     { "id": "sample-card", "name": "Visa", "opening": 4200, "kind": "card" }
   ],
-  "holdings": [
-    {
-      "id": "sample-holding-nvda",
-      "kind": "stock",
-      "code": "NVDA",
-      "name": "NVIDIA",
-      "qty": 1000,
-      "costTotal": 34230,
-      "price": 27.19
-    }
-  ],
   "entries": [
     { "id": "sample-lunch", "title": "午饭", "amount": 18.4, "direction": "out", "category": "餐饮", "ago": 0, "accountId": "sample-cash", "checked": false, "shared": false },
     { "id": "sample-metro", "title": "地铁", "amount": 2.75, "direction": "out", "category": "交通", "ago": 0, "accountId": "sample-cash", "checked": true, "shared": false },

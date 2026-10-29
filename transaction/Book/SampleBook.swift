@@ -20,12 +20,6 @@ enum SampleBook {
             }
             map["entries"] = rows
         }
-        if var rows = map["holdings"] as? [[String: Any]] {
-            for index in rows.indices where (rows[index]["priceAsOf"] as? String)?.isEmpty != false {
-                rows[index]["priceAsOf"] = LedgerDay.today(now)
-            }
-            map["holdings"] = rows
-        }
         guard let data = try? JSONSerialization.data(withJSONObject: map),
               let text = String(data: data, encoding: .utf8),
               let book = BookDocument.decode(text) else {
@@ -35,7 +29,6 @@ enum SampleBook {
     }
 
     static func accounts() -> [Account] { seed().accounts }
-    static func holdings(now: Date = Date()) -> [Holding] { seed(now: now).holdings }
     static func entries(now: Date = Date()) -> [Entry] { seed(now: now).entries }
 
     private static func document() -> [String: Any]? {

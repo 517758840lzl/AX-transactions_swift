@@ -174,29 +174,6 @@ final class BookStore: ObservableObject {
         return nil
     }
 
-    func upsertHolding(_ holding: Holding) -> Bool {
-        let key = holding.code.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-        let duplicate = book.holdings.contains {
-            $0.id != holding.id && $0.kind == holding.kind && $0.code.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() == key
-        }
-        if duplicate {
-            flash(copy.holdingDuplicate)
-            return false
-        }
-        if let index = book.holdings.firstIndex(where: { $0.id == holding.id }) {
-            book.holdings[index] = holding
-        } else {
-            book.holdings.append(holding)
-        }
-        persist()
-        return true
-    }
-
-    func removeHolding(_ id: String) {
-        book.holdings.removeAll { $0.id == id }
-        persist()
-    }
-
     @discardableResult
     func saveEntry(_ entry: Entry, creatingCashNamed name: String?) -> Entry {
         var next = entry
@@ -362,7 +339,6 @@ final class BookStore: ObservableObject {
 
     func clearSample() {
         book.accounts.removeAll { $0.id.hasPrefix("sample-") }
-        book.holdings.removeAll { $0.id.hasPrefix("sample-") }
         book.entries.removeAll { $0.id.hasPrefix("sample-") }
         book.sampleCleared = true
         persist()
@@ -371,7 +347,6 @@ final class BookStore: ObservableObject {
     func clearBook() {
         book.entries = []
         book.accounts = []
-        book.holdings = []
         book.templates = []
         book.monthlyBudget = nil
         book.categoryCaps = [:]

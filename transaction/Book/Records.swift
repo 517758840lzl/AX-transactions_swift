@@ -31,17 +31,6 @@ struct Account: Identifiable, Equatable {
     var dueDay: Int = 0
 }
 
-struct Holding: Identifiable, Equatable {
-    var id: String
-    var kind: HoldingKind
-    var code: String
-    var name: String
-    var qty: Double
-    var costTotal: Double
-    var price: Double
-    var priceAsOf: String
-}
-
 struct Entry: Identifiable, Equatable {
     var id: String
     var title: String
@@ -131,7 +120,6 @@ struct Book {
     var templates: [EntryTemplate]
     var categories: [String]
     var accounts: [Account]
-    var holdings: [Holding]
     var entries: [Entry]
     var repeats: [RepeatPlan]
     var goals: [SavingGoal]
@@ -153,7 +141,6 @@ struct Book {
             templates: [],
             categories: LedgerCopy.resolve(.zh).starterCategories,
             accounts: [],
-            holdings: [],
             entries: [],
             repeats: [],
             goals: [],

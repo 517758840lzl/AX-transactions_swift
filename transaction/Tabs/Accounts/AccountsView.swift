@@ -16,12 +16,8 @@ struct AccountsView: View {
         let copy = store.copy
         let days = BookMath.worthDays(screen.worthSpan, entries: store.book.entries)
         let priorISO = LedgerDay.adding(days: -1, to: BookMath.windowStart(days: days))
-        let stocks = store.book.holdings.filter { $0.kind == .stock || $0.kind == .etf }
-        let funds = store.book.holdings.filter { $0.kind == .fund }
-        let empty = store.book.accounts.isEmpty && store.book.holdings.isEmpty
-        let showSample = !store.book.sampleCleared && (
-            store.book.accounts.contains { $0.id.hasPrefix("sample-") } || store.book.holdings.contains { $0.id.hasPrefix("sample-") }
-        )
+        let empty = store.book.accounts.isEmpty
+        let showSample = !store.book.sampleCleared && store.book.accounts.contains { $0.id.hasPrefix("sample-") }
 
         PageScroll(bottom: 16) {
             HStack {
@@ -35,17 +31,12 @@ struct AccountsView: View {
                 Text(copy.accountsEmpty).font(.system(size: 15)).foregroundStyle(Palette.muted).padding(.top, 24)
             } else {
                 WorthSummary(store: store, screen: screen, opens: true)
-                mix(copy, priorISO: priorISO, stocks: stocks, funds: funds)
+                monthFlow(copy)
+                mix(copy, priorISO: priorISO)
                 ForEach(AccountKind.order, id: \.self) { kind in
                     if shows(kind.rawValue) {
                         accountGroup(kind, priorISO: priorISO, copy: copy)
                     }
-                }
-                if shows("stock") {
-                    holdingGroup(copy.holdingsStock, stocks, toneOffset: 2, copy: copy)
-                }
-                if shows("fund") {
-                    holdingGroup(copy.holdingsFund, funds, toneOffset: 5, copy: copy)
                 }
                 archivedGroup(copy)
             }
@@ -53,7 +44,6 @@ struct AccountsView: View {
                 PillButton(title: copy.transfer, filled: false) { screen.open(.transfer) }
             }
             PillButton(title: copy.addAccount) { screen.open(.accountForm(id: nil)) }
-            PillButton(title: copy.addHolding, filled: false) { screen.open(.holdingForm(id: nil)) }
             if showSample {
                 SampleBanner(title: copy.sampleBanner, actionTitle: copy.sampleClear) { store.clearSample() }
             }
@@ -64,8 +54,106 @@ struct AccountsView: View {
         screen.accountFocus == nil || screen.accountFocus == id
     }
 
-    private func mix(_ copy: LedgerCopy, priorISO: String, stocks: [Holding], funds: [Holding]) -> some View {
-        let rows = mixRows(priorISO: priorISO, stocks: stocks, funds: funds, copy: copy)
+    @ViewBuilder
+    private func monthFlow(_ copy: LedgerCopy) -> some View {
+        let prefix = LedgerDay.yearMonth(Date())
+        let rows = store.book.entries.filter { $0.date.hasPrefix(prefix) }
+        if !rows.isEmpty {
+            let spent = LedgerMoney.cents(rows.filter(\.isOut).reduce(0) { $0 + $1.amount })
+            let income = LedgerMoney.cents(rows.filter { !$0.isOut }.reduce(0) { $0 + $1.amount })
+            let accounts = store.book.accounts.filter { account in
+                !account.archived && rows.contains { $0.accountId == account.id }
+            }
+            VStack(alignment: .leading, spacing: 0) {
+                Button { openMonth(account: nil) } label: {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text(copy.accountMonthFlow)
+                                .font(.system(size: 17, weight: .bold))
+                                .foregroundColor(Palette.ink)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundColor(Palette.faint)
+                        }
+                        HStack(spacing: 8) {
+                            Color.clear.frame(width: 28, height: 1)
+                            flowStat(copy.periodSpend, spent, Palette.down, signed: false)
+                            flowStat(copy.periodIncome, income, Palette.ink, signed: false)
+                            flowStat(copy.accountPeriodNet, income - spent, Palette.ink, signed: true)
+                        }
+                    }
+                    .padding(.bottom, 12)
+                }
+                .buttonStyle(.plain)
+                ForEach(accounts) { account in
+                    let mine = rows.filter { $0.accountId == account.id }
+                    let spent = LedgerMoney.cents(mine.filter(\.isOut).reduce(0) { $0 + $1.amount })
+                    let income = LedgerMoney.cents(mine.filter { !$0.isOut }.reduce(0) { $0 + $1.amount })
+                    Button { openMonth(account: account.id) } label: {
+                        HStack(spacing: 8) {
+                            Text(String(account.name.prefix(1)))
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundColor(Palette.ink)
+                                .frame(width: 28, height: 28)
+                                .background(Palette.wash, in: Circle())
+                            MoneyText(value: spent, mark: store.book.mark, size: 13, color: Palette.down)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            MoneyText(value: income, mark: store.book.mark, size: 13)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            MoneyText(value: income - spent, mark: store.book.mark, size: 13, signed: true)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .padding(.vertical, 8)
+                        .overlay(alignment: .top) {
+                            Rectangle().fill(Palette.line).frame(height: 1)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(account.name)
+                }
+            }
+            .padding(14)
+            .background(Color.white, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Palette.line, lineWidth: 1))
+            .padding(.top, 12)
+        }
+    }
+
+    private func flowStat(_ title: String, _ value: Double, _ color: Color, signed: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundColor(Palette.muted)
+            MoneyText(value: value, mark: store.book.mark, size: 13, signed: signed, color: color)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func openMonth(account: String?) {
+        let now = Date()
+        let calendar = Calendar.current
+        let start = LedgerDay.iso(year: calendar.component(.year, from: now), month: calendar.component(.month, from: now), day: 1)
+        if let account {
+            screen.openRange(account: account, from: start, to: LedgerDay.today())
+            return
+        }
+        screen.accountId = nil
+        screen.txMode = .range
+        screen.txFrom = start
+        screen.txTo = LedgerDay.today()
+        screen.category = nil
+        screen.feedKind = ""
+        screen.status = "all"
+        screen.txDirection = "all"
+        screen.search = ""
+        screen.showCalendar = false
+        screen.txUnscoped = true
+        screen.reveal(tab: 1)
+    }
+
+    private func mix(_ copy: LedgerCopy, priorISO: String) -> some View {
+        let rows = mixRows(priorISO: priorISO, copy: copy)
         let scale = rows.map { abs($0.amount) }.max() ?? 1
         return Group {
             if rows.count >= 2 {
@@ -112,7 +200,7 @@ struct AccountsView: View {
         }
     }
 
-    private func mixRows(priorISO: String, stocks: [Holding], funds: [Holding], copy: LedgerCopy) -> [MixSlice] {
+    private func mixRows(priorISO: String, copy: LedgerCopy) -> [MixSlice] {
         var rows: [MixSlice] = []
         for kind in AccountKind.order {
             let accounts = store.book.accounts.filter { $0.kind == kind && !$0.archived }
@@ -121,12 +209,6 @@ struct AccountsView: View {
                 sum + BookMath.accountNowAndPrior(account, entries: store.book.entries, priorISO: priorISO).now
             }
             rows.append(MixSlice(id: kind.rawValue, title: copy.accountKind(kind), amount: total))
-        }
-        if !stocks.isEmpty {
-            rows.append(MixSlice(id: "stock", title: copy.holdingsStock, amount: stocks.reduce(0) { $0 + BookMath.holdingMarketValue($1) }))
-        }
-        if !funds.isEmpty {
-            rows.append(MixSlice(id: "fund", title: copy.holdingsFund, amount: funds.reduce(0) { $0 + BookMath.holdingMarketValue($1) }))
         }
         return rows
     }
@@ -188,38 +270,6 @@ struct AccountsView: View {
                             value: BookMath.accountTotal(account, entries: store.book.entries),
                             detail: "",
                             detailColor: Palette.muted
-                        )
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            .padding(.top, 4)
-        }
-    }
-
-    @ViewBuilder
-    private func holdingGroup(_ title: String, _ holdings: [Holding], toneOffset: Int, copy: LedgerCopy) -> some View {
-        if !holdings.isEmpty {
-            VStack(alignment: .leading, spacing: 0) {
-                HStack {
-                    Text(title)
-                        .font(.system(size: 13, weight: .bold))
-                        .foregroundStyle(Palette.muted)
-                    Spacer()
-                    MoneyText(value: holdings.reduce(0) { $0 + BookMath.holdingMarketValue($1) }, mark: store.book.mark, size: 13)
-                }
-                ForEach(Array(holdings.enumerated()), id: \.element.id) { index, holding in
-                    Button {
-                        screen.open(.holding(id: holding.id))
-                    } label: {
-                        let places = holding.kind == .fund ? 2 : 0
-                        let qty = "\(LedgerMoney.fixed(holding.qty, fraction: places)) \(copy.shareUnit(holding.kind))"
-                        ledgerLine(
-                            name: holding.name,
-                            meta: "\(holding.code) · \(copy.holdingKind(holding.kind)) · \(qty)",
-                            tone: index + toneOffset,
-                            value: BookMath.holdingMarketValue(holding),
-                            signed: BookMath.holdingPnl(holding)
                         )
                     }
                     .buttonStyle(.plain)

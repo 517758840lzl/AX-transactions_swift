@@ -118,10 +118,6 @@ struct RootView: View {
             AccountDetailView(store: store, screen: screen, accountID: id)
         case .accountForm(let id):
             AccountFormView(store: store, accountID: id)
-        case .holding(let id):
-            HoldingDetailView(store: store, holdingID: id)
-        case .holdingForm(let id):
-            HoldingFormView(store: store, holdingID: id)
         case .transfer:
             TransferFormView(store: store)
         case .repeatPlan(let id):

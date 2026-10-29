@@ -21,8 +21,6 @@ struct BookExportPage: View {
                     stat(book.entries.count, copy.transactions) { showTab(1) }
                     Rectangle().fill(Palette.line).frame(width: 1, height: 36)
                     stat(book.accounts.count, copy.accounts) { showTab(2) }
-                    Rectangle().fill(Palette.line).frame(width: 1, height: 36)
-                    stat(book.holdings.count, copy.holdingsLabel) { showTab(2) }
                 }
             }
             Button {

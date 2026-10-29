@@ -59,18 +59,6 @@ enum BookDocument {
                     "dueDay": account.dueDay,
                 ] as [String: Any]
             },
-            "holdings": book.holdings.map { holding in
-                [
-                    "id": holding.id,
-                    "kind": holding.kind.rawValue,
-                    "code": holding.code,
-                    "name": holding.name,
-                    "qty": holding.qty,
-                    "costTotal": holding.costTotal,
-                    "price": holding.price,
-                    "priceAsOf": holding.priceAsOf,
-                ] as [String: Any]
-            },
             "entries": book.entries.map { entryObject($0) },
             "goals": book.goals.map { goal in
                 [
@@ -151,7 +139,6 @@ enum BookDocument {
         }
         book.templates = templates(map["templates"])
         book.accounts = accounts(map["accounts"], sampleCleared: sampleCleared)
-        book.holdings = holdings(map["holdings"], sampleCleared: sampleCleared)
         book.entries = entries(map["entries"], sampleCleared: sampleCleared)
         return book
     }
@@ -171,27 +158,6 @@ enum BookDocument {
                 dueDay: day(map["dueDay"])
             )
         }
-    }
-
-    private static func holdings(_ raw: Any?, sampleCleared: Bool) -> [Holding] {
-        guard let list = raw as? [Any] else { return sampleCleared ? [] : SampleBook.holdings() }
-        return list.compactMap { item in
-            guard let map = item as? [String: Any] else { return nil }
-            return holding(map)
-        }
-    }
-
-    private static func holding(_ map: [String: Any]) -> Holding {
-        Holding(
-            id: "\(map["id"] ?? "")",
-            kind: HoldingKind.read(map["kind"]),
-            code: "\(map["code"] ?? "")",
-            name: "\(map["name"] ?? "")",
-            qty: money(map["qty"]) ?? 0,
-            costTotal: money(map["costTotal"]) ?? 0,
-            price: money(map["price"]) ?? 0,
-            priceAsOf: "\(map["priceAsOf"] ?? "")"
-        )
     }
 
     private static func entries(_ raw: Any?, sampleCleared: Bool) -> [Entry] {

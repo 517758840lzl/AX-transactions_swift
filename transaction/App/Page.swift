@@ -13,8 +13,6 @@ enum Page: Hashable {
     case budget
     case account(id: String)
     case accountForm(id: String?)
-    case holding(id: String)
-    case holdingForm(id: String?)
     case transfer
     case repeatPlan(id: String?)
     case yearReport

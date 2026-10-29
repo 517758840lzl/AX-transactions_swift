@@ -16,6 +16,8 @@ final class LedgerScreen: ObservableObject {
     @Published var dashFrom = LedgerDay.monthStart()
     @Published var dashTo = LedgerDay.today()
     @Published var txScope = LedgerScope.mine
+    /// Account pages count every movement on the account, including ones marked household.
+    @Published var txUnscoped = false
     @Published var txMode = PeriodMode.month
     @Published var txFrom = LedgerDay.monthStart()
     @Published var txTo = LedgerDay.today()
@@ -29,6 +31,8 @@ final class LedgerScreen: ObservableObject {
     @Published var accountId: String?
     @Published var windowIndex = 1
     @Published var worthSpan = WorthSpan.month
+    /// "" | "out" | "in" | "other". Set when a stats row opens the activity list.
+    @Published var feedKind = ""
 
     var windowDays: Int { BookMath.windowDays[min(max(windowIndex, 0), 1)] }
 
@@ -46,6 +50,8 @@ final class LedgerScreen: ObservableObject {
     }
 
     func selectTab(_ index: Int) {
+        feedKind = ""
+        txUnscoped = false
         withAnimation(Self.tabFade) {
             tab = index
         }
@@ -63,16 +69,34 @@ final class LedgerScreen: ObservableObject {
     private static let tabFade = Animation.easeInOut(duration: 0.2)
     static let fold = Animation.timingCurve(0.22, 0.9, 0.28, 1, duration: 0.28)
 
+    func openStats(from: String, to: String, kind: String, category: String?, title: String?) {
+        txScope = dashScope
+        txMode = .range
+        txFrom = from
+        txTo = min(to, LedgerDay.today())
+        self.category = category
+        search = title ?? ""
+        status = "all"
+        txDirection = "all"
+        accountId = nil
+        feedKind = kind
+        txUnscoped = false
+        showCalendar = false
+        reveal(tab: 1)
+    }
+
     func openRange(account id: String, from: String, to: String) {
         accountId = id
         txMode = .range
         txFrom = from
         txTo = min(to, LedgerDay.today())
         category = nil
+        feedKind = ""
         status = "all"
         txDirection = "all"
         search = ""
         showCalendar = false
+        txUnscoped = true
         reveal(tab: 1)
     }
 
@@ -82,10 +106,12 @@ final class LedgerScreen: ObservableObject {
         txFrom = BookMath.windowStart(days: windowDays)
         txTo = LedgerDay.today()
         category = nil
+        feedKind = ""
         status = "all"
         txDirection = "all"
         search = ""
         showCalendar = false
+        txUnscoped = true
         reveal(tab: 1)
     }
 }
