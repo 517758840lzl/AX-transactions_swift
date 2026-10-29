@@ -131,6 +131,7 @@ struct LedgerCopy {
     var transferFrom: String
     var transferTo: String
     var transferCategory: String
+    var transferNeedTwo: String
     var accountPeriodNet: String
     var accountsTrend: String
     var accountMix: String
@@ -512,6 +513,7 @@ private let chinese = LedgerCopy(
     holdingCodeStock: "NVDA", holdingNameStock: "英伟达", holdingCodeEtf: "SPY", holdingNameEtf: "标普500",
     holdingCodeFund: "VFIAX", holdingNameFund: "先锋500",
     transfer: "转账", transferTitle: "账户转账", transferFrom: "转出", transferTo: "转入", transferCategory: "转账",
+    transferNeedTwo: "再添加一个账户才能转账",
     accountPeriodNet: "区间净流入", accountsTrend: "净资产走势", accountMix: "构成", accountsWindow7: "7 天", accountsWindow30: "1 月",
     accountPeriodDelta: "区间变动",
     transactions: "流水", searchPlaceholder: "搜名称、分类或账户", filterAll: "全部", filterOpen: "未核对", filterDone: "已核对",
@@ -605,6 +607,7 @@ private let englishCopy = LedgerCopy(
     holdingCodeStock: "NVDA", holdingNameStock: "NVIDIA", holdingCodeEtf: "SPY", holdingNameEtf: "S&P 500",
     holdingCodeFund: "VFIAX", holdingNameFund: "Vanguard 500",
     transfer: "Transfer", transferTitle: "Transfer", transferFrom: "From", transferTo: "To", transferCategory: "Transfer",
+    transferNeedTwo: "Add another account to transfer",
     accountPeriodNet: "Net inflow", accountsTrend: "Net worth trend", accountMix: "Split", accountsWindow7: "7D", accountsWindow30: "1M",
     accountPeriodDelta: "Period change",
     transactions: "Activity", searchPlaceholder: "Search name, category, or account",

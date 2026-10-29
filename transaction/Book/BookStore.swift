@@ -81,7 +81,7 @@ final class BookStore: ObservableObject {
         note = message
         noteTask?.cancel()
         noteTask = Task { [weak self] in
-            try? await Task.sleep(nanoseconds: 1_600_000_000)
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
             guard !Task.isCancelled else { return }
             self?.note = nil
         }

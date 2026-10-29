@@ -48,13 +48,18 @@ struct RootView: View {
                 }
                 if let note = store.note {
                     Text(note)
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 10)
-                        .background(Palette.ink.opacity(0.92), in: Capsule())
-                        .padding(.bottom, 96)
-                        .frame(maxWidth: .infinity)
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(Palette.ink)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 18)
+                        .padding(.vertical, 12)
+                        .background(Color.white, in: Capsule())
+                        .overlay(Capsule().stroke(Palette.line, lineWidth: 1))
+                        .shadow(color: Palette.ink.opacity(0.08), radius: 12, y: 6)
+                        .padding(.horizontal, 24)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .allowsHitTesting(false)
+                        .zIndex(25)
                 }
                 ForEach(Array(screen.path.enumerated()), id: \.offset) { index, page in
                     destination(page, copy: copy)

@@ -104,7 +104,8 @@ struct MeView: View {
             pendingImport = text
             confirmImport = true
         }
-        .confirmationDialog(copy.importData, isPresented: $confirmImport, titleVisibility: .visible) {
+        .alert(copy.importData, isPresented: $confirmImport) {
+            Button(copy.cancel, role: .cancel) { pendingImport = "" }
             Button(copy.importData, role: .destructive) {
                 if store.importDocument(pendingImport) {
                     store.flash(copy.importDone)
@@ -113,16 +114,15 @@ struct MeView: View {
                 }
                 pendingImport = ""
             }
-            Button(copy.cancel, role: .cancel) { pendingImport = "" }
         } message: {
             Text(copy.importConfirm)
         }
-        .confirmationDialog(copy.clearBook, isPresented: $confirmClear, titleVisibility: .visible) {
+        .alert(copy.clearBook, isPresented: $confirmClear) {
+            Button(copy.cancel, role: .cancel) {}
             Button(copy.clearBook, role: .destructive) {
                 store.clearBook()
                 store.flash(copy.clearBookDone)
             }
-            Button(copy.cancel, role: .cancel) {}
         } message: {
             Text(copy.clearBookConfirm)
         }

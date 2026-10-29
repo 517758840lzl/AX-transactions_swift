@@ -44,8 +44,12 @@ struct AccountsView: View {
                 }
                 archivedGroup(copy)
             }
-            if store.book.accounts.count >= 2 {
-                PillButton(title: copy.transfer, filled: false) { screen.open(.transfer) }
+            PillButton(title: copy.transfer, filled: false, faded: store.book.accounts.count < 2) {
+                if store.book.accounts.count < 2 {
+                    store.flash(copy.transferNeedTwo)
+                } else {
+                    screen.open(.transfer)
+                }
             }
             PillButton(title: copy.addAccount) { screen.open(.accountForm(id: nil, chooseKind: false)) }
             if showSample {
