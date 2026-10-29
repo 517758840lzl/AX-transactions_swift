@@ -130,7 +130,7 @@ struct TransactionsView: View {
         let groups = dayGroups(listed)
         let flat = groups.flatMap(\.entries)
         let firstOfDay = Dictionary(uniqueKeysWithValues: groups.map { ($0.day, $0.entries.first?.id) })
-        return VStack(alignment: .leading, spacing: 0) {
+        return LazyVStack(alignment: .leading, spacing: 0) {
             ForEach(Array(flat.enumerated()), id: \.element.id) { index, entry in
                 if !screen.showCalendar, firstOfDay[entry.date] == entry.id {
                     dayHead(entry.date, entries: groups.first { $0.day == entry.date }?.entries ?? [], copy: copy)
@@ -166,14 +166,11 @@ struct TransactionsView: View {
                         rankLabel(part.amount, previous: previous, copy: copy)
                     }
                 }
-                GeometryReader { proxy in
-                    let width = total > 0 ? proxy.size.width * min(max(part.amount / total, 0.04), 1) : 0
-                    ZStack(alignment: .leading) {
-                        Capsule().fill(Palette.wash)
-                        Capsule().fill(Palette.slice(part.colorIndex)).frame(width: width)
-                    }
-                }
-                .frame(height: 4)
+                PortionBar(
+                    fraction: total > 0 ? part.amount / total : 0,
+                    tint: Palette.slice(part.colorIndex),
+                    height: 4
+                )
             }
             .padding(.vertical, 6)
         }

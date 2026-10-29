@@ -42,10 +42,15 @@ final class LedgerScreen: ObservableObject {
         }
     }
 
-    func close() {
+    func close(animated: Bool = true) {
         guard !path.isEmpty else { return }
-        withAnimation(Self.pageSlide) {
-            _ = path.removeLast()
+        let update = { _ = self.path.removeLast() }
+        if animated {
+            withAnimation(Self.pageSlide) { update() }
+        } else {
+            var step = Transaction()
+            step.disablesAnimations = true
+            withTransaction(step) { update() }
         }
     }
 
@@ -65,7 +70,7 @@ final class LedgerScreen: ObservableObject {
         }
     }
 
-    private static let pageSlide = Animation.timingCurve(0.22, 0.9, 0.28, 1, duration: 0.34)
+    static let pageSlide = Animation.timingCurve(0.22, 0.9, 0.28, 1, duration: 0.34)
     private static let tabFade = Animation.easeInOut(duration: 0.2)
     static let fold = Animation.timingCurve(0.22, 0.9, 0.28, 1, duration: 0.28)
 

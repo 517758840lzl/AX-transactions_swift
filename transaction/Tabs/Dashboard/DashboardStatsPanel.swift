@@ -201,13 +201,7 @@ struct DashboardStatsPanel: View {
                     .font(.system(size: 12, weight: .bold))
                     .foregroundStyle(Palette.faint)
             }
-            GeometryReader { proxy in
-                ZStack(alignment: .leading) {
-                    Capsule().fill(Palette.neutral)
-                    Capsule().fill(Palette.pink).frame(width: max(8, proxy.size.width * CGFloat(share)))
-                }
-            }
-            .frame(height: 8)
+            PortionBar(fraction: share, tint: Palette.pink, track: Palette.neutral, height: 8)
         }
         .padding(.vertical, 6)
     }

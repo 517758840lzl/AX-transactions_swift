@@ -175,14 +175,11 @@ struct AccountsView: View {
                                         Spacer(minLength: 8)
                                         MoneyText(value: row.amount, mark: store.book.mark, size: 15)
                                     }
-                                    GeometryReader { proxy in
-                                        let width = scale > 0 ? proxy.size.width * min(abs(row.amount) / scale, 1) : 0
-                                        ZStack(alignment: .leading) {
-                                            Capsule().fill(Palette.wash)
-                                            Capsule().fill(screen.accountFocus == row.id ? Palette.ink : Palette.pink).frame(width: max(width, 4))
-                                        }
-                                    }
-                                    .frame(height: 6)
+                                    PortionBar(
+                                        fraction: scale > 0 ? abs(row.amount) / scale : 0,
+                                        tint: screen.accountFocus == row.id ? Palette.ink : Palette.pink,
+                                        height: 6
+                                    )
                                 }
                                 .padding(.vertical, 10)
                                 .contentShape(Rectangle())

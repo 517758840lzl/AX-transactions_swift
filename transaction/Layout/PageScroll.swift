@@ -14,7 +14,8 @@ struct PageScroll<Content: View>: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: 12) {
+            // A plain stack. The four tabs are a few cards, and a lazy stack remeasures them while the finger moves.
+            VStack(alignment: .leading, spacing: 12) {
                 content()
             }
             .padding(.horizontal, 18)

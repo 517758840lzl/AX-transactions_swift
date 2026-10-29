@@ -61,6 +61,7 @@ private struct ScrollTouch: UIViewRepresentable {
 
         override func layoutSubviews() {
             super.layoutSubviews()
+            guard hookedScroll == nil else { return }
             tune()
         }
 

@@ -13,6 +13,9 @@ struct RootView: View {
     @StateObject private var screen = LedgerScreen()
     @Environment(\.scenePhase) private var scenePhase
     @State private var opening = true
+    @State private var edgeDrag: CGFloat = 0
+    @State private var edgePage = -1
+    @State private var edgeTicket = 0
 
     init(store: BookStore) {
         _store = StateObject(wrappedValue: store)
@@ -65,6 +68,17 @@ struct RootView: View {
                     destination(page, copy: copy)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(Palette.stage)
+                        .offset(x: index == edgePage ? edgeDrag : 0)
+                        .background {
+                            if index == screen.path.count - 1 {
+                                EdgeBack(onChange: { moved in
+                                    edgePage = index
+                                    edgeDrag = moved
+                                }, onEnd: { moved, speed in
+                                    finishEdge(from: index, moved: moved, speed: speed)
+                                })
+                            }
+                        }
                         .zIndex(Double(index + 1))
                         .transition(.move(edge: .trailing))
                 }
@@ -97,6 +111,31 @@ struct RootView: View {
             openPendingBill()
         }
         .tint(Palette.ink)
+    }
+
+    private func finishEdge(from index: Int, moved: CGFloat, speed: CGFloat) {
+        let width = UIScreen.main.bounds.width
+        let commit = moved > width * 0.3 || speed > 900
+        guard commit else {
+            withAnimation(LedgerScreen.pageSlide) {
+                edgeDrag = 0
+                edgePage = -1
+            }
+            return
+        }
+        edgeTicket += 1
+        let ticket = edgeTicket
+        let depth = screen.path.count
+        withAnimation(LedgerScreen.pageSlide) {
+            edgePage = index
+            edgeDrag = width
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.34) {
+            guard ticket == edgeTicket, screen.path.count == depth else { return }
+            screen.close(animated: false)
+            edgeDrag = 0
+            edgePage = -1
+        }
     }
 
     private func openPendingBill() {
