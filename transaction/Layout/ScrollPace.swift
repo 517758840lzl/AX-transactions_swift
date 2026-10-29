@@ -72,6 +72,7 @@ private struct ScrollTouch: UIViewRepresentable {
                     scroll.delaysContentTouches = false
                     scroll.canCancelContentTouches = true
                     scroll.keyboardDismissMode = .onDrag
+                    scroll.clipsToBounds = true
                     scroll.panGestureRecognizer.delaysTouchesBegan = false
                     guard hookedScroll !== scroll else { return }
                     hookedScroll?.panGestureRecognizer.removeTarget(self, action: #selector(pageDrag))

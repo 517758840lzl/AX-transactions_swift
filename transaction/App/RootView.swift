@@ -7,6 +7,7 @@
 
 import Combine
 import SwiftUI
+import UIKit
 
 struct RootView: View {
     @StateObject private var store: BookStore
@@ -40,11 +41,10 @@ struct RootView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     tabBar(copy)
                 }
-                if screen.tab == 0 || screen.tab == 1 {
+                if screen.path.isEmpty, screen.tab == 0 || screen.tab == 1 {
                     EntryButton(title: copy.entryNew) {
                         screen.open(.entry(id: nil))
                     }
-                    .zIndex(5)
                 }
                 if let note = store.note {
                     Text(note)
@@ -73,6 +73,10 @@ struct RootView: View {
                         }
                         .zIndex(Double(index + 1))
                         .transition(.move(edge: .trailing))
+                }
+                if !opening {
+                    statusBarCover
+                        .zIndex(30)
                 }
                 if opening {
                     OpeningCover(line: store.book.locale.openingLine) {
@@ -103,6 +107,37 @@ struct RootView: View {
             openPendingBill()
         }
         .tint(Palette.ink)
+    }
+
+    /// Covers the status bar with the page color so scrolling cards do not show through it.
+    private var statusBarCover: some View {
+        let height = Self.statusBarHeight
+        return statusCoverFill
+            .frame(height: height)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .offset(y: -height)
+            .allowsHitTesting(false)
+    }
+
+    private var statusCoverFill: Color {
+        switch screen.path.last {
+        case .yearReport:
+            return Palette.stage
+        case nil:
+            return Palette.stage
+        default:
+            return .white
+        }
+    }
+
+    private static var statusBarHeight: CGFloat {
+        let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        for scene in scenes {
+            if let window = scene.windows.first(where: \.isKeyWindow) {
+                return max(window.safeAreaInsets.top, 20)
+            }
+        }
+        return max(scenes.first?.windows.first?.safeAreaInsets.top ?? 47, 20)
     }
 
     private func finishEdge(from index: Int, moved: CGFloat, speed: CGFloat) {
