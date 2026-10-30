@@ -65,7 +65,7 @@ struct AccountsView: View {
     @ViewBuilder
     private func monthFlow(_ copy: LedgerCopy) -> some View {
         let prefix = LedgerDay.yearMonth(Date())
-        let rows = store.book.entries.filter { $0.date.hasPrefix(prefix) }
+        let rows = store.book.entries.filter { $0.date.hasPrefix(prefix) && !$0.isTransfer }
         if !rows.isEmpty {
             let spent = LedgerMoney.cents(rows.filter(\.isOut).reduce(0) { $0 + $1.amount })
             let income = LedgerMoney.cents(rows.filter { !$0.isOut }.reduce(0) { $0 + $1.amount })

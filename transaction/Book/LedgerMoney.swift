@@ -36,16 +36,21 @@ enum LedgerMoney {
         return String(grouped.reversed()) + "." + fraction
     }
 
-    /// Digits and one dot. The rest is dropped.
+    /// Digits and one dot, at most two decimal places. Letters, signs and a second dot are dropped.
     static func typing(_ raw: String) -> String {
         var kept = ""
         var dotted = false
+        var places = 0
         for character in raw {
             if character >= "0" && character <= "9" {
+                if dotted {
+                    guard places < 2 else { continue }
+                    places += 1
+                }
                 kept.append(character)
             } else if character == ".", !dotted {
                 dotted = true
-                kept.append(character)
+                kept.append(".")
             }
         }
         return kept

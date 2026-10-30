@@ -23,7 +23,7 @@ struct AccountDetailView: View {
             let prior = BookMath.accountNowAndPrior(account, entries: store.book.entries, priorISO: LedgerDay.adding(days: -1, to: from)).prior
             let delta = total - prior
             let today = LedgerDay.today()
-            let windowEntries = store.book.entries.filter { $0.accountId == account.id && $0.date >= from && $0.date <= today }
+            let windowEntries = store.book.entries.filter { $0.accountId == account.id && $0.date >= from && $0.date <= today && !$0.isTransfer }
             let inflow = windowEntries.filter { !$0.isOut }.reduce(0) { $0 + $1.amount }
             let outflow = windowEntries.filter(\.isOut).reduce(0) { $0 + $1.amount }
             let series = BookMath.windowSnapshot(accounts: [account], entries: store.book.entries, days: days).amounts

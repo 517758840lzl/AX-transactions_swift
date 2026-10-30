@@ -104,7 +104,7 @@ struct SavingGoalFormView: View {
     }
 
     private var canSave: Bool {
-        let goal = Double(target.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
+        let goal = LedgerMoney.cents(Double(target.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0)
         return !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && goal > 0
     }
 

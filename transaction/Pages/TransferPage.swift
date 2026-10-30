@@ -46,7 +46,8 @@ struct TransferFormView: View {
     }
 
     private var canSave: Bool {
-        store.book.accounts.count >= 2 && fromID != toID && (Double(amount) ?? 0) > 0
+        let value = LedgerMoney.cents(Double(amount.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0)
+        return store.book.accounts.count >= 2 && fromID != toID && value > 0
     }
 
     private func save() {

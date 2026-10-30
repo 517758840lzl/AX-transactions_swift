@@ -219,11 +219,11 @@ struct EntryFormView: View {
     }
 
     private var canSave: Bool {
-        let value = LedgerMoney.solve(amount.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
+        let value = LedgerMoney.cents(LedgerMoney.solve(amount.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0)
         let titled = !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         guard titled, value > 0 else { return false }
         if splitOn, entryID == nil {
-            let other = LedgerMoney.solve(otherAmount.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
+            let other = LedgerMoney.cents(LedgerMoney.solve(otherAmount.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0)
             return other > 0 && !otherCategory.isEmpty
         }
         return true
