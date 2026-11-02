@@ -130,7 +130,7 @@ final class BillReminder: NSObject, UNUserNotificationCenterDelegate {
                     parts.hour = BillPlan.hour
                     parts.minute = 0
                     let trigger = UNCalendarNotificationTrigger(dateMatching: parts, repeats: false)
-                    center.add(UNNotificationRequest(identifier: payload.identifier, content: content, trigger: trigger))
+                    try? await center.add(UNNotificationRequest(identifier: payload.identifier, content: content, trigger: trigger))
                 }
             }
         }
