@@ -61,15 +61,15 @@ struct DashboardStatsPanel: View {
                     Text(copy.statsCount(window.count, kind: kindName))
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(Palette.muted)
-                    MoneyText(value: total, mark: store.book.mark, size: 36)
+                    MoneyText(value: total, mark: store.book.mark, size: 36, color: total > 0 ? Palette.ink : Palette.muted)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .buttonStyle(.plain)
 
             Text(copy.statsCompare(annual: annual, kind: kindName))
-                .font(.system(size: 17, weight: .bold))
-                .foregroundStyle(Palette.ink)
+                .font(.system(size: 17, weight: total > 0 ? .bold : .regular))
+                .foregroundStyle(total > 0 ? Palette.ink : Palette.muted)
             HStack(alignment: .bottom, spacing: 6) {
                 ForEach(bars, id: \.self) { key in
                     bar(key, peak: peak, current: current, shown: shown)
@@ -78,8 +78,8 @@ struct DashboardStatsPanel: View {
             .frame(height: 168, alignment: .bottom)
 
             Text(copy.statsCompose(when, kind: kindName))
-                .font(.system(size: 17, weight: .bold))
-                .foregroundStyle(Palette.ink)
+                .font(.system(size: 17, weight: total > 0 ? .bold : .regular))
+                .foregroundStyle(total > 0 ? Palette.ink : Palette.muted)
             if mix.isEmpty {
                 Text(copy.statsEmpty).font(.system(size: 14)).foregroundStyle(Palette.muted)
             } else {
@@ -95,8 +95,8 @@ struct DashboardStatsPanel: View {
             }
 
             Text(copy.statsRank(when, kind: kindName))
-                .font(.system(size: 17, weight: .bold))
-                .foregroundStyle(Palette.ink)
+                .font(.system(size: 17, weight: total > 0 ? .bold : .regular))
+                .foregroundStyle(total > 0 ? Palette.ink : Palette.muted)
             if rank.isEmpty {
                 Text(copy.statsEmpty).font(.system(size: 14)).foregroundStyle(Palette.muted)
             } else {
@@ -220,7 +220,7 @@ struct DashboardStatsPanel: View {
                         .font(.system(size: 9))
                 }
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(selected ? Palette.pink : Palette.wash)
+                    .fill(selected && amount > 0 ? Palette.pink : Palette.wash)
                     .frame(height: height)
                     .frame(maxWidth: 36)
                 Text("\(month)")
