@@ -96,20 +96,25 @@ struct RootView: View {
             .background(Palette.stage)
         .environmentObject(screen)
         .environment(\.pageBack, { screen.close() })
-        .environment(\.keyboardDone, copy.done)
         .environment(\.amountsHidden, store.book.hideAmounts)
         .onAppear {
             store.settleRepeats()
             BillReminder.shared.refresh(book: store.book)
+            DailyReminder.shared.sync(store.book, ask: false)
             openPendingBill()
+            openPendingEntry()
         }
         .onChange(of: scenePhase) { phase in
             if phase == .active {
                 BillReminder.shared.refresh(book: store.book)
+                DailyReminder.shared.sync(store.book, ask: false)
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .billReminderOpened)) { _ in
             openPendingBill()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .dailyLogOpened)) { _ in
+            openPendingEntry()
         }
         .tint(Palette.ink)
     }
@@ -126,7 +131,7 @@ struct RootView: View {
 
     private var statusCoverFill: Color {
         switch screen.path.last {
-        case .yearReport:
+        case .yearReport, .reminder:
             return Palette.stage
         case nil:
             return Palette.stage
@@ -176,6 +181,12 @@ struct RootView: View {
         screen.open(.account(id: id))
     }
 
+    private func openPendingEntry() {
+        guard BillReminder.shared.takePendingEntry() else { return }
+        if case .entry = screen.path.last { return }
+        screen.open(.entry(id: nil))
+    }
+
     @ViewBuilder
     private func destination(_ page: Page, copy: LedgerCopy) -> some View {
         switch page {
@@ -192,7 +203,7 @@ struct RootView: View {
         case .transfer:
             TransferFormView(store: store)
         case .repeatPlan(let id):
-            RepeatPlanFormView(store: store, planID: id)
+            RepeatPlanFormView(store: store, screen: screen, planID: id)
         case .yearReport:
             YearReportPage(store: store, screen: screen)
         case .savingGoals:
@@ -202,13 +213,17 @@ struct RootView: View {
         case .profile:
             ProfileFormView(store: store)
         case .categories:
-            CategoryManageView(store: store)
+            CategoryManageView(store: store, screen: screen)
+        case .categoryForm(let slot):
+            CategoryFormView(store: store, screen: screen, slot: slot)
         case .language:
             LanguagePickView(store: store)
         case .currency:
             CurrencyPickView(store: store)
         case .privacy:
             PrivacyView(title: copy.privacyTitle)
+        case .reminder:
+            ReminderPage(store: store)
         case .export:
             BookExportPage(store: store, screen: screen)
         case .removed:

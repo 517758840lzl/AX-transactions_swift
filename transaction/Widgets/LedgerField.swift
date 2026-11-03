@@ -19,8 +19,7 @@ struct LedgerField: View {
             if decimal {
                 DecimalPadField(text: text, placeholder: placeholder)
             } else {
-                TextField(placeholder, text: text)
-                    .textInputAutocapitalization(.sentences)
+                PlainField(text: text, placeholder: placeholder)
             }
         }
         .font(.system(size: 16))
@@ -78,6 +77,58 @@ private struct DecimalPadField: UIViewRepresentable {
             text.wrappedValue = next
             if field.text != next { field.text = next }
             return false
+        }
+    }
+}
+
+/// Name and note fields. The return key closes the keyboard.
+private struct PlainField: UIViewRepresentable {
+    var text: Binding<String>
+    var placeholder: String
+
+    func makeUIView(context: Context) -> UITextField {
+        let field = UITextField()
+        field.delegate = context.coordinator
+        field.font = .systemFont(ofSize: 16)
+        field.textColor = UIColor(red: 11 / 255, green: 5 / 255, blue: 29 / 255, alpha: 1)
+        field.tintColor = field.textColor
+        field.autocorrectionType = .default
+        field.autocapitalizationType = .sentences
+        field.placeholder = placeholder
+        field.text = text.wrappedValue
+        field.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        field.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        field.addTarget(context.coordinator, action: #selector(Coordinator.changed(_:)), for: .editingChanged)
+        return field
+    }
+
+    func updateUIView(_ field: UITextField, context: Context) {
+        context.coordinator.text = text
+        if field.text != text.wrappedValue {
+            field.text = text.wrappedValue
+        }
+        field.placeholder = placeholder
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(text: text)
+    }
+
+    final class Coordinator: NSObject, UITextFieldDelegate {
+        var text: Binding<String>
+
+        init(text: Binding<String>) {
+            self.text = text
+        }
+
+        @objc func changed(_ field: UITextField) {
+            let next = field.text ?? ""
+            if text.wrappedValue != next { text.wrappedValue = next }
+        }
+
+        func textFieldShouldReturn(_ field: UITextField) -> Bool {
+            field.resignFirstResponder()
+            return true
         }
     }
 }

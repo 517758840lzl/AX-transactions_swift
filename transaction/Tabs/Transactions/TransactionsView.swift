@@ -141,7 +141,11 @@ struct TransactionsView: View {
         } label: {
             VStack(alignment: .leading, spacing: 4) {
                 HStack(alignment: .center, spacing: 8) {
-                    Circle().fill(Palette.slice(part.colorIndex)).frame(width: 8, height: 8)
+                    CategoryBadge(
+                        style: CategoryMarks.style(name: part.name, marks: store.book.categoryMarks),
+                        selected: active,
+                        side: 22
+                    )
                     Text(part.name)
                         .font(.system(size: 13, weight: active ? .heavy : .semibold))
                         .foregroundStyle(Palette.ink)

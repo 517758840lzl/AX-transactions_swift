@@ -33,9 +33,14 @@ enum BookDocument {
             "sampleCleared": book.sampleCleared,
             "hideAmounts": book.hideAmounts,
             "lockOnOpen": book.lockOnOpen,
+            "dailyReminder": book.dailyReminder,
+            "reminderHour": book.reminderHour,
+            "reminderMinute": book.reminderMinute,
             "monthly": book.monthlyBudget as Any? ?? NSNull(),
             "categoryCaps": book.categoryCaps,
             "categories": book.categories,
+            "categoryMarks": book.categoryMarks,
+            "presetStamp": book.presetStamp,
             "templates": book.templates.map { template in
                 [
                     "id": template.id,
@@ -121,6 +126,9 @@ enum BookDocument {
         book.sampleCleared = sampleCleared
         book.hideAmounts = map["hideAmounts"] as? Bool ?? false
         book.lockOnOpen = map["lockOnOpen"] as? Bool ?? false
+        book.dailyReminder = map["dailyReminder"] as? Bool ?? false
+        book.reminderHour = Self.clock(map["reminderHour"], fallback: 21, upper: 23)
+        book.reminderMinute = Self.clock(map["reminderMinute"], fallback: 30, upper: 59)
         book.removed = removed(map["removed"])
         book.goals = goals(map["goals"])
         book.repeats = repeats(map["repeats"])
@@ -137,6 +145,10 @@ enum BookDocument {
         if let names = map["categories"] as? [Any], !names.isEmpty {
             book.categories = names.map { "\($0)" }
         }
+        if let marks = map["categoryMarks"] as? [String: String] {
+            book.categoryMarks = marks
+        }
+        book.presetStamp = map["presetStamp"] as? Int ?? 0
         book.templates = templates(map["templates"])
         book.accounts = accounts(map["accounts"], sampleCleared: sampleCleared)
         book.entries = entries(map["entries"], sampleCleared: sampleCleared)
@@ -166,6 +178,11 @@ enum BookDocument {
             guard let map = item as? [String: Any] else { return nil }
             return readEntry(map)
         }
+    }
+
+    private static func clock(_ raw: Any?, fallback: Int, upper: Int) -> Int {
+        let value = raw as? Int ?? Int(money(raw) ?? Double(fallback))
+        return min(max(value, 0), upper)
     }
 
     private static func day(_ raw: Any?) -> Int {

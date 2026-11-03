@@ -49,6 +49,56 @@ enum SampleBook {
         return names
     }
 
+    static func displayTitle(id: String, title: String, locale: BookLocale) -> String {
+        let bare = stripTag(title)
+        let known = names[id] ?? [:]
+        let base = known.values.contains(bare) ? (known[locale.rawValue] ?? known["en"] ?? bare) : bare
+        let suffix = " (\(tag(locale)))"
+        return base.hasSuffix(suffix) ? base : base + suffix
+    }
+
+    private static let names: [String: [String: String]] = [
+        "sample-lunch": [
+            "zh": "午餐", "zh-Hant": "午餐", "en": "Lunch", "ja": "ランチ", "ko": "점심",
+            "es": "Comida", "pt": "Almoço", "fr": "Déjeuner", "de": "Mittagessen", "it": "Pranzo",
+        ],
+        "sample-coffee": [
+            "zh": "咖啡", "zh-Hant": "咖啡", "en": "Coffee", "ja": "コーヒー", "ko": "커피",
+            "es": "Café", "pt": "Café", "fr": "Café", "de": "Kaffee", "it": "Caffè",
+        ],
+        "sample-metro": [
+            "zh": "地铁", "zh-Hant": "地鐵", "en": "Metro", "ja": "地下鉄", "ko": "지하철",
+            "es": "Metro", "pt": "Metro", "fr": "Métro", "de": "U-Bahn", "it": "Metro",
+        ],
+    ]
+
+    private static func tag(_ locale: BookLocale) -> String {
+        switch locale {
+        case .zh, .zhHant: return "示例"
+        case .en: return "Sample"
+        case .ja: return "例"
+        case .ko: return "예시"
+        case .es: return "ejemplo"
+        case .pt: return "exemplo"
+        case .fr: return "exemple"
+        case .de: return "Beispiel"
+        case .it: return "esempio"
+        }
+    }
+
+    static func bareTitle(_ title: String) -> String {
+        stripTag(title)
+    }
+
+    private static func stripTag(_ title: String) -> String {
+        let tags = ["示例", "Sample", "例", "예시", "ejemplo", "exemplo", "exemple", "Beispiel", "esempio"]
+        for tag in tags {
+            let suffix = " (\(tag))"
+            if title.hasSuffix(suffix) { return String(title.dropLast(suffix.count)) }
+        }
+        return title
+    }
+
     private static func date(for row: [String: Any], now: Date) -> String {
         if let ago = row["ago"] as? Int {
             let date = Calendar.current.date(byAdding: .day, value: -ago, to: now) ?? now

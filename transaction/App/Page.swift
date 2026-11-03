@@ -20,9 +20,11 @@ enum Page: Hashable {
     case savingGoal(id: String?)
     case profile
     case categories
+    case categoryForm(slot: String)
     case language
     case currency
     case privacy
+    case reminder
     case export
     case removed
     case worthTrend

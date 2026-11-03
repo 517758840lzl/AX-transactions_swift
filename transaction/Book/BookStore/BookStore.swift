@@ -50,7 +50,7 @@ final class BookStore: ObservableObject {
                 let seeded = SampleBook.seed()
                 let same = book.categories == seeded.categories
                     && book.accounts.map(\.name) == seeded.accounts.map(\.name)
-                    && book.entries.map(\.title) == seeded.entries.map(\.title)
+                    && book.entries.map(\.id) == seeded.entries.map(\.id)
                     && book.entries.count == seeded.entries.count
                 if !same {
                     book.accounts = seeded.accounts
@@ -62,8 +62,10 @@ final class BookStore: ObservableObject {
         } else {
             book = SampleBook.seed()
         }
+        let adopted = CategoryMarks.adopt(&book)
+        let labeled = Self.labelSamples(&book)
         let store = BookStore(book: book, fileURL: fileURL)
-        if shortened || !FileManager.default.fileExists(atPath: fileURL.path) {
+        if shortened || adopted || labeled || !FileManager.default.fileExists(atPath: fileURL.path) {
             store.persist()
         }
         store.settleRepeats()
@@ -95,6 +97,7 @@ final class BookStore: ObservableObject {
     func setLocale(_ locale: BookLocale) {
         guard book.locale != locale else { return }
         book.locale = locale
+        Self.labelSamples(&book)
         persist()
     }
 
@@ -107,6 +110,22 @@ final class BookStore: ObservableObject {
     func setCurrency(_ currency: CurrencyCode) {
         guard book.currency != currency else { return }
         book.currency = currency
+        persist()
+    }
+
+    func setDailyReminder(_ on: Bool) {
+        guard book.dailyReminder != on else { return }
+        book.dailyReminder = on
+        persist()
+        DailyReminder.shared.sync(book, ask: on)
+    }
+
+    func setReminderTime(hour: Int, minute: Int) {
+        let nextHour = min(max(hour, 0), 23)
+        let nextMinute = min(max(minute, 0), 59)
+        guard book.reminderHour != nextHour || book.reminderMinute != nextMinute else { return }
+        book.reminderHour = nextHour
+        book.reminderMinute = nextMinute
         persist()
     }
 
@@ -129,10 +148,13 @@ final class BookStore: ObservableObject {
         persist()
     }
 
-    func addCategory(_ name: String) {
+    func addCategory(_ name: String, mark: String) {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, !book.categories.contains(trimmed) else { return }
         book.categories.append(trimmed)
+        if mark != "tag" {
+            book.categoryMarks[trimmed] = mark
+        }
         persist()
         flash(copy.categoryAdded(trimmed))
     }
@@ -140,6 +162,7 @@ final class BookStore: ObservableObject {
     func removeCategory(_ name: String) {
         guard book.categories.count > 1, let fallback = book.categories.first(where: { $0 != name }) else { return }
         book.categories.removeAll { $0 == name }
+        book.categoryMarks[name] = nil
         book.categoryCaps[name] = nil
         book.entries = book.entries.map { entry in
             var next = entry
@@ -168,16 +191,37 @@ final class BookStore: ObservableObject {
     }
 
     func persist() {
+        let hasOwn = book.entries.contains { !$0.id.hasPrefix("sample-") } || book.accounts.contains { !$0.id.hasPrefix("sample-") }
+        if hasOwn {
+            book.entries.removeAll { $0.id.hasPrefix("sample-") }
+            book.accounts.removeAll { $0.id.hasPrefix("sample-") }
+            book.sampleCleared = true
+        }
         let text = BookDocument.encode(book)
         try? text.write(to: fileURL, atomically: true, encoding: .utf8)
         BillReminder.shared.refresh(book: book)
+        DailyReminder.shared.sync(book, ask: false)
+    }
+
+    @discardableResult
+    static func labelSamples(_ book: inout Book) -> Bool {
+        guard !book.sampleCleared else { return false }
+        var changed = false
+        for index in book.entries.indices {
+            let entry = book.entries[index]
+            guard entry.id.hasPrefix("sample-") else { continue }
+            let title = SampleBook.displayTitle(id: entry.id, title: entry.title, locale: book.locale)
+            guard title != entry.title else { continue }
+            book.entries[index].title = title
+            changed = true
+        }
+        return changed
     }
 
     private static func onlySample(_ book: Book) -> Bool {
         !book.sampleCleared
-            && !book.accounts.isEmpty
             && !book.entries.isEmpty
-            && book.accounts.allSatisfy { $0.id.hasPrefix("sample-") }
             && book.entries.allSatisfy { $0.id.hasPrefix("sample-") }
+            && book.accounts.allSatisfy { $0.id.hasPrefix("sample-") }
     }
 }

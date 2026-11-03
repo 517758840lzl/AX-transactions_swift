@@ -237,6 +237,11 @@ struct DashboardStatsPanel: View {
     private func mixRow(_ name: String, amount: Double, share: Double) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
+                CategoryBadge(
+                    style: CategoryMarks.style(name: name, marks: store.book.categoryMarks),
+                    selected: false,
+                    side: 22
+                )
                 Text(name)
                     .font(.system(size: 15, weight: .bold))
                     .foregroundStyle(Palette.ink)

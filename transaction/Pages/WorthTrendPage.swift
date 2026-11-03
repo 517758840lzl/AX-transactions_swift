@@ -10,13 +10,15 @@ import SwiftUI
 struct WorthSummary: View {
     @ObservedObject var store: BookStore
     @ObservedObject var screen: LedgerScreen
+    var accounts: [Account]? = nil
     var opens: Bool
 
     var body: some View {
         let copy = store.copy
+        let listed = accounts ?? store.book.accounts
         let days = BookMath.worthDays(screen.worthSpan, entries: store.book.entries)
         let snapshot = BookMath.windowSnapshot(
-            accounts: store.book.accounts,
+            accounts: listed,
             entries: store.book.entries,
             days: days
         )

@@ -49,7 +49,7 @@ struct EntryFormView: View {
                 ChipWrap(names: suggestions, selected: title) { title = $0 }
             }
             FieldLabel(text: copy.category)
-            ChipWrap(names: store.book.categories, selected: category) { category = $0 }
+            CategoryGrid(names: store.book.categories, marks: store.book.categoryMarks, selected: category, rows: 4, addTitle: copy.add, onSelect: { category = $0 }, onAdd: { screen.open(.categoryForm(slot: "entry")) })
             if existing == nil {
                 checkRow(copy.splitMark, on: splitOn) {
                     withAnimation(LedgerScreen.fold) { splitOn.toggle() }
@@ -60,7 +60,7 @@ struct EntryFormView: View {
                     FieldLabel(text: copy.splitAmount)
                     LedgerField(text: $otherAmount, placeholder: "0.00", decimal: true)
                     FieldLabel(text: copy.category)
-                    ChipWrap(names: store.book.categories, selected: otherCategory) { otherCategory = $0 }
+                    CategoryGrid(names: store.book.categories, marks: store.book.categoryMarks, selected: otherCategory, rows: 4, addTitle: copy.add, onSelect: { otherCategory = $0 }, onAdd: { screen.open(.categoryForm(slot: "other")) })
                     checkRow(copy.shared, on: otherShared) { otherShared.toggle() }
                 }
                 .transition(.opacity)
@@ -69,7 +69,14 @@ struct EntryFormView: View {
             DateField(copy: copy, iso: $date, label: copy.date)
             FieldLabel(text: copy.account)
             if store.openAccounts(keeping: accountID).isEmpty {
-                LedgerField(text: $accountName, placeholder: copy.accountKindCash)
+                Text(copy.accountNone)
+                    .font(.system(size: 16))
+                    .foregroundStyle(Palette.muted)
+                    .padding(.horizontal, 14)
+                    .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
+                    .background(Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Palette.line, lineWidth: 1))
+                    .allowsHitTesting(false)
             } else {
                 accountField
             }
@@ -132,6 +139,14 @@ struct EntryFormView: View {
             }
         }
         .onAppear { fill(existing) }
+        .onChange(of: screen.categoryPickName) { picked in
+            guard !picked.isEmpty else { return }
+            if screen.categoryPickSlot == "entry" { category = picked }
+            if screen.categoryPickSlot == "other" { otherCategory = picked }
+            if screen.categoryPickSlot == "entry" || screen.categoryPickSlot == "other" {
+                screen.categoryPickName = ""
+            }
+        }
         .onChange(of: store.book.accounts.map(\.id).joined(separator: ",")) { _ in
             guard entryID == nil || accountID.isEmpty else { return }
             let own = store.openAccounts().filter { !$0.id.hasPrefix("sample-") }
@@ -221,7 +236,7 @@ struct EntryFormView: View {
     private var canSave: Bool {
         let value = LedgerMoney.cents(LedgerMoney.solve(amount.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0)
         let titled = !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        guard titled, value > 0 else { return false }
+        guard titled, value > 0, !accountID.isEmpty, !store.openAccounts(keeping: accountID).isEmpty else { return false }
         if splitOn, entryID == nil {
             let other = LedgerMoney.cents(LedgerMoney.solve(otherAmount.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0)
             return other > 0 && !otherCategory.isEmpty
@@ -248,14 +263,13 @@ struct EntryFormView: View {
             category = store.book.categories.first ?? store.copy.starterCategories[0]
             otherCategory = category
             accountID = store.openAccounts().first?.id ?? ""
-            if accountName.isEmpty { accountName = store.copy.accountKindCash }
+            accountName = store.openAccounts().first?.name ?? ""
         }
     }
 
     private func save(existing: Entry?) {
         guard canSave, let value = LedgerMoney.solve(amount.trimmingCharacters(in: .whitespacesAndNewlines)) else { return }
         let named = title.trimmingCharacters(in: .whitespacesAndNewlines)
-        let fresh = store.openAccounts(keeping: accountID).isEmpty ? accountName : nil
         let firstID = existing?.id ?? LedgerID.make()
         let splitting = splitOn && existing == nil
         let entry = Entry(
@@ -275,7 +289,7 @@ struct EntryFormView: View {
             goalId: direction == .out && !splitting ? goalId : "",
             splitGroup: splitting ? firstID : (existing?.splitGroup ?? "")
         )
-        let stored = store.saveEntry(entry, creatingCashNamed: fresh)
+        let stored = store.saveEntry(entry)
         if splitting, let other = LedgerMoney.solve(otherAmount.trimmingCharacters(in: .whitespacesAndNewlines)) {
             var second = stored
             second.id = LedgerID.make()
@@ -285,7 +299,7 @@ struct EntryFormView: View {
             second.goalId = ""
             second.refundOf = ""
             second.claim = direction == .out ? claim : .none
-            store.saveEntry(second, creatingCashNamed: nil)
+            store.saveEntry(second)
         }
         pageBack()
     }

@@ -23,6 +23,7 @@ final class BillReminder: NSObject, UNUserNotificationCenterDelegate {
     static let shared = BillReminder()
 
     private var pendingAccountID: String?
+    private var pendingEntry = false
     private var handled: Set<String> = []
     private var generation = 0
 
@@ -50,8 +51,19 @@ final class BillReminder: NSObject, UNUserNotificationCenterDelegate {
         return id
     }
 
+    func takePendingEntry() -> Bool {
+        let open = pendingEntry
+        pendingEntry = false
+        return open
+    }
+
     func remember(_ response: UNNotificationResponse) {
         let requestID = response.notification.request.identifier
+        if requestID == DailyReminder.identifier {
+            pendingEntry = true
+            NotificationCenter.default.post(name: .dailyLogOpened, object: nil)
+            return
+        }
         guard requestID.hasPrefix("bill-"),
               let accountID = response.notification.request.content.userInfo["accountId"] as? String,
               handled.insert(requestID).inserted else { return }

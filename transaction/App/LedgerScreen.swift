@@ -33,6 +33,8 @@ final class LedgerScreen: ObservableObject {
     @Published var worthSpan = WorthSpan.month
     /// "", "out", "in", or "other". Set when a stats row opens the list.
     @Published var feedKind = ""
+    @Published var categoryPickSlot = ""
+    @Published var categoryPickName = ""
 
     var windowDays: Int { BookMath.windowDays[min(max(windowIndex, 0), 1)] }
 

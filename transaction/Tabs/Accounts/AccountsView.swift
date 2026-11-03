@@ -14,10 +14,11 @@ struct AccountsView: View {
 
     var body: some View {
         let copy = store.copy
+        let own = store.book.accounts.filter { !$0.id.hasPrefix("sample-") }
         let days = BookMath.worthDays(screen.worthSpan, entries: store.book.entries)
         let priorISO = LedgerDay.adding(days: -1, to: BookMath.windowStart(days: days))
-        let empty = store.book.accounts.isEmpty
-        let showSample = !store.book.sampleCleared && store.book.accounts.contains { $0.id.hasPrefix("sample-") }
+        let empty = own.isEmpty
+        let showSample = !empty && !store.book.sampleCleared && store.book.accounts.contains { $0.id.hasPrefix("sample-") }
 
         PageScroll(bottom: 16) {
             HStack(alignment: .center, spacing: 0) {
@@ -25,16 +26,16 @@ struct AccountsView: View {
                     .font(.system(size: 26, weight: .bold))
                     .tracking(-0.4)
                     .foregroundStyle(Palette.ink)
-                Text("(\(store.book.accounts.count))")
+                Text("(\(own.count))")
                     .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(Palette.muted)
             }
             .lineLimit(1)
             .minimumScaleFactor(0.8)
             if empty {
-                Text(copy.accountsEmpty).font(.system(size: 15)).foregroundStyle(Palette.muted).padding(.top, 24)
+                AccountIntro(copy: copy)
             } else {
-                WorthSummary(store: store, screen: screen, opens: true)
+                WorthSummary(store: store, screen: screen, accounts: own, opens: true)
                 monthFlow(copy)
                 mix(copy, priorISO: priorISO)
                 ForEach(AccountKind.order, id: \.self) { kind in
@@ -44,14 +45,16 @@ struct AccountsView: View {
                 }
                 archivedGroup(copy)
             }
-            PillButton(title: copy.transfer, filled: false, faded: store.book.accounts.count < 2) {
-                if store.book.accounts.count < 2 {
+            PillButton(title: copy.transfer, filled: false, faded: own.count < 2) {
+                if own.count < 2 {
                     store.flash(copy.transferNeedTwo)
                 } else {
                     screen.open(.transfer)
                 }
             }
-            PillButton(title: copy.addAccount) { screen.open(.accountForm(id: nil, chooseKind: false)) }
+            PillButton(title: copy.addAccount) {
+                screen.open(.accountForm(id: nil, chooseKind: false))
+            }
             if showSample {
                 SampleBanner(title: copy.sampleBanner, actionTitle: copy.sampleClear) { store.clearSample() }
             }
@@ -62,14 +65,19 @@ struct AccountsView: View {
         screen.accountFocus == nil || screen.accountFocus == id
     }
 
+    private func ownAccounts() -> [Account] {
+        store.book.accounts.filter { !$0.id.hasPrefix("sample-") }
+    }
+
     @ViewBuilder
     private func monthFlow(_ copy: LedgerCopy) -> some View {
         let prefix = LedgerDay.yearMonth(Date())
-        let rows = store.book.entries.filter { $0.date.hasPrefix(prefix) && !$0.isTransfer }
+        let ownIds = Set(ownAccounts().map(\.id))
+        let rows = store.book.entries.filter { $0.date.hasPrefix(prefix) && !$0.isTransfer && ownIds.contains($0.accountId) }
         if !rows.isEmpty {
             let spent = LedgerMoney.cents(rows.filter(\.isOut).reduce(0) { $0 + $1.amount })
             let income = LedgerMoney.cents(rows.filter { !$0.isOut }.reduce(0) { $0 + $1.amount })
-            let accounts = store.book.accounts.filter { account in
+            let accounts = ownAccounts().filter { account in
                 !account.archived && rows.contains { $0.accountId == account.id }
             }
             VStack(alignment: .leading, spacing: 0) {
@@ -212,7 +220,7 @@ struct AccountsView: View {
     private func mixRows(priorISO: String, copy: LedgerCopy) -> [MixSlice] {
         var rows: [MixSlice] = []
         for kind in AccountKind.order {
-            let accounts = store.book.accounts.filter { $0.kind == kind && !$0.archived }
+            let accounts = ownAccounts().filter { $0.kind == kind && !$0.archived }
             if accounts.isEmpty { continue }
             let total = accounts.reduce(0) { sum, account in
                 sum + BookMath.accountNowAndPrior(account, entries: store.book.entries, priorISO: priorISO).now
@@ -224,7 +232,7 @@ struct AccountsView: View {
 
     @ViewBuilder
     private func accountGroup(_ kind: AccountKind, priorISO: String, copy: LedgerCopy) -> some View {
-        let accounts = store.book.accounts.filter { $0.kind == kind && !$0.archived }
+        let accounts = ownAccounts().filter { $0.kind == kind && !$0.archived }
         if !accounts.isEmpty {
             let toneBase = AccountKind.order.firstIndex(of: kind) ?? 0
             let rows = accounts.map { account -> (Account, Double, Double) in
@@ -262,7 +270,7 @@ struct AccountsView: View {
 
     @ViewBuilder
     private func archivedGroup(_ copy: LedgerCopy) -> some View {
-        let accounts = store.book.accounts.filter(\.archived)
+        let accounts = ownAccounts().filter(\.archived)
         if !accounts.isEmpty {
             VStack(alignment: .leading, spacing: 0) {
                 Text(copy.archivedTitle)
@@ -323,4 +331,60 @@ private struct MixSlice: Identifiable {
     var id: String
     var title: String
     var amount: Double
+}
+
+private struct AccountIntro: View {
+    var copy: LedgerCopy
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .center, spacing: 12) {
+                Image(systemName: "banknote")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Palette.ink)
+                    .frame(width: 36, height: 36)
+                    .background(Color.white, in: Circle())
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(copy.accountIntroTitle)
+                        .font(.system(size: 17, weight: .bold))
+                        .foregroundStyle(Palette.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text(copy.accountIntroBody)
+                        .font(.system(size: 13))
+                        .foregroundStyle(Palette.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Palette.pink.opacity(0.55), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            introRow("chart.bar.fill", copy.accountIntroSumTitle, copy.accountIntroSumBody)
+            introRow("lock.fill", copy.accountIntroLocalTitle, copy.accountIntroLocalBody)
+            introRow("creditcard", copy.accountIntroNameTitle, copy.accountIntroNameBody)
+        }
+        .padding(.top, 16)
+    }
+
+    private func introRow(_ symbol: String, _ title: String, _ body: String) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: symbol)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(Palette.ink)
+                .frame(width: 36, height: 36)
+                .background(Palette.wash, in: Circle())
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(Palette.ink)
+                Text(body)
+                    .font(.system(size: 14))
+                    .foregroundStyle(Palette.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.white, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Palette.line, lineWidth: 1))
+    }
 }

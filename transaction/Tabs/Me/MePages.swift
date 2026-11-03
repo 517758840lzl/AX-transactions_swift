@@ -10,12 +10,11 @@ import SwiftUI
 
 struct CategoryManageView: View {
     @ObservedObject var store: BookStore
+    @ObservedObject var screen: LedgerScreen
     @State private var editing = false
-    @State private var newCategory = ""
 
     var body: some View {
         let copy = store.copy
-        let pending = newCategory.trimmingCharacters(in: .whitespacesAndNewlines)
         FormPage(title: copy.categories, back: copy.back) {
             HStack {
                 Spacer()
@@ -23,23 +22,15 @@ struct CategoryManageView: View {
                     .font(.system(size: 15, weight: .bold))
                     .foregroundStyle(Palette.ink)
             }
-            FlowChips(names: store.book.categories, editing: editing, canRemove: store.book.categories.count > 1) { name in
-                store.removeCategory(name)
-            }
-            HStack(spacing: 8) {
-                LedgerField(text: $newCategory, placeholder: copy.newCategory)
-                Button(copy.add) {
-                    store.addCategory(pending)
-                    newCategory = ""
-                }
-                .font(.system(size: 15, weight: .bold))
-                .foregroundStyle(Palette.ink)
-                .padding(.horizontal, 18)
-                .frame(minHeight: 48)
-                .background(Palette.pink, in: Capsule())
-                .opacity(pending.isEmpty ? 0.45 : 1)
-                .disabled(pending.isEmpty)
-            }
+            CategoryGrid(
+                names: store.book.categories,
+                marks: store.book.categoryMarks,
+                editing: editing,
+                canRemove: store.book.categories.count > 1,
+                addTitle: copy.add,
+                onRemove: { store.removeCategory($0) },
+                onAdd: { screen.open(.categoryForm(slot: "manage")) }
+            )
         }
     }
 }

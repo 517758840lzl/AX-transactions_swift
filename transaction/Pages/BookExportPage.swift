@@ -50,6 +50,34 @@ struct BookExportPage: View {
                 }
             }
             .buttonStyle(.plain)
+            Button {
+                let filename = "\(BundleTitle.current).xlsx"
+                ShareSheet.present(data: ExcelBook.data(book: book, copy: copy), filename: filename)
+            } label: {
+                PanelCard {
+                    HStack(spacing: 14) {
+                        Image(systemName: "tablecells")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(Palette.ink)
+                            .frame(width: 44, height: 44)
+                            .background(Palette.pink, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(copy.exportExcel)
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundStyle(Palette.ink)
+                            Text(copy.dataExcelNote)
+                                .font(.system(size: 13))
+                                .foregroundStyle(Palette.muted)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        Spacer(minLength: 8)
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(Palette.faint)
+                    }
+                }
+            }
+            .buttonStyle(.plain)
         }
     }
 

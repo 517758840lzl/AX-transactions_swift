@@ -21,7 +21,7 @@ extension BookMath {
     static func titleSuggestions(_ entries: [Entry], localeID: String, transferCategory: String) -> [String] {
         var counts: [String: Int] = [:]
         for entry in entries where entry.category != transferCategory {
-            let title = entry.title.trimmingCharacters(in: .whitespacesAndNewlines)
+            let title = SampleBook.bareTitle(entry.title).trimmingCharacters(in: .whitespacesAndNewlines)
             if !title.isEmpty { counts[title, default: 0] += 1 }
         }
         let locale = Locale(identifier: localeID)

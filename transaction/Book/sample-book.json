@@ -1,14 +1,12 @@
 {
   "locale": "en",
   "sampleCleared": false,
-  "categories": ["Dining", "Transit", "Daily", "Housing", "Income", "Subscriptions", "Entertainment"],
-  "accounts": [
-    { "id": "sample-cash", "name": "Cash", "opening": 100, "kind": "cash" },
-    { "id": "sample-card", "name": "Visa", "opening": 200, "kind": "card" }
-  ],
+  "presetStamp": 2,
+  "categories": ["Dining", "Transit", "Shopping", "Daily", "Housing", "Snacks", "Clothes", "Entertainment", "Social", "Pets", "Kids", "Sports", "Medical", "Phone", "Education", "Subscriptions", "Income", "Travel", "Beauty"],
+  "accounts": [],
   "entries": [
-    { "id": "sample-lunch", "title": "Lunch", "amount": 18.4, "direction": "out", "category": "Dining", "ago": 0, "accountId": "sample-cash", "checked": false, "shared": false },
-    { "id": "sample-coffee", "title": "Coffee", "amount": 6.5, "direction": "out", "category": "Dining", "ago": 1, "accountId": "sample-card", "checked": true, "shared": true },
-    { "id": "sample-metro", "title": "Metro", "amount": 2.75, "direction": "out", "category": "Transit", "ago": 0, "accountId": "sample-cash", "checked": true, "shared": false }
+    { "id": "sample-lunch", "title": "Lunch", "amount": 18.4, "direction": "out", "category": "Dining", "ago": 0, "accountId": "sample-show", "checked": false, "shared": false },
+    { "id": "sample-coffee", "title": "Coffee", "amount": 6.5, "direction": "out", "category": "Dining", "ago": 1, "accountId": "sample-show", "checked": true, "shared": true },
+    { "id": "sample-metro", "title": "Metro", "amount": 2.75, "direction": "out", "category": "Transit", "ago": 0, "accountId": "sample-show", "checked": true, "shared": false }
   ]
 }

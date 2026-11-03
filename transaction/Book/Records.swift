@@ -125,8 +125,13 @@ struct Book {
     var goals: [SavingGoal]
     var hideAmounts: Bool
     var lockOnOpen: Bool
+    var dailyReminder: Bool
+    var reminderHour: Int
+    var reminderMinute: Int
     var removed: [RemovedEntry]
     var sampleCleared: Bool
+    var categoryMarks: [String: String]
+    var presetStamp: Int
 
     var mark: String { currency.mark }
 
@@ -146,8 +151,13 @@ struct Book {
             goals: [],
             hideAmounts: false,
             lockOnOpen: false,
+            dailyReminder: false,
+            reminderHour: 21,
+            reminderMinute: 30,
             removed: [],
-            sampleCleared: false
+            sampleCleared: false,
+            categoryMarks: [:],
+            presetStamp: 2
         )
     }
 }

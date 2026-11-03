@@ -24,8 +24,5 @@ struct PageScroll<Content: View>: View {
             .immediateScroll()
         }
         .background(Palette.stage)
-        .keyboardBar(keyboardDone)
     }
-
-    @Environment(\.keyboardDone) private var keyboardDone
 }

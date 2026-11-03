@@ -48,20 +48,9 @@ extension BookStore {
     }
 
     @discardableResult
-    func saveEntry(_ entry: Entry, creatingCashNamed name: String?) -> Entry {
+    func saveEntry(_ entry: Entry) -> Entry {
         var next = entry
-        if next.accountId.isEmpty {
-            let account = Account(
-                id: LedgerID.make(),
-                name: (name?.trimmingCharacters(in: .whitespacesAndNewlines)).flatMap { $0.isEmpty ? nil : $0 } ?? copy.accountKindCash,
-                opening: 0,
-                kind: .cash,
-                countsInWorth: true
-            )
-            book.accounts.append(account)
-            next.accountId = account.id
-            next.accountName = account.name
-        } else if let account = book.accounts.first(where: { $0.id == next.accountId }) {
+        if let account = book.accounts.first(where: { $0.id == next.accountId }) {
             next.accountName = account.name
         }
         next.amount = LedgerMoney.cents(next.amount)
@@ -117,7 +106,7 @@ extension BookStore {
             claim: .none,
             refundOf: source.id
         )
-        saveEntry(back, creatingCashNamed: nil)
+        saveEntry(back)
     }
 
     func depositTowardGoal(_ goal: SavingGoal, from: Account, to: Account, amount: Double, date: String) {
@@ -308,7 +297,8 @@ extension BookStore {
     }
 
     func importDocument(_ raw: String) -> Bool {
-        guard let parsed = BookDocument.decode(raw) else { return false }
+        guard var parsed = BookDocument.decode(raw) else { return false }
+        _ = CategoryMarks.adopt(&parsed)
         book = parsed
         persist()
         return true

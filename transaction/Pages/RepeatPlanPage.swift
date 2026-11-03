@@ -10,6 +10,7 @@ import SwiftUI
 
 struct RepeatPlanFormView: View {
     @ObservedObject var store: BookStore
+    @ObservedObject var screen: LedgerScreen
     var planID: String?
     @Environment(\.pageBack) private var pageBack
     @State private var direction = Direction.out
@@ -34,7 +35,7 @@ struct RepeatPlanFormView: View {
             FieldLabel(text: copy.name)
             LedgerField(text: $title, placeholder: copy.namePh)
             FieldLabel(text: copy.category)
-            ChipWrap(names: store.book.categories, selected: category) { category = $0 }
+            CategoryGrid(names: store.book.categories, marks: store.book.categoryMarks, selected: category, rows: 4, addTitle: copy.add, onSelect: { category = $0 }, onAdd: { screen.open(.categoryForm(slot: "plan")) })
             FieldLabel(text: copy.repeatDay)
             LedgerField(text: $day, placeholder: "1", decimal: true)
             FieldLabel(text: copy.account)
@@ -53,6 +54,11 @@ struct RepeatPlanFormView: View {
             }
         }
         .onAppear { fill(existing) }
+        .onChange(of: screen.categoryPickName) { picked in
+            guard !picked.isEmpty, screen.categoryPickSlot == "plan" else { return }
+            category = picked
+            screen.categoryPickName = ""
+        }
     }
 
     private var accountField: some View {

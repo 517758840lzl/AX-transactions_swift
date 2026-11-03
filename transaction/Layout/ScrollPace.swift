@@ -21,17 +21,6 @@ extension View {
         background(ScrollTouch())
     }
 
-    /// Decimal pads have no return key, so the bar closes the keyboard.
-    func keyboardBar(_ title: String) -> some View {
-        toolbar {
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer()
-                Button(title) {
-                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                }
-            }
-        }
-    }
 }
 
 private struct ScrollTouch: UIViewRepresentable {

@@ -84,12 +84,21 @@ struct LedgerCopy {
     var accounts: String
     var accountCountFormat: String
     var accountsEmpty: String
+    var accountIntroTitle: String
+    var accountIntroBody: String
+    var accountIntroSumTitle: String
+    var accountIntroSumBody: String
+    var accountIntroLocalTitle: String
+    var accountIntroLocalBody: String
+    var accountIntroNameTitle: String
+    var accountIntroNameBody: String
     var accountKindBank: String
     var accountKindCash: String
     var accountKindCard: String
     var accountKindOther: String
     var addAccount: String
     var accountGuide: String
+    var accountNone: String
     var editAccount: String
     var newAccount: String
     var accountName: String
@@ -164,12 +173,21 @@ struct LedgerCopy {
     var privacy: String
     var language: String
     var currency: String
+    var reminderTitle: String
+    var reminderDaily: String
+    var reminderTime: String
+    var reminderNote: String
+    var reminderDenied: String
+    var reminderOff: String
+    var reminderPing: String
     var streakDays: String
     var streakToday: String
     var streakNone: String
     var privacyTitle: String
     var exportBackup: String
     var dataExportNote: String
+    var exportExcel: String
+    var dataExcelNote: String
     var exportBook: String
     var dataManage: String
     var clearBook: String
@@ -501,8 +519,12 @@ private let chinese = LedgerCopy(
     scopeMine: "只看我的", scopeFamily: "家庭", time: "时间", today: "今日", thisMonth: "本月",
     customRange: "自定义", rangeStart: "开始", rangeEnd: "结束", rangeTo: "至",
     accounts: "账户", accountCountFormat: "{count} 个", accountsEmpty: "添加第一个账户，填入真实余额。",
+    accountIntroTitle: "写下现在有多少钱", accountIntroBody: "把各处的钱记在一起，名字自己起。",
+    accountIntroSumTitle: "自动汇总", accountIntroSumBody: "记下的支出和收入会更新对应账户余额，净资产跟着变。",
+    accountIntroLocalTitle: "只在这台手机", accountIntroLocalBody: "数据只存在这台手机，不上传，也不收集任何个人信息。",
+    accountIntroNameTitle: "不用填卡号", accountIntroNameBody: "现金、银行卡、信用卡都可以，自己起名即可，不用填账号。",
     accountKindBank: "银行卡", accountKindCash: "现金", accountKindCard: "信用卡", accountKindOther: "其他",
-    addAccount: "添加账户", accountGuide: "还没有自己的账户，去添加", editAccount: "编辑账户", newAccount: "添加账户",
+    addAccount: "添加账户", accountGuide: "还没有自己的账户，去添加", accountNone: "没有", editAccount: "编辑账户", newAccount: "添加账户",
     accountName: "账户名称", accountNamePh: "Visa、现金、工资卡", accountKindLabel: "账户类型",
     deleteAccount: "删除账户及流水", accountBalance: "当前余额", accountDetailActivity: "查看流水", filterAccount: "账户",
     holdingsStock: "股票", holdingsFund: "基金", holdingsLabel: "持仓", holdingKindStock: "股票", holdingKindEtf: "ETF", holdingKindFund: "基金",
@@ -523,8 +545,14 @@ private let chinese = LedgerCopy(
     weekdays: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
     calendarWeek: ["日", "一", "二", "三", "四", "五", "六"],
     me: "我的", meLedger: "账本", meDisplay: "显示", meData: "数据", categories: "分类", profileHint: "点击填写昵称", privacy: "隐私协议", language: "语言", currency: "货币",
+    reminderTitle: "提醒", reminderDaily: "每天提醒记账", reminderTime: "时间",
+    reminderNote: "到点后由系统发通知，点开进入记一笔。",
+    reminderDenied: "通知权限未开启，请在系统设置中允许 {name} 发送提醒。",
+    reminderOff: "关闭", reminderPing: "该记账了",
     streakDays: "连续记账", streakToday: "今日已记", streakNone: "今天还没记", privacyTitle: "隐私协议",
-    exportBackup: "导出 JSON 备份", dataExportNote: "账户、流水和预算都会写进这一份 JSON。", exportBook: "导出账本", dataManage: "数据管理", clearBook: "清除数据",
+    exportBackup: "导出 JSON 备份", dataExportNote: "账户、流水和预算都会写进这一份 JSON。",
+    exportExcel: "导出 Excel", dataExcelNote: "流水、账户和预算会写成表格，可以用 Excel 打开。",
+    exportBook: "导出账本", dataManage: "数据管理", clearBook: "清除数据",
     clearBookConfirm: "清除后，账户、流水和预算都会去掉，并且不会再填回示例。", clearBookDone: "账本数据已清除",
     importData: "导入账本", importPaste: "粘贴导出的 JSON", importDone: "导入成功", importInvalid: "JSON 无效，请检查内容",
     importConfirm: "这份文件会换掉现在的账本，包括账户和流水。",
@@ -538,7 +566,7 @@ private let chinese = LedgerCopy(
     monthTitleFormat: "{month}月{overview}", monthUnitFormat: "{month}月", monthDayFormat: "{month}月{day}日",
     calendarTitleFormat: "{year}年{month}月", monthPrevious: "上个月", monthNext: "下个月",
     categoryAddedFormat: "已添加分类：{name}",
-    starterCategories: ["餐饮", "交通", "日用", "居住", "收入", "订阅", "娱乐"],
+    starterCategories: ["餐饮", "交通", "购物", "日用", "居住", "零食", "服饰", "娱乐", "社交", "宠物", "养娃", "运动", "医疗", "通讯", "教育", "订阅", "收入", "旅行", "美容"],
     categoryHintAmounts: ["餐饮": 1800, "交通": 400, "日用": 600, "居住": 3200, "收入": 8000, "订阅": 200, "娱乐": 500],
     cardStatementDay: "出账日", cardDueDay: "还款日", cardBill: "本期账单",
     refundMark: "退款", refundDone: "已退款", refundBackFormat: "{title} 退款",
@@ -593,8 +621,12 @@ private let englishCopy = LedgerCopy(
     scopeMine: "Mine only", scopeFamily: "Household", time: "Time", today: "Today", thisMonth: "This month",
     customRange: "Custom", rangeStart: "Start", rangeEnd: "End", rangeTo: "to",
     accounts: "Accounts", accountCountFormat: "{count}", accountsEmpty: "Add your first account with the real balance.",
+    accountIntroTitle: "Write down what you have", accountIntroBody: "Bring each balance together. You choose the name.",
+    accountIntroSumTitle: "Balances follow the book", accountIntroSumBody: "Each expense and income updates that account. Net worth moves with it.",
+    accountIntroLocalTitle: "Stays on this phone", accountIntroLocalBody: "The book stays on this phone. Nothing is uploaded, and no personal information is collected.",
+    accountIntroNameTitle: "No card number", accountIntroNameBody: "Cash, bank cards, and credit cards are fine. Name them yourself. No account number.",
     accountKindBank: "Bank", accountKindCash: "Cash", accountKindCard: "Credit", accountKindOther: "Other",
-    addAccount: "Add account", accountGuide: "No account of your own yet. Add one", editAccount: "Edit account", newAccount: "Add account",
+    addAccount: "Add account", accountGuide: "No account of your own yet. Add one", accountNone: "None", editAccount: "Edit account", newAccount: "Add account",
     accountName: "Account name", accountNamePh: "Visa, Cash, Payroll", accountKindLabel: "Account type",
     deleteAccount: "Delete account & transactions", accountBalance: "Current balance",
     accountDetailActivity: "View activity", filterAccount: "Account",
@@ -619,8 +651,14 @@ private let englishCopy = LedgerCopy(
     calendarWeek: ["S", "M", "T", "W", "T", "F", "S"],
     me: "Me", meLedger: "Book", meDisplay: "Display", meData: "Data", categories: "Categories", profileHint: "Tap to set nickname", privacy: "Privacy",
     language: "Language", currency: "Currency",
+    reminderTitle: "Reminders", reminderDaily: "Daily reminder", reminderTime: "Time",
+    reminderNote: "The system notifies you at this time. Tap it to add a transaction.",
+    reminderDenied: "Notifications are off. Allow {name} to send reminders in Settings.",
+    reminderOff: "Off", reminderPing: "Time to log a transaction",
     streakDays: "Streak", streakToday: "Logged today", streakNone: "Not logged today", privacyTitle: "Privacy",
-    exportBackup: "Export JSON backup", dataExportNote: "Accounts, activity and budgets go into this JSON.", exportBook: "Export book", dataManage: "Data", clearBook: "Clear data",
+    exportBackup: "Export JSON backup", dataExportNote: "Accounts, activity and budgets go into this JSON.",
+    exportExcel: "Export Excel", dataExcelNote: "Activity, accounts and budgets become a spreadsheet Excel can open.",
+    exportBook: "Export book", dataManage: "Data", clearBook: "Clear data",
     clearBookConfirm: "Accounts, transactions and budgets will be removed, and the sample book will not come back.",
     clearBookDone: "Book data cleared",
     importData: "Import book", importPaste: "Paste exported JSON", importDone: "Import complete",
@@ -638,7 +676,7 @@ private let englishCopy = LedgerCopy(
     monthTitleFormat: "{monthName} {overview}", monthUnitFormat: "{monthName}", monthDayFormat: "{monthName} {day}",
     calendarTitleFormat: "{monthName} {year}", monthPrevious: "Previous month", monthNext: "Next month",
     categoryAddedFormat: "Added category: {name}",
-    starterCategories: ["Dining", "Transit", "Daily", "Housing", "Income", "Subscriptions", "Entertainment"],
+    starterCategories: ["Dining", "Transit", "Shopping", "Daily", "Housing", "Snacks", "Clothes", "Entertainment", "Social", "Pets", "Kids", "Sports", "Medical", "Phone", "Education", "Subscriptions", "Income", "Travel", "Beauty"],
     categoryHintAmounts: ["Dining": 1800, "Transit": 400, "Daily": 600, "Housing": 3200, "Income": 8000, "Subscriptions": 200, "Entertainment": 500],
     cardStatementDay: "Statement day", cardDueDay: "Due day", cardBill: "This statement",
     refundMark: "Refund", refundDone: "Refunded", refundBackFormat: "{title} refund",

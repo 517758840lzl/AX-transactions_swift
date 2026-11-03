@@ -12,6 +12,16 @@ enum ShareSheet {
     static func present(_ text: String) {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(BundleTitle.current).json")
         try? text.write(to: url, atomically: true, encoding: .utf8)
+        present(url)
+    }
+
+    static func present(data: Data, filename: String) {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
+        guard (try? data.write(to: url, options: .atomic)) != nil else { return }
+        present(url)
+    }
+
+    private static func present(_ url: URL) {
         let controller = UIActivityViewController(activityItems: [url], applicationActivities: nil)
         guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let root = scene.windows.first(where: \.isKeyWindow)?.rootViewController else { return }

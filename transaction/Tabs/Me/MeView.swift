@@ -75,6 +75,8 @@ struct MeView: View {
                 settingsRow(copy.language, trailing: languageName, opens: true) { screen.open(.language) }
                 divider
                 settingsRow(copy.currency, trailing: "\(store.book.currency.rawValue) \(store.book.mark)", opens: true) { screen.open(.currency) }
+                divider
+                settingsRow(copy.reminderTitle, trailing: reminderText(copy), opens: true) { screen.open(.reminder) }
             }
 
             PanelCard(title: copy.meData, titleSize: 13, card: true) {
@@ -130,6 +132,11 @@ struct MeView: View {
 
     private var divider: some View {
         Rectangle().fill(Palette.line.opacity(0.95)).frame(height: 1).padding(.vertical, 4)
+    }
+
+    private func reminderText(_ copy: LedgerCopy) -> String {
+        guard store.book.dailyReminder else { return copy.reminderOff }
+        return String(format: "%02d:%02d", store.book.reminderHour, store.book.reminderMinute)
     }
 
     private func budgetText(_ copy: LedgerCopy) -> String {
