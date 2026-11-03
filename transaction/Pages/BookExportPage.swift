@@ -50,9 +50,11 @@ struct BookExportPage: View {
                 }
             }
             .buttonStyle(.plain)
+            .contentShape(Rectangle())
             Button {
+                let payload = ExcelBook.data(book: book, copy: copy)
                 let filename = "\(BundleTitle.current).xlsx"
-                ShareSheet.present(data: ExcelBook.data(book: book, copy: copy), filename: filename)
+                ShareSheet.present(data: payload, filename: filename)
             } label: {
                 PanelCard {
                     HStack(spacing: 14) {
@@ -78,6 +80,8 @@ struct BookExportPage: View {
                 }
             }
             .buttonStyle(.plain)
+            .contentShape(Rectangle())
+            .accessibilityLabel(copy.exportExcel)
         }
     }
 

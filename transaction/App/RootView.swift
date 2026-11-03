@@ -25,20 +25,17 @@ struct RootView: View {
     var body: some View {
         let copy = store.copy
         ZStack(alignment: .bottomTrailing) {
-                VStack(spacing: 0) {
-                    ZStack {
-                        Group {
-                            switch screen.tab {
-                            case 0: DashboardView(store: store, screen: screen)
-                            case 1: TransactionsView(store: store, screen: screen)
-                            case 2: AccountsView(store: store, screen: screen)
-                            default: MeView(store: store, screen: screen)
-                            }
-                        }
-                        .id(screen.tab)
-                        .transition(.opacity)
+                Group {
+                    switch screen.tab {
+                    case 0: DashboardView(store: store, screen: screen)
+                    case 1: TransactionsView(store: store, screen: screen)
+                    case 2: AccountsView(store: store, screen: screen)
+                    default: MeView(store: store, screen: screen)
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                .id(screen.tab)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .safeAreaInset(edge: .bottom, spacing: 0) {
                     tabBar(copy)
                 }
                 if screen.path.isEmpty, screen.tab == 0 || screen.tab == 1 {
@@ -261,6 +258,6 @@ struct RootView: View {
         }
         .padding(.horizontal, 10)
         .padding(.bottom, 6)
-        .background(Color.white)
+        .background(Color.white.ignoresSafeArea(edges: .bottom))
     }
 }

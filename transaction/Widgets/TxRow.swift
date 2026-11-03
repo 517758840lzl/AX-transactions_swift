@@ -71,8 +71,10 @@ struct TxRow: View {
     }
 
     private var meta: String {
-        var text = "\(entry.category) · \(entry.accountName)"
-        if entry.shared { text += " · \(copy.familyTag)" }
-        return text
+        var parts = [entry.category]
+        let account = entry.accountName.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !account.isEmpty { parts.append(account) }
+        if entry.shared { parts.append(copy.familyTag) }
+        return parts.joined(separator: " · ")
     }
 }

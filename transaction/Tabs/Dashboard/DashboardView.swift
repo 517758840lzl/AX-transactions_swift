@@ -18,7 +18,7 @@ struct DashboardView: View {
         let queue = BookMath.reviewQueue(scoped)
         let showSample = !store.book.sampleCleared && store.book.entries.contains { $0.id.hasPrefix("sample-") }
 
-        PageScroll(bottom: 88) {
+        PageScroll(bottom: 128) {
             HStack(spacing: 8) {
                 Text(copy.monthTitle())
                     .font(.system(size: 26, weight: .bold))

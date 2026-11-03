@@ -33,7 +33,7 @@ struct EntryFormView: View {
     var body: some View {
         let copy = store.copy
         let existing = store.book.entries.first { $0.id == entryID }
-        let suggestions = BookMath.titleSuggestions(store.book.entries, localeID: copy.localeID, transferCategory: copy.transferCategory)
+        let suggestions = BookMath.titleSuggestions(store.book.entries, locale: store.book.locale, transferCategory: copy.transferCategory)
         FormPage(title: existing == nil ? copy.entryNew : copy.entryEdit, back: copy.back) {
             ChoiceRow(labels: [copy.periodSpend, copy.monthIncome], index: direction == .out ? 0 : 1) { index in
                 withAnimation(LedgerScreen.fold) {
@@ -236,7 +236,9 @@ struct EntryFormView: View {
     private var canSave: Bool {
         let value = LedgerMoney.cents(LedgerMoney.solve(amount.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0)
         let titled = !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        guard titled, value > 0, !accountID.isEmpty, !store.openAccounts(keeping: accountID).isEmpty else { return false }
+        let ownAccount = store.openAccounts(keeping: accountID).contains { $0.id == accountID && !$0.id.hasPrefix("sample-") }
+        let editing = entryID != nil
+        guard titled, value > 0, ownAccount || editing else { return false }
         if splitOn, entryID == nil {
             let other = LedgerMoney.cents(LedgerMoney.solve(otherAmount.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0)
             return other > 0 && !otherCategory.isEmpty

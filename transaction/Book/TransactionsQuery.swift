@@ -18,19 +18,24 @@ extension BookMath {
         return map
     }
     /// Frequent titles first. Generated transfer labels are not memos.
-    static func titleSuggestions(_ entries: [Entry], localeID: String, transferCategory: String) -> [String] {
+    static func titleSuggestions(_ entries: [Entry], locale: BookLocale, transferCategory: String) -> [String] {
         var counts: [String: Int] = [:]
         for entry in entries where entry.category != transferCategory {
             let title = SampleBook.bareTitle(entry.title).trimmingCharacters(in: .whitespacesAndNewlines)
             if !title.isEmpty { counts[title, default: 0] += 1 }
         }
-        let locale = Locale(identifier: localeID)
-        return counts.keys.sorted { lhs, rhs in
+        let sorting = Locale(identifier: locale.rawValue)
+        var titles = counts.keys.sorted { lhs, rhs in
             let left = counts[lhs] ?? 0
             let right = counts[rhs] ?? 0
             if left != right { return left > right }
-            return lhs.compare(rhs, locale: locale) == .orderedAscending
-        }.prefix(6).map { $0 }
+            return lhs.compare(rhs, locale: sorting) == .orderedAscending
+        }
+        titles = Array(titles.prefix(6))
+        for title in SampleBook.starterTitles(locale) where !titles.contains(title) {
+            titles.append(title)
+        }
+        return titles
     }
     static func streakDays(_ entries: [Entry], now: Date = Date()) -> Int {
         let days = Set(entries.map(\.date))
