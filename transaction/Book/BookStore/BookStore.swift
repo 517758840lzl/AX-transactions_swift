@@ -55,21 +55,16 @@ final class BookStore: ObservableObject {
             book = decoded
             carried = true
         } else {
-            book = SampleBook.seed()
+            book = Book.empty()
+            book.sampleCleared = true
             carried = true
         }
-        if Self.onlySample(book) {
-            let seeded = SampleBook.seed()
-            let same = book.categories == seeded.categories
-                && book.accounts.map(\.name) == seeded.accounts.map(\.name)
-                && book.entries.map(\.id) == seeded.entries.map(\.id)
-                && book.entries.count == seeded.entries.count
-            if !same {
-                book.accounts = seeded.accounts
-                book.entries = seeded.entries
-                book.categories = seeded.categories
-                shortened = true
-            }
+        let hadSample = book.entries.contains { $0.id.hasPrefix("sample-") } || book.accounts.contains { $0.id.hasPrefix("sample-") }
+        if hadSample {
+            book.entries.removeAll { $0.id.hasPrefix("sample-") }
+            book.accounts.removeAll { $0.id.hasPrefix("sample-") }
+            book.sampleCleared = true
+            shortened = true
         }
         let adopted = CategoryMarks.adopt(&book)
         let labeled = Self.labelSamples(&book)
@@ -229,12 +224,5 @@ final class BookStore: ObservableObject {
             changed = true
         }
         return changed
-    }
-
-    private static func onlySample(_ book: Book) -> Bool {
-        !book.sampleCleared
-            && !book.entries.isEmpty
-            && book.entries.allSatisfy { $0.id.hasPrefix("sample-") }
-            && book.accounts.allSatisfy { $0.id.hasPrefix("sample-") }
     }
 }

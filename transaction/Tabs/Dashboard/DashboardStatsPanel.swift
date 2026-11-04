@@ -34,9 +34,8 @@ struct DashboardStatsPanel: View {
         let span = periodBounds(shown)
 
         VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 22) {
-                spanTab(copy.statsMonthly, on: !annual) { annual = false }
-                spanTab(copy.statsAnnual, on: annual) { annual = true }
+            SegmentControl(labels: [copy.statsMonthly, copy.statsAnnual], index: annual ? 1 : 0) { index in
+                annual = index == 1
             }
             Group {
                 if kindsOverflow(copy) {
@@ -57,18 +56,20 @@ struct DashboardStatsPanel: View {
             Button {
                 screen.openStats(from: span.start, to: span.end, kind: kind, category: nil, title: nil)
             } label: {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(copy.statsCount(window.count, kind: kindName))
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    MoneyText(value: total, mark: store.book.mark, size: 24, color: total > 0 ? Palette.ink : Palette.muted)
+                        .fixedSize()
+                    Text("(\(copy.statsCount(window.count, kind: kindName)))")
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(Palette.muted)
-                    MoneyText(value: total, mark: store.book.mark, size: 36, color: total > 0 ? Palette.ink : Palette.muted)
+                        .lineLimit(2)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .buttonStyle(.plain)
 
             Text(copy.statsCompare(annual: annual, kind: kindName))
-                .font(.system(size: 17, weight: total > 0 ? .bold : .regular))
+                .font(.system(size: 13, weight: total > 0 ? .bold : .regular))
                 .foregroundStyle(total > 0 ? Palette.ink : Palette.muted)
             HStack(alignment: .bottom, spacing: 6) {
                 ForEach(bars, id: \.self) { key in
@@ -76,13 +77,14 @@ struct DashboardStatsPanel: View {
                 }
             }
             .frame(height: 168, alignment: .bottom)
-
-            Text(copy.statsCompose(when, kind: kindName))
-                .font(.system(size: 17, weight: total > 0 ? .bold : .regular))
-                .foregroundStyle(total > 0 ? Palette.ink : Palette.muted)
-            if mix.isEmpty {
-                Text(copy.statsEmpty).font(.system(size: 14)).foregroundStyle(Palette.muted)
+            if total == 0 {
+                Text(copy.statsEmpty)
+                    .font(.system(size: 14))
+                    .foregroundStyle(Palette.muted)
             } else {
+                Text(copy.statsCompose(when, kind: kindName))
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundStyle(Palette.ink)
                 let top = mix.map(\.amount).max() ?? 1
                 ForEach(Array(mix.enumerated()), id: \.element.name) { _, item in
                     Button {
@@ -92,14 +94,10 @@ struct DashboardStatsPanel: View {
                     }
                     .buttonStyle(.plain)
                 }
-            }
 
-            Text(copy.statsRank(when, kind: kindName))
-                .font(.system(size: 17, weight: total > 0 ? .bold : .regular))
-                .foregroundStyle(total > 0 ? Palette.ink : Palette.muted)
-            if rank.isEmpty {
-                Text(copy.statsEmpty).font(.system(size: 14)).foregroundStyle(Palette.muted)
-            } else {
+                Text(copy.statsRank(when, kind: kindName))
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundStyle(Palette.ink)
                 ForEach(Array(rank.enumerated()), id: \.element.name) { index, item in
                     Button {
                         screen.openStats(from: span.start, to: span.end, kind: kind, category: nil, title: item.name)
@@ -125,7 +123,7 @@ struct DashboardStatsPanel: View {
                 cursor = stepped(shown, by: -1, current: current)
             }
             Text(annual ? String(shown.prefix(4)) : shown.replacingOccurrences(of: "-", with: "/"))
-                .font(.system(size: 14, weight: .bold))
+                .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(Palette.ink)
                 .frame(minWidth: annual ? 52 : 64)
             stepButton(copy.statsNext, system: "chevron.right", enabled: canStep(shown, by: 1, current: current)) {
@@ -151,7 +149,7 @@ struct DashboardStatsPanel: View {
     /// Short labels stay with the month. Longer ones wrap whole, never clipped.
     private func kindsOverflow(_ copy: LedgerCopy) -> Bool {
         let width = toolsWidth > 0 ? toolsWidth : UIScreen.main.bounds.width - 52
-        let font = UIFont.systemFont(ofSize: 13, weight: .bold)
+        let font = UIFont.systemFont(ofSize: 13, weight: .semibold)
         let pills = [copy.statsOut, copy.statsIn, copy.statsOther].reduce(CGFloat(0)) { total, label in
             total + ceil((label as NSString).size(withAttributes: [.font: font]).width) + 26
         }
@@ -159,25 +157,12 @@ struct DashboardStatsPanel: View {
         return date + 8 + pills + 16 > width
     }
 
-    private func spanTab(_ title: String, on: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(title)
-                .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(on ? Palette.ink : Palette.faint)
-                .padding(.bottom, 8)
-                .overlay(alignment: .bottom) {
-                    Rectangle().fill(on ? Palette.pink : Color.clear).frame(height: 2)
-                }
-        }
-        .buttonStyle(.plain)
-    }
-
     private func kindTab(_ title: String, id: String) -> some View {
         let on = kind == id
         return Button { kind = id } label: {
             Text(title)
-                .font(.system(size: 13, weight: .bold))
-                .foregroundStyle(Palette.ink)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(on ? Palette.ink : Palette.muted)
                 .lineLimit(1)
                 .fixedSize(horizontal: true, vertical: false)
                 .padding(.horizontal, 12)
@@ -192,7 +177,7 @@ struct DashboardStatsPanel: View {
     private func stepButton(_ label: String, system: String, enabled: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: system)
-                .font(.system(size: 13, weight: .bold))
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(enabled ? Palette.ink : Palette.faint)
                 .frame(width: 28, height: 28)
         }
@@ -243,7 +228,7 @@ struct DashboardStatsPanel: View {
                     side: 22
                 )
                 Text(name)
-                    .font(.system(size: 15, weight: .bold))
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(Palette.ink)
                     .lineLimit(1)
                 Spacer(minLength: 8)
@@ -269,7 +254,7 @@ struct DashboardStatsPanel: View {
                 .frame(width: 32, height: 32)
                 .background(Palette.slice(index).opacity(0.2), in: Circle())
             Text(name)
-                .font(.system(size: 15, weight: .bold))
+                .font(.system(size: 15, weight: .semibold))
                 .foregroundStyle(Palette.ink)
                 .lineLimit(1)
             Spacer(minLength: 8)

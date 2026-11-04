@@ -14,7 +14,7 @@ struct DashboardClaimPanel: View {
     var copy: LedgerCopy
 
     var body: some View {
-        let waiting = store.book.entries.filter { $0.claim == .waiting && $0.isOut }
+        let waiting = store.book.entries.filter { $0.claim == .waiting && $0.isOut && !$0.id.hasPrefix("sample-") }
         if !waiting.isEmpty {
             PanelCard(title: "\(copy.claimTitle) · \(waiting.count)") {
                 ForEach(waiting) { entry in

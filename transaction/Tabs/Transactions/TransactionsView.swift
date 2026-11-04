@@ -27,9 +27,8 @@ struct TransactionsView: View {
         let chartSpan = directed(inSpan(keepingCategory: false))
         let parts = BookMath.categoryParts(chartSpan, caps: [:]).sorted { $0.amount > $1.amount }
         let total = parts.reduce(0) { $0 + $1.amount }
-        let previous = BookMath.prevMonthOutByCategory(store.book.entries)
+        let previous = BookMath.prevMonthOutByCategory(store.book.entries.filter { !$0.id.hasPrefix("sample-") })
         let spendByDay = Dictionary(grouping: period.filter { $0.isOut && !$0.isTransfer }, by: \.date).mapValues { $0.reduce(0) { $0 + $1.amount } }
-        let showSample = !store.book.sampleCleared && store.book.entries.contains { $0.id.hasPrefix("sample-") }
         let accountName = store.book.accounts.first { $0.id == screen.accountId }?.name
         let listTitle = screen.showCalendar ? copy.dayChip(screen.calendarDay ?? LedgerDay.today()) : copy.periodChip(mode: screen.txMode, from: screen.txFrom, to: screen.txTo)
 
@@ -77,13 +76,10 @@ struct TransactionsView: View {
                 }
                 PanelCard(title: listTitle) {
                     if listed.isEmpty {
-                        Text(copy.txEmpty).font(.system(size: 13)).foregroundStyle(Palette.muted)
+                        emptyPeriod(copy)
                     } else {
                         rows(listed, copy: copy)
                     }
-                }
-                if showSample {
-                    SampleBanner(title: copy.sampleBanner, actionTitle: copy.sampleClear) { store.clearSample() }
                 }
             }
             .animation(LedgerScreen.fold, value: screen.showCalendar)
@@ -110,6 +106,27 @@ struct TransactionsView: View {
         .padding(12)
         .background(Palette.neutral, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Palette.line, lineWidth: 1))
+    }
+
+    private func emptyPeriod(_ copy: LedgerCopy) -> some View {
+        VStack(spacing: 16) {
+            Image(systemName: "doc.text")
+                .font(.system(size: 28, weight: .regular))
+                .foregroundStyle(Palette.down)
+                .frame(width: 76, height: 76)
+                .background(Palette.pink.opacity(0.45), in: Circle())
+            Text(copy.txEmpty)
+                .font(.system(size: 15))
+                .foregroundStyle(Palette.muted)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+            PillButton(title: copy.entryNew) {
+                screen.open(.entry(id: nil))
+            }
+            .frame(width: UIScreen.main.bounds.width / 2)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 12)
     }
 
     private func rows(_ listed: [Entry], copy: LedgerCopy) -> some View {
@@ -232,6 +249,7 @@ struct TransactionsView: View {
         let query = screen.search.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         let pool = screen.txUnscoped ? store.book.entries : BookMath.byScope(store.book.entries, screen.txScope)
         return BookMath.inPeriod(pool, bounds).filter { entry in
+            if entry.id.hasPrefix("sample-") { return false }
             if screen.feedKind == "out", entry.isTransfer || !entry.isOut { return false }
             if screen.feedKind == "in", entry.isTransfer || entry.isOut { return false }
             if screen.feedKind == "other", !entry.isTransfer || !entry.isOut { return false }

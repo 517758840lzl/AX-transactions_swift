@@ -26,7 +26,7 @@ struct YearReportPage: View {
         let spend = summed(scoped.filter { $0.isOut && !$0.isTransfer })
         let income = summed(scoped.filter { !$0.isOut && !$0.isTransfer })
         let total = kind == "in" ? income : spend
-        let columns = BookMath.yearColumns(BookMath.byScope(store.book.entries, screen.dashScope), year: year)
+        let columns = BookMath.yearColumns(BookMath.byScope(store.book.entries, screen.dashScope).filter { !$0.id.hasPrefix("sample-") }, year: year)
         let live = columns.filter { !upcoming($0.month) }
         let peak = live.map { columnAmount($0) }.max() ?? 0
         let average = live.isEmpty ? 0 : live.reduce(0) { $0 + columnAmount($1) } / Double(live.count)
@@ -191,7 +191,7 @@ struct YearReportPage: View {
 
     private func yearEntries() -> [Entry] {
         let prefix = String(format: "%04d", year)
-        return BookMath.byScope(store.book.entries, screen.dashScope).filter { $0.date.hasPrefix(prefix) }
+        return BookMath.byScope(store.book.entries, screen.dashScope).filter { !$0.id.hasPrefix("sample-") && $0.date.hasPrefix(prefix) }
     }
 
     private func matches(_ entry: Entry) -> Bool {

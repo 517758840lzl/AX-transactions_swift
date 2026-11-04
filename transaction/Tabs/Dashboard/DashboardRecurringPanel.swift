@@ -16,9 +16,16 @@ struct DashboardRecurringPanel: View {
     var body: some View {
         let month = LedgerDay.yearMonth(Date())
         PanelCard(title: copy.recurringTitle, trailing: {
-            Button(copy.add) { screen.open(.repeatPlan(id: nil)) }
-                .font(.system(size: 13, weight: .bold))
-                .foregroundStyle(Palette.ink)
+            Button { screen.open(.repeatPlan(id: nil)) } label: {
+                Image(systemName: "plus")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(Palette.ink)
+                    .frame(width: 28, height: 28)
+                    .background(Palette.pink, in: Circle())
+                    .contentShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(copy.add)
         }) {
             if store.book.repeats.isEmpty {
                 Text(copy.recurringEmpty)

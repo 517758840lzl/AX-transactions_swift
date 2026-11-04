@@ -27,7 +27,7 @@ struct TxRow: View {
             Button(action: onOpen) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(entry.title)
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.system(size: 15, weight: .medium))
                         .foregroundStyle(Palette.ink)
                         .lineLimit(1)
                     Text(meta)
@@ -39,7 +39,7 @@ struct TxRow: View {
             }
             .buttonStyle(.plain)
             VStack(alignment: .trailing, spacing: 6) {
-                MoneyText(value: entry.isOut ? -entry.amount : entry.amount, mark: mark, size: 16, signed: true)
+                MoneyText(value: entry.isOut ? -entry.amount : entry.amount, mark: mark, size: 16, signed: true, digitWeight: .semibold)
                 Button(action: onToggle) {
                     Text(entry.checked ? copy.checked : copy.unchecked)
                         .font(.system(size: 10, weight: .bold))

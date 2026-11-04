@@ -170,8 +170,8 @@ enum BookDocument {
         return book
     }
 
-    private static func accounts(_ raw: Any?, sampleCleared: Bool) -> [Account] {
-        guard let list = raw as? [Any] else { return sampleCleared ? [] : SampleBook.accounts() }
+    private static func accounts(_ raw: Any?, sampleCleared _: Bool) -> [Account] {
+        guard let list = raw as? [Any] else { return [] }
         return list.compactMap { item in
             guard let map = item as? [String: Any] else { return nil }
             return Account(
@@ -187,8 +187,8 @@ enum BookDocument {
         }
     }
 
-    private static func entries(_ raw: Any?, sampleCleared: Bool) -> [Entry] {
-        guard let list = raw as? [Any] else { return sampleCleared ? [] : SampleBook.entries() }
+    private static func entries(_ raw: Any?, sampleCleared _: Bool) -> [Entry] {
+        guard let list = raw as? [Any] else { return [] }
         return list.compactMap { item in
             guard let map = item as? [String: Any] else { return nil }
             return readEntry(map)

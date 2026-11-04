@@ -16,12 +16,12 @@ struct DashboardReviewPanel: View {
 
     var body: some View {
         if !queue.isEmpty {
-            PanelCard(title: "\(copy.toReview) · \(queue.count)", trailing: {
+            PanelCard(title: "\(copy.toReview) · \(queue.count)", titleSize: 13, trailing: {
                 Button(copy.markAllReviewed) { store.markReviewed(queue.map(\.id)) }
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(Palette.ink)
                     .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
+                    .padding(.vertical, 7)
                     .background(Palette.pink, in: Capsule())
             }) {
                 ForEach(Array(queue.enumerated()), id: \.element.id) { index, entry in

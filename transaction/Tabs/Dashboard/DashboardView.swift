@@ -14,9 +14,8 @@ struct DashboardView: View {
 
     var body: some View {
         let copy = store.copy
-        let scoped = BookMath.byScope(store.book.entries, screen.dashScope)
+        let scoped = BookMath.byScope(store.book.entries, screen.dashScope).filter { !$0.id.hasPrefix("sample-") }
         let queue = BookMath.reviewQueue(scoped)
-        let showSample = !store.book.sampleCleared && store.book.entries.contains { $0.id.hasPrefix("sample-") }
 
         PageScroll(bottom: 128) {
             HStack(spacing: 8) {
@@ -46,10 +45,25 @@ struct DashboardView: View {
             DashboardClaimPanel(store: store, screen: screen, copy: copy)
             DashboardReviewPanel(store: store, screen: screen, copy: copy, queue: queue)
             DashboardRecurringPanel(store: store, screen: screen, copy: copy)
-            if showSample {
-                SampleBanner(title: copy.sampleBanner, actionTitle: copy.sampleClear) {
-                    store.clearSample()
+            if scoped.isEmpty {
+                Button { screen.open(.entry(id: nil)) } label: {
+                    HStack(spacing: 8) {
+                        HStack(alignment: .bottom, spacing: 2.5) {
+                            RoundedRectangle(cornerRadius: 1.5, style: .continuous).fill(Palette.down).frame(width: 5, height: 11)
+                            RoundedRectangle(cornerRadius: 1.5, style: .continuous).fill(Palette.down).frame(width: 5, height: 17)
+                            RoundedRectangle(cornerRadius: 1.5, style: .continuous).fill(Palette.down).frame(width: 5, height: 24)
+                        }
+                        .frame(width: 22, height: 24, alignment: .bottom)
+                        Text(copy.statsQuiet)
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(Palette.ink)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color.white, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(Palette.line, lineWidth: 1))
                 }
+                .buttonStyle(.plain)
             }
         }
     }
