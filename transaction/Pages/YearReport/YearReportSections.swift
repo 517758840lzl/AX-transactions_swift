@@ -48,6 +48,7 @@ struct YearReportCard<Content: View>: View {
 struct YearReportClassify: View {
     var copy: LedgerCopy
     var mark: String
+    var marks: [String: String]
     var slices: [YearBucket]
     var total: Double
     @Binding var openCategory: String
@@ -70,7 +71,11 @@ struct YearReportClassify: View {
                                 openCategory = openCategory == slice.id ? "" : slice.id
                             } label: {
                                 HStack(spacing: 8) {
-                                    Circle().fill(Palette.slice(index)).frame(width: 8, height: 8)
+                                    CategoryBadge(
+                                        style: CategoryMarks.style(name: slice.name, marks: marks),
+                                        selected: false,
+                                        side: 28
+                                    )
                                     Text("\(index + 1). \(slice.name)  \(percent(slice.amount, total))")
                                         .font(.system(size: 15, weight: .semibold))
                                         .foregroundColor(Palette.ink)
@@ -118,11 +123,11 @@ struct YearReportClassify: View {
                             openTitle(category, item.name)
                         } label: {
                             VStack(alignment: .leading, spacing: 6) {
-                                Text(String(item.name.prefix(1)))
-                                    .font(.system(size: 13, weight: .bold))
-                                    .foregroundColor(Palette.ink)
-                                    .frame(width: 28, height: 28)
-                                    .background(Palette.wash, in: Circle())
+                                CategoryBadge(
+                                    style: CategoryMarks.style(name: category, marks: marks),
+                                    selected: false,
+                                    side: 28
+                                )
                                 Text(item.name)
                                     .font(.system(size: 12, weight: .semibold))
                                     .foregroundColor(Palette.ink)

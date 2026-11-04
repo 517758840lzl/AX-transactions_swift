@@ -125,6 +125,7 @@ struct TransactionsView: View {
                 TxRow(
                     entry: entry,
                     mark: store.book.mark,
+                    marks: store.book.categoryMarks,
                     copy: copy,
                     showTopBorder: index > 0,
                     onOpen: { screen.open(.entry(id: entry.id)) },

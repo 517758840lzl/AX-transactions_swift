@@ -67,6 +67,7 @@ struct YearReportPage: View {
                 YearReportClassify(
                     copy: copy,
                     mark: store.book.mark,
+                    marks: store.book.categoryMarks,
                     slices: slices,
                     total: total,
                     openCategory: $openCategory,

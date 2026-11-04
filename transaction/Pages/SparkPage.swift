@@ -116,6 +116,11 @@ struct SparksListView: View {
             ForEach(dayEntries(day)) { entry in
                 Button { screen.open(.entry(id: entry.id)) } label: {
                     HStack(spacing: 8) {
+                        CategoryBadge(
+                            style: CategoryMarks.style(name: entry.category, marks: store.book.categoryMarks),
+                            selected: false,
+                            side: 28
+                        )
                         Text(entry.title)
                             .font(.system(size: 15, weight: .semibold))
                             .foregroundStyle(Palette.ink)

@@ -11,6 +11,7 @@ import SwiftUI
 struct TxRow: View {
     var entry: Entry
     var mark: String
+    var marks: [String: String]
     var copy: LedgerCopy
     var showTopBorder = false
     var onOpen: () -> Void
@@ -18,11 +19,11 @@ struct TxRow: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
-            Text(initial)
-                .font(.system(size: 15, weight: .bold))
-                .foregroundStyle(Palette.ink)
-                .frame(width: 40, height: 40)
-                .background(Palette.slice(colorIndex).opacity(0.2), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            CategoryBadge(
+                style: CategoryMarks.style(name: entry.category, marks: marks),
+                selected: false,
+                side: 40
+            )
             Button(action: onOpen) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(entry.title)
@@ -58,16 +59,6 @@ struct TxRow: View {
                 Rectangle().fill(Palette.line.opacity(0.85)).frame(height: 1)
             }
         }
-    }
-
-    private var initial: String {
-        entry.category.isEmpty ? "?" : String(entry.category.prefix(1))
-    }
-
-    /// First character of the category.
-    private var colorIndex: Int {
-        let unit = entry.category.utf16.first.map(Int.init) ?? 0
-        return unit % SliceColors.values.count
     }
 
     private var meta: String {
