@@ -63,10 +63,10 @@ let traditionalCopy = LedgerCopy(
     reminderDenied: "通知權限未開啟，請在系統設定中允許 {name} 傳送提醒。",
     reminderOff: "關閉", reminderPing: "該記帳了",
     streakDays: "連續記帳", streakToday: "今日已記", streakNone: "今天還沒記", privacyTitle: "隱私權政策",
-    exportBackup: "匯出 JSON 備份", dataExportNote: "帳戶、流水和預算都會寫進這一份 JSON。",
+    exportBackup: "匯出 JSON 備份", dataExportNote: "帳戶、流水、預算和靈感都會寫進這一份 JSON。",
     exportExcel: "匯出 Excel", dataExcelNote: "流水、帳戶和預算會寫成表格，可以用 Excel 打開。",
     exportBook: "匯出帳本", dataManage: "資料管理", clearBook: "清除資料",
-    clearBookConfirm: "清除後，帳戶、流水和預算都會去掉，並且不會再填回範例。", clearBookDone: "帳本資料已清除",
+    clearBookConfirm: "清除後，帳戶、流水、預算和靈感都會去掉，並且不會再填回範例。", clearBookDone: "帳本資料已清除",
     importData: "匯入帳本", importPaste: "貼上匯出的 JSON", importDone: "匯入成功", importInvalid: "JSON 無效，請檢查內容",
     importConfirm: "這份檔案會換掉現在的帳本，包括帳戶和流水。",
     importFile: "選擇 JSON 檔案",
@@ -105,7 +105,12 @@ let traditionalCopy = LedgerCopy(
     yearMostFormat: "{when} 最多", yearAverageFormat: "月均{kind}", yearCountFormat: "{count} 筆",
     yearExpand: "展開", yearFold: "收起", yearRefunded: "已退",
     yearPrev: "上一年", yearNext: "下一年",
-    accountMonthFlow: "本月進出"
+    accountMonthFlow: "本月進出",
+    sparks: "靈感", sparkPlaceholder: "寫下這一刻",
+    sparkIdea: "靈感", sparkDiary: "日記", sparkThought: "隨想", sparkSummary: "每日總結",
+    sparkFavorite: "收藏", sparkTags: "標籤", sparkTagHint: "用空格分開",
+    sparkPicture: "圖片", sparkPictureRemove: "去掉圖片",
+    sparkSearch: "搜文字、標籤或日期", sparkNotes: "筆記", sparkTimeline: "時間軸"
 )
 
 let japaneseCopy = LedgerCopy(
@@ -164,10 +169,10 @@ let japaneseCopy = LedgerCopy(
     reminderDenied: "通知がオフです。設定で {name} の通知を許可してください。",
     reminderOff: "オフ", reminderPing: "記録の時間です",
     streakDays: "連続記入", streakToday: "今日は記入済み", streakNone: "今日は未記入", privacyTitle: "プライバシー",
-    exportBackup: "JSONを書き出す", dataExportNote: "口座、明細、予算がこのJSONに入ります。",
+    exportBackup: "JSONを書き出す", dataExportNote: "口座、明細、予算、ひらめきがこのJSONに入ります。",
     exportExcel: "Excelを書き出す", dataExcelNote: "明細、口座、予算を表にして、Excelで開けます。",
     exportBook: "家計簿を書き出す", dataManage: "データ", clearBook: "データを消去",
-    clearBookConfirm: "消去すると口座、明細、予算が消え、サンプルは戻りません。", clearBookDone: "家計簿のデータを消去しました",
+    clearBookConfirm: "消去すると口座、明細、予算、ひらめきが消え、サンプルは戻りません。", clearBookDone: "家計簿のデータを消去しました",
     importData: "家計簿を読み込む", importPaste: "書き出したJSONを貼り付け", importDone: "読み込み完了", importInvalid: "JSONが無効です。内容を確認してください",
     importConfirm: "このファイルで現在の家計簿を置き換えます。口座と明細が含まれます。",
     importFile: "JSONファイルを選択",
@@ -206,7 +211,12 @@ let japaneseCopy = LedgerCopy(
     yearMostFormat: "{when} 最多", yearAverageFormat: "月平均{kind}", yearCountFormat: "{count}件",
     yearExpand: "展開", yearFold: "閉じる", yearRefunded: "返金",
     yearPrev: "前年", yearNext: "次年",
-    accountMonthFlow: "今月の出入"
+    accountMonthFlow: "今月の出入",
+    sparks: "ひらめき", sparkPlaceholder: "いま浮かんだことを書く",
+    sparkIdea: "ひらめき", sparkDiary: "日記", sparkThought: "随想", sparkSummary: "一日のまとめ",
+    sparkFavorite: "お気に入り", sparkTags: "タグ", sparkTagHint: "スペースで区切る",
+    sparkPicture: "写真", sparkPictureRemove: "写真を外す",
+    sparkSearch: "文字、タグ、日付で探す", sparkNotes: "メモ", sparkTimeline: "タイムライン"
 )
 
 let koreanCopy = LedgerCopy(
@@ -265,10 +275,10 @@ let koreanCopy = LedgerCopy(
     reminderDenied: "알림 권한이 꺼져 있습니다. 설정에서 {name} 알림을 허용하세요.",
     reminderOff: "끔", reminderPing: "기록할 시간입니다",
     streakDays: "연속 기록", streakToday: "오늘 기록함", streakNone: "오늘 아직 없음", privacyTitle: "개인정보",
-    exportBackup: "JSON 백업 내보내기", dataExportNote: "계좌, 내역, 예산이 이 JSON에 들어갑니다.",
+    exportBackup: "JSON 백업 내보내기", dataExportNote: "계좌, 내역, 예산, 아이디어가 이 JSON에 들어갑니다.",
     exportExcel: "Excel 내보내기", dataExcelNote: "내역, 계좌, 예산을 표로 만들어 Excel에서 열 수 있습니다.",
     exportBook: "장부 내보내기", dataManage: "데이터", clearBook: "데이터 지우기",
-    clearBookConfirm: "지우면 계좌, 내역, 예산이 삭제되고 샘플은 돌아오지 않습니다.", clearBookDone: "장부 데이터를 지웠습니다",
+    clearBookConfirm: "지우면 계좌, 내역, 예산, 아이디어가 삭제되고 샘플은 돌아오지 않습니다.", clearBookDone: "장부 데이터를 지웠습니다",
     importData: "장부 가져오기", importPaste: "내보낸 JSON 붙여넣기", importDone: "가져오기 완료", importInvalid: "JSON이 올바르지 않습니다. 내용을 확인하세요",
     importConfirm: "이 파일이 현재 장부를 바꿉니다. 계좌와 내역이 포함됩니다.",
     importFile: "JSON 파일 선택",
@@ -307,5 +317,10 @@ let koreanCopy = LedgerCopy(
     yearMostFormat: "{when} 최다", yearAverageFormat: "월평균 {kind}", yearCountFormat: "{count}건",
     yearExpand: "펼치기", yearFold: "접기", yearRefunded: "환불",
     yearPrev: "이전 해", yearNext: "다음 해",
-    accountMonthFlow: "이번 달 입출"
+    accountMonthFlow: "이번 달 입출",
+    sparks: "아이디어", sparkPlaceholder: "떠오른 것을 적기",
+    sparkIdea: "아이디어", sparkDiary: "일기", sparkThought: "생각", sparkSummary: "하루 정리",
+    sparkFavorite: "즐겨찾기", sparkTags: "태그", sparkTagHint: "띄어쓰기로 구분",
+    sparkPicture: "사진", sparkPictureRemove: "사진 빼기",
+    sparkSearch: "글, 태그, 날짜 검색", sparkNotes: "노트", sparkTimeline: "타임라인"
 )

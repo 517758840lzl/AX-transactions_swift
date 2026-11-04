@@ -229,6 +229,31 @@ extension BookStore {
         persist()
     }
 
+    func saveSpark(_ spark: Spark) {
+        let body = String(spark.body.trimmingCharacters(in: .whitespacesAndNewlines).prefix(2000))
+        guard !body.isEmpty else { return }
+        let next = Spark(
+            id: spark.id,
+            body: body,
+            writtenOn: spark.writtenOn,
+            kind: spark.kind,
+            tags: SparkTags.parse(spark.tags.joined(separator: " ")),
+            favorite: spark.favorite,
+            image: spark.image
+        )
+        if let index = book.sparks.firstIndex(where: { $0.id == next.id }) {
+            book.sparks[index] = next
+        } else {
+            book.sparks.append(next)
+        }
+        persist()
+    }
+
+    func deleteSpark(_ id: String) {
+        book.sparks.removeAll { $0.id == id }
+        persist()
+    }
+
     func payClaim(_ id: String) {
         guard let index = book.entries.firstIndex(where: { $0.id == id }), book.entries[index].claim == .waiting else { return }
         var source = book.entries[index]

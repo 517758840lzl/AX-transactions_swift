@@ -16,6 +16,7 @@ struct MeView: View {
     @State private var pendingImport = ""
     @State private var confirmImport = false
     @State private var confirmClear = false
+    @State private var sparksOpen = false
 
     var body: some View {
         let copy = store.copy
@@ -55,6 +56,64 @@ struct MeView: View {
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+            }
+
+            PanelCard(title: copy.sparks, titleSize: 13, card: true, trailing: {
+                let count = store.book.sparks.count
+                if count > 0 {
+                    Button { screen.open(.sparks) } label: {
+                        HStack(spacing: 4) {
+                            Text("\(count)")
+                                .font(.system(size: 14, weight: .bold))
+                            Text("›")
+                                .font(.system(size: 20, weight: .regular))
+                        }
+                        .foregroundStyle(Palette.muted)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }) {
+                Button { screen.open(.sparks) } label: {
+                    Text(copy.sparkPlaceholder)
+                        .font(.system(size: 16))
+                        .foregroundStyle(Palette.muted)
+                        .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
+                        .padding(.horizontal, 14)
+                        .background(Palette.wash, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                let latest = store.book.sparks.sorted { left, right in
+                    if left.writtenOn != right.writtenOn { return left.writtenOn > right.writtenOn }
+                    return left.id > right.id
+                }
+                let shown = sparksOpen ? latest : Array(latest.prefix(3))
+                ForEach(shown) { spark in
+                    Button { screen.open(.spark(id: spark.id)) } label: {
+                        Text(spark.body.replacingOccurrences(of: "\n", with: " "))
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(Palette.ink)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.vertical, 8)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                }
+                if latest.count > 3 {
+                    Button { sparksOpen.toggle() } label: {
+                        HStack(spacing: 4) {
+                            Text(sparksOpen ? copy.yearFold : copy.yearExpand)
+                                .font(.system(size: 14, weight: .bold))
+                            Image(systemName: sparksOpen ? "chevron.up" : "chevron.down")
+                                .font(.system(size: 12, weight: .bold))
+                        }
+                        .foregroundStyle(Palette.muted)
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                    }
+                    .buttonStyle(.plain)
+                }
             }
 
             PanelCard(title: copy.meLedger, titleSize: 13, card: true) {

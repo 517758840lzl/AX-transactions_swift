@@ -100,6 +100,28 @@ struct RepeatPlan: Identifiable, Equatable {
     var lastMonth: String
 }
 
+enum SparkKind: String, CaseIterable {
+    case idea
+    case diary
+    case thought
+    case summary
+
+    static func read(_ raw: String) -> SparkKind {
+        SparkKind(rawValue: raw) ?? .idea
+    }
+}
+
+struct Spark: Identifiable, Equatable {
+    var id: String
+    var body: String
+    /// Day the thought belongs to, `yyyy-MM-dd`.
+    var writtenOn: String
+    var kind: SparkKind = .idea
+    var tags: [String] = []
+    var favorite: Bool = false
+    var image: Data?
+}
+
 struct EntryTemplate: Identifiable, Equatable {
     var id: String
     var title: String
@@ -123,6 +145,7 @@ struct Book {
     var entries: [Entry]
     var repeats: [RepeatPlan]
     var goals: [SavingGoal]
+    var sparks: [Spark]
     var hideAmounts: Bool
     var lockOnOpen: Bool
     var dailyReminder: Bool
@@ -149,6 +172,7 @@ struct Book {
             entries: [],
             repeats: [],
             goals: [],
+            sparks: [],
             hideAmounts: false,
             lockOnOpen: false,
             dailyReminder: false,
@@ -159,6 +183,23 @@ struct Book {
             categoryMarks: [:],
             presetStamp: 2
         )
+    }
+}
+
+enum SparkTags {
+    static func parse(_ raw: String) -> [String] {
+        var seen = Set<String>()
+        var tags: [String] = []
+        let pieces = raw.split { character in
+            character == " " || character == "," || character == "，" || character == "\n" || character == "#"
+        }
+        for piece in pieces {
+            let tag = String(piece).trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !tag.isEmpty, tag.count <= 20, seen.insert(tag).inserted else { continue }
+            tags.append(tag)
+            if tags.count == 8 { break }
+        }
+        return tags
     }
 }
 

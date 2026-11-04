@@ -28,12 +28,14 @@ final class BookStore: ObservableObject {
     @Published var book: Book
     @Published var note: String?
 
-    private let fileURL: URL
+    private let database: BookDatabase
+    private let legacyURL: URL
     private var noteTask: Task<Void, Never>?
 
-    init(book: Book, fileURL: URL) {
+    init(book: Book, database: BookDatabase, legacyURL: URL) {
         self.book = book
-        self.fileURL = fileURL
+        self.database = database
+        self.legacyURL = legacyURL
     }
 
     static func open() -> BookStore {
@@ -41,31 +43,38 @@ final class BookStore: ObservableObject {
             ?? FileManager.default.temporaryDirectory
         let folder = directory.appendingPathComponent(BundleTitle.current, isDirectory: true)
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        let fileURL = folder.appendingPathComponent("ledger-book-v1.json")
+        let legacyURL = folder.appendingPathComponent("ledger-book-v1.json")
+        let database = BookDatabase(url: folder.appendingPathComponent("ledger.sqlite"))
         var book: Book
         var shortened = false
-        if let raw = try? String(contentsOf: fileURL, encoding: .utf8), let decoded = BookDocument.decode(raw) {
+        var carried = false
+        if let stored = database.load() {
+            book = stored
+            try? FileManager.default.removeItem(at: legacyURL)
+        } else if let raw = try? String(contentsOf: legacyURL, encoding: .utf8), let decoded = BookDocument.decode(raw) {
             book = decoded
-            if Self.onlySample(book) {
-                let seeded = SampleBook.seed()
-                let same = book.categories == seeded.categories
-                    && book.accounts.map(\.name) == seeded.accounts.map(\.name)
-                    && book.entries.map(\.id) == seeded.entries.map(\.id)
-                    && book.entries.count == seeded.entries.count
-                if !same {
-                    book.accounts = seeded.accounts
-                    book.entries = seeded.entries
-                    book.categories = seeded.categories
-                    shortened = true
-                }
-            }
+            carried = true
         } else {
             book = SampleBook.seed()
+            carried = true
+        }
+        if Self.onlySample(book) {
+            let seeded = SampleBook.seed()
+            let same = book.categories == seeded.categories
+                && book.accounts.map(\.name) == seeded.accounts.map(\.name)
+                && book.entries.map(\.id) == seeded.entries.map(\.id)
+                && book.entries.count == seeded.entries.count
+            if !same {
+                book.accounts = seeded.accounts
+                book.entries = seeded.entries
+                book.categories = seeded.categories
+                shortened = true
+            }
         }
         let adopted = CategoryMarks.adopt(&book)
         let labeled = Self.labelSamples(&book)
-        let store = BookStore(book: book, fileURL: fileURL)
-        if shortened || adopted || labeled || !FileManager.default.fileExists(atPath: fileURL.path) {
+        let store = BookStore(book: book, database: database, legacyURL: legacyURL)
+        if shortened || adopted || labeled || carried {
             store.persist()
         }
         store.settleRepeats()
@@ -185,6 +194,7 @@ final class BookStore: ObservableObject {
         book.categoryCaps = [:]
         book.repeats = []
         book.goals = []
+        book.sparks = []
         book.removed = []
         book.sampleCleared = true
         persist()
@@ -197,8 +207,11 @@ final class BookStore: ObservableObject {
             book.accounts.removeAll { $0.id.hasPrefix("sample-") }
             book.sampleCleared = true
         }
-        let text = BookDocument.encode(book)
-        try? text.write(to: fileURL, atomically: true, encoding: .utf8)
+        if database.replace(book) {
+            try? FileManager.default.removeItem(at: legacyURL)
+        } else {
+            try? BookDocument.encode(book).write(to: legacyURL, atomically: true, encoding: .utf8)
+        }
         BillReminder.shared.refresh(book: book)
         DailyReminder.shared.sync(book, ask: false)
     }

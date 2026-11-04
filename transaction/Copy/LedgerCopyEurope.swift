@@ -66,10 +66,10 @@ let spanishCopy = LedgerCopy(
     reminderDenied: "Los avisos están apagados. Permite que {name} avise en Ajustes.",
     reminderOff: "No", reminderPing: "Hora de anotar",
     streakDays: "Racha", streakToday: "Anotado hoy", streakNone: "Hoy sin anotar", privacyTitle: "Privacidad",
-    exportBackup: "Exportar copia JSON", dataExportNote: "Cuentas, movimientos y presupuestos van en este JSON.",
+    exportBackup: "Exportar copia JSON", dataExportNote: "Cuentas, movimientos, presupuestos e ideas van en este JSON.",
     exportExcel: "Exportar Excel", dataExcelNote: "Movimientos, cuentas y presupuestos quedan en una hoja que abre Excel.",
     exportBook: "Exportar libro", dataManage: "Datos", clearBook: "Borrar datos",
-    clearBookConfirm: "Se quitarán cuentas, movimientos y presupuestos, y el ejemplo no volverá.",
+    clearBookConfirm: "Se quitarán cuentas, movimientos, presupuestos e ideas, y el ejemplo no volverá.",
     clearBookDone: "Datos del libro borrados",
     importData: "Importar libro", importPaste: "Pegar el JSON exportado", importDone: "Importación lista",
     importInvalid: "JSON no válido. Revisa el contenido.",
@@ -112,7 +112,12 @@ let spanishCopy = LedgerCopy(
     yearMostFormat: "{when} máximo", yearAverageFormat: "Media mensual de {kind}", yearCountFormat: "{count} en total",
     yearExpand: "Ver más", yearFold: "Ver menos", yearRefunded: "Reembolsado",
     yearPrev: "Año anterior", yearNext: "Año siguiente",
-    accountMonthFlow: "Este mes"
+    accountMonthFlow: "Este mes",
+    sparks: "Ideas", sparkPlaceholder: "Escríbelo",
+    sparkIdea: "Idea", sparkDiary: "Diario", sparkThought: "Pensamiento", sparkSummary: "Resumen del día",
+    sparkFavorite: "Favorito", sparkTags: "Etiquetas", sparkTagHint: "Sepáralas con espacios",
+    sparkPicture: "Foto", sparkPictureRemove: "Quitar foto",
+    sparkSearch: "Buscar texto, etiqueta o fecha", sparkNotes: "Notas", sparkTimeline: "Línea de tiempo"
 )
 
 let portugueseCopy = LedgerCopy(
@@ -174,10 +179,10 @@ let portugueseCopy = LedgerCopy(
     reminderDenied: "Os avisos estão desligados. Permita que {name} avise nos Ajustes.",
     reminderOff: "Não", reminderPing: "Hora de lançar",
     streakDays: "Sequência", streakToday: "Lançado hoje", streakNone: "Nada hoje", privacyTitle: "Privacidade",
-    exportBackup: "Exportar cópia JSON", dataExportNote: "Contas, movimentos e orçamentos entram neste JSON.",
+    exportBackup: "Exportar cópia JSON", dataExportNote: "Contas, movimentos, orçamentos e ideias entram neste JSON.",
     exportExcel: "Exportar Excel", dataExcelNote: "Movimentos, contas e orçamentos viram uma planilha que o Excel abre.",
     exportBook: "Exportar livro", dataManage: "Dados", clearBook: "Apagar dados",
-    clearBookConfirm: "Contas, movimentos e orçamentos serão removidos, e o exemplo não volta.",
+    clearBookConfirm: "Contas, movimentos, orçamentos e ideias serão removidos, e o exemplo não volta.",
     clearBookDone: "Dados do livro apagados",
     importData: "Importar livro", importPaste: "Colar o JSON exportado", importDone: "Importação concluída",
     importInvalid: "JSON inválido. Confira o conteúdo.",
@@ -220,7 +225,12 @@ let portugueseCopy = LedgerCopy(
     yearMostFormat: "{when} máximo", yearAverageFormat: "Média mensal de {kind}", yearCountFormat: "{count} no total",
     yearExpand: "Expandir", yearFold: "Recolher", yearRefunded: "Reembolsado",
     yearPrev: "Ano anterior", yearNext: "Ano seguinte",
-    accountMonthFlow: "Este mês"
+    accountMonthFlow: "Este mês",
+    sparks: "Ideias", sparkPlaceholder: "Escreva agora",
+    sparkIdea: "Ideia", sparkDiary: "Diário", sparkThought: "Pensamento", sparkSummary: "Resumo do dia",
+    sparkFavorite: "Favorito", sparkTags: "Etiquetas", sparkTagHint: "Separe com espaços",
+    sparkPicture: "Foto", sparkPictureRemove: "Tirar foto",
+    sparkSearch: "Buscar texto, etiqueta ou data", sparkNotes: "Notas", sparkTimeline: "Linha do tempo"
 )
 
 let frenchCopy = LedgerCopy(
@@ -282,10 +292,10 @@ let frenchCopy = LedgerCopy(
     reminderDenied: "Les notifications sont coupées. Autorisez {name} dans Réglages.",
     reminderOff: "Non", reminderPing: "C’est l’heure de noter",
     streakDays: "Série", streakToday: "Noté aujourd’hui", streakNone: "Pas encore noté", privacyTitle: "Confidentialité",
-    exportBackup: "Exporter la sauvegarde JSON", dataExportNote: "Comptes, opérations et budgets vont dans ce JSON.",
+    exportBackup: "Exporter la sauvegarde JSON", dataExportNote: "Comptes, opérations, budgets et idées vont dans ce JSON.",
     exportExcel: "Exporter Excel", dataExcelNote: "Opérations, comptes et budgets deviennent un tableau qu’Excel ouvre.",
     exportBook: "Exporter le livre", dataManage: "Données", clearBook: "Effacer les données",
-    clearBookConfirm: "Comptes, opérations et budgets seront retirés, et l’exemple ne reviendra pas.",
+    clearBookConfirm: "Comptes, opérations, budgets et idées seront retirés, et l’exemple ne reviendra pas.",
     clearBookDone: "Données du livre effacées",
     importData: "Importer le livre", importPaste: "Coller le JSON exporté", importDone: "Import terminé",
     importInvalid: "JSON invalide. Vérifiez le contenu.",
@@ -328,7 +338,12 @@ let frenchCopy = LedgerCopy(
     yearMostFormat: "{when} max", yearAverageFormat: "Moyenne mensuelle : {kind}", yearCountFormat: "{count} au total",
     yearExpand: "Déplier", yearFold: "Replier", yearRefunded: "Remboursé",
     yearPrev: "Année précédente", yearNext: "Année suivante",
-    accountMonthFlow: "Ce mois"
+    accountMonthFlow: "Ce mois",
+    sparks: "Idées", sparkPlaceholder: "Écris-le",
+    sparkIdea: "Idée", sparkDiary: "Journal", sparkThought: "Pensée", sparkSummary: "Bilan du jour",
+    sparkFavorite: "Favori", sparkTags: "Étiquettes", sparkTagHint: "Sépare par des espaces",
+    sparkPicture: "Photo", sparkPictureRemove: "Retirer la photo",
+    sparkSearch: "Chercher un mot, une étiquette ou une date", sparkNotes: "Notes", sparkTimeline: "Fil"
 )
 
 let germanCopy = LedgerCopy(
@@ -390,10 +405,10 @@ let germanCopy = LedgerCopy(
     reminderDenied: "Mitteilungen sind aus. Erlaube {name} Mitteilungen in den Einstellungen.",
     reminderOff: "Aus", reminderPing: "Zeit zum Buchen",
     streakDays: "Serie", streakToday: "Heute gebucht", streakNone: "Heute noch nichts", privacyTitle: "Datenschutz",
-    exportBackup: "JSON-Sicherung exportieren", dataExportNote: "Konten, Buchungen und Budgets landen in diesem JSON.",
+    exportBackup: "JSON-Sicherung exportieren", dataExportNote: "Konten, Buchungen, Budgets und Einfälle landen in diesem JSON.",
     exportExcel: "Excel exportieren", dataExcelNote: "Buchungen, Konten und Budgets werden eine Tabelle, die Excel öffnet.",
     exportBook: "Buch exportieren", dataManage: "Daten", clearBook: "Daten löschen",
-    clearBookConfirm: "Konten, Buchungen und Budgets werden entfernt, und das Beispiel kommt nicht zurück.",
+    clearBookConfirm: "Konten, Buchungen, Budgets und Einfälle werden entfernt, und das Beispiel kommt nicht zurück.",
     clearBookDone: "Buchdaten gelöscht",
     importData: "Buch importieren", importPaste: "Exportiertes JSON einfügen", importDone: "Import fertig",
     importInvalid: "JSON ungültig. Inhalt prüfen.",
@@ -436,7 +451,12 @@ let germanCopy = LedgerCopy(
     yearMostFormat: "{when} am meisten", yearAverageFormat: "Monatsdurchschnitt {kind}", yearCountFormat: "{count} gesamt",
     yearExpand: "Mehr", yearFold: "Weniger", yearRefunded: "Erstattet",
     yearPrev: "Voriges Jahr", yearNext: "Nächstes Jahr",
-    accountMonthFlow: "Dieser Monat"
+    accountMonthFlow: "Dieser Monat",
+    sparks: "Einfälle", sparkPlaceholder: "Schreib es auf",
+    sparkIdea: "Einfall", sparkDiary: "Tagebuch", sparkThought: "Gedanke", sparkSummary: "Tagesfazit",
+    sparkFavorite: "Favorit", sparkTags: "Stichworte", sparkTagHint: "Mit Leerzeichen trennen",
+    sparkPicture: "Foto", sparkPictureRemove: "Foto entfernen",
+    sparkSearch: "Text, Stichwort oder Datum suchen", sparkNotes: "Notizen", sparkTimeline: "Zeitstrahl"
 )
 
 let italianCopy = LedgerCopy(
@@ -498,10 +518,10 @@ let italianCopy = LedgerCopy(
     reminderDenied: "Le notifiche sono spente. Consenti a {name} di avvisare in Impostazioni.",
     reminderOff: "No", reminderPing: "È ora di annotare",
     streakDays: "Serie", streakToday: "Segnato oggi", streakNone: "Oggi niente", privacyTitle: "Privacy",
-    exportBackup: "Esporta backup JSON", dataExportNote: "Conti, movimenti e budget finiscono in questo JSON.",
+    exportBackup: "Esporta backup JSON", dataExportNote: "Conti, movimenti, budget e idee finiscono in questo JSON.",
     exportExcel: "Esporta Excel", dataExcelNote: "Movimenti, conti e budget diventano un foglio che Excel apre.",
     exportBook: "Esporta libro", dataManage: "Dati", clearBook: "Cancella dati",
-    clearBookConfirm: "Conti, movimenti e budget verranno tolti, e l’esempio non torna.",
+    clearBookConfirm: "Conti, movimenti, budget e idee verranno tolti, e l’esempio non torna.",
     clearBookDone: "Dati del libro cancellati",
     importData: "Importa libro", importPaste: "Incolla il JSON esportato", importDone: "Importazione fatta",
     importInvalid: "JSON non valido. Controlla il contenuto.",
@@ -544,5 +564,10 @@ let italianCopy = LedgerCopy(
     yearMostFormat: "{when} massimo", yearAverageFormat: "Media mensile {kind}", yearCountFormat: "{count} in totale",
     yearExpand: "Espandi", yearFold: "Chiudi", yearRefunded: "Rimborsato",
     yearPrev: "Anno scorso", yearNext: "Anno prossimo",
-    accountMonthFlow: "Questo mese"
+    accountMonthFlow: "Questo mese",
+    sparks: "Idee", sparkPlaceholder: "Scrivilo",
+    sparkIdea: "Idea", sparkDiary: "Diario", sparkThought: "Pensiero", sparkSummary: "Riepilogo del giorno",
+    sparkFavorite: "Preferito", sparkTags: "Etichette", sparkTagHint: "Separale con spazi",
+    sparkPicture: "Foto", sparkPictureRemove: "Togli foto",
+    sparkSearch: "Cerca testo, etichetta o data", sparkNotes: "Note", sparkTimeline: "Cronologia"
 )

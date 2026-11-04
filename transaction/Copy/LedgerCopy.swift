@@ -305,6 +305,20 @@ struct LedgerCopy {
     var yearPrev: String
     var yearNext: String
     var accountMonthFlow: String
+    var sparks: String
+    var sparkPlaceholder: String
+    var sparkIdea: String
+    var sparkDiary: String
+    var sparkThought: String
+    var sparkSummary: String
+    var sparkFavorite: String
+    var sparkTags: String
+    var sparkTagHint: String
+    var sparkPicture: String
+    var sparkPictureRemove: String
+    var sparkSearch: String
+    var sparkNotes: String
+    var sparkTimeline: String
 
     func monthTitle(now: Date = Date()) -> String {
         let month = LedgerDay.month(of: now)
@@ -478,6 +492,15 @@ struct LedgerCopy {
         }
     }
 
+    func sparkKindTitle(_ kind: SparkKind) -> String {
+        switch kind {
+        case .idea: return sparkIdea
+        case .diary: return sparkDiary
+        case .thought: return sparkThought
+        case .summary: return sparkSummary
+        }
+    }
+
     static func resolve(_ locale: BookLocale) -> LedgerCopy {
         switch locale {
         case .zh: return chinese
@@ -550,10 +573,10 @@ private let chinese = LedgerCopy(
     reminderDenied: "通知权限未开启，请在系统设置中允许 {name} 发送提醒。",
     reminderOff: "关闭", reminderPing: "该记账了",
     streakDays: "连续记账", streakToday: "今日已记", streakNone: "今天还没记", privacyTitle: "隐私协议",
-    exportBackup: "导出 JSON 备份", dataExportNote: "账户、流水和预算都会写进这一份 JSON。",
+    exportBackup: "导出 JSON 备份", dataExportNote: "账户、流水、预算和灵感都会写进这一份 JSON。",
     exportExcel: "导出 Excel", dataExcelNote: "流水、账户和预算会写成表格，可以用 Excel 打开。",
     exportBook: "导出账本", dataManage: "数据管理", clearBook: "清除数据",
-    clearBookConfirm: "清除后，账户、流水和预算都会去掉，并且不会再填回示例。", clearBookDone: "账本数据已清除",
+    clearBookConfirm: "清除后，账户、流水、预算和灵感都会去掉，并且不会再填回示例。", clearBookDone: "账本数据已清除",
     importData: "导入账本", importPaste: "粘贴导出的 JSON", importDone: "导入成功", importInvalid: "JSON 无效，请检查内容",
     importConfirm: "这份文件会换掉现在的账本，包括账户和流水。",
     importFile: "选择 JSON 文件",
@@ -592,7 +615,12 @@ private let chinese = LedgerCopy(
     yearMostFormat: "{when} 最多", yearAverageFormat: "月均{kind}", yearCountFormat: "{count} 笔",
     yearExpand: "展开", yearFold: "收起", yearRefunded: "已退",
     yearPrev: "上一年", yearNext: "下一年",
-    accountMonthFlow: "本月进出"
+    accountMonthFlow: "本月进出",
+    sparks: "灵感", sparkPlaceholder: "写下这一下",
+    sparkIdea: "灵感", sparkDiary: "日记", sparkThought: "随想", sparkSummary: "每日总结",
+    sparkFavorite: "收藏", sparkTags: "标签", sparkTagHint: "用空格分开",
+    sparkPicture: "图片", sparkPictureRemove: "去掉图片",
+    sparkSearch: "搜索文字、标签或日期", sparkNotes: "笔记", sparkTimeline: "时间轴"
 )
 
 private let englishCopy = LedgerCopy(
@@ -656,10 +684,10 @@ private let englishCopy = LedgerCopy(
     reminderDenied: "Notifications are off. Allow {name} to send reminders in Settings.",
     reminderOff: "Off", reminderPing: "Time to log a transaction",
     streakDays: "Streak", streakToday: "Logged today", streakNone: "Not logged today", privacyTitle: "Privacy",
-    exportBackup: "Export JSON backup", dataExportNote: "Accounts, activity and budgets go into this JSON.",
+    exportBackup: "Export JSON backup", dataExportNote: "Accounts, activity, budgets and ideas go into this JSON.",
     exportExcel: "Export Excel", dataExcelNote: "Activity, accounts and budgets become a spreadsheet Excel can open.",
     exportBook: "Export book", dataManage: "Data", clearBook: "Clear data",
-    clearBookConfirm: "Accounts, transactions and budgets will be removed, and the sample book will not come back.",
+    clearBookConfirm: "Accounts, transactions, budgets and ideas will be removed, and the sample book will not come back.",
     clearBookDone: "Book data cleared",
     importData: "Import book", importPaste: "Paste exported JSON", importDone: "Import complete",
     importInvalid: "Invalid JSON. Check the contents.",
@@ -702,5 +730,10 @@ private let englishCopy = LedgerCopy(
     yearMostFormat: "{when} most", yearAverageFormat: "Average monthly {kind}", yearCountFormat: "{count} in total",
     yearExpand: "Expand", yearFold: "Collapse", yearRefunded: "Refunded",
     yearPrev: "Previous year", yearNext: "Next year",
-    accountMonthFlow: "This month"
+    accountMonthFlow: "This month",
+    sparks: "Ideas", sparkPlaceholder: "Write it down",
+    sparkIdea: "Idea", sparkDiary: "Diary", sparkThought: "Thought", sparkSummary: "Day note",
+    sparkFavorite: "Favorite", sparkTags: "Tags", sparkTagHint: "Separate with spaces",
+    sparkPicture: "Photo", sparkPictureRemove: "Remove photo",
+    sparkSearch: "Search words, tags, or date", sparkNotes: "Notes", sparkTimeline: "Timeline"
 )

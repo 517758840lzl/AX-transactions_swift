@@ -97,6 +97,20 @@ enum BookDocument {
                     "entry": entryObject(item.entry),
                 ] as [String: Any]
             },
+            "sparks": book.sparks.map { spark in
+                var object: [String: Any] = [
+                    "id": spark.id,
+                    "body": spark.body,
+                    "writtenOn": spark.writtenOn,
+                    "kind": spark.kind.rawValue,
+                    "tags": spark.tags,
+                    "favorite": spark.favorite,
+                ]
+                if let image = spark.image {
+                    object["image"] = image.base64EncodedString()
+                }
+                return object
+            },
         ]
     }
 
@@ -131,6 +145,7 @@ enum BookDocument {
         book.reminderMinute = Self.clock(map["reminderMinute"], fallback: 30, upper: 59)
         book.removed = removed(map["removed"])
         book.goals = goals(map["goals"])
+        book.sparks = sparks(map["sparks"])
         book.repeats = repeats(map["repeats"])
         book.nickname = map["nickname"] as? String ?? ""
         book.gender = Gender.read(map["gender"])
@@ -248,6 +263,28 @@ enum BookDocument {
                 countsInBudget: map["countsInBudget"] as? Bool ?? true,
                 day: min(max(day, 1), 28),
                 lastMonth: "\(map["lastMonth"] ?? "")"
+            )
+        }
+    }
+
+    private static func sparks(_ raw: Any?) -> [Spark] {
+        guard let list = raw as? [Any] else { return [] }
+        return list.compactMap { item in
+            guard let map = item as? [String: Any] else { return nil }
+            let body = "\(map["body"] ?? "")".trimmingCharacters(in: .whitespacesAndNewlines)
+            let writtenOn = "\(map["writtenOn"] ?? "")"
+            guard !body.isEmpty, writtenOn.count == 10 else { return nil }
+            let id = "\(map["id"] ?? "")"
+            let tags = map["tags"] as? [Any] ?? []
+            let image = Data(base64Encoded: "\(map["image"] ?? "")")
+            return Spark(
+                id: id.isEmpty ? LedgerID.make() : id,
+                body: String(body.prefix(2000)),
+                writtenOn: writtenOn,
+                kind: SparkKind.read("\(map["kind"] ?? "")"),
+                tags: SparkTags.parse(tags.map { "\($0)" }.joined(separator: " ")),
+                favorite: map["favorite"] as? Bool ?? false,
+                image: image
             )
         }
     }

@@ -18,6 +18,8 @@ enum Page: Hashable {
     case yearReport
     case savingGoals
     case savingGoal(id: String?)
+    case sparks
+    case spark(id: String?)
     case profile
     case categories
     case categoryForm(slot: String)

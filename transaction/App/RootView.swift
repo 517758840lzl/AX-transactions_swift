@@ -207,6 +207,10 @@ struct RootView: View {
             SavingGoalsListView(store: store, screen: screen)
         case .savingGoal(let id):
             SavingGoalFormView(store: store, goalID: id)
+        case .sparks:
+            SparksListView(store: store, screen: screen)
+        case .spark(let id):
+            SparkFormView(store: store, sparkID: id)
         case .profile:
             ProfileFormView(store: store)
         case .categories:
