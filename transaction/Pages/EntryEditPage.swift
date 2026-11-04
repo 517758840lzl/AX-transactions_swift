@@ -7,6 +7,7 @@
 
 import Combine
 import SwiftUI
+import UIKit
 
 struct EntryFormView: View {
     @ObservedObject var store: BookStore
@@ -29,6 +30,7 @@ struct EntryFormView: View {
     @State private var otherCategory = ""
     @State private var otherShared = false
     @State private var ready = false
+    @State private var tried = false
 
     var body: some View {
         let copy = store.copy
@@ -41,9 +43,11 @@ struct EntryFormView: View {
                 }
             }
             FieldLabel(text: copy.amount)
-            LedgerField(text: $amount, placeholder: "0.00", decimal: true)
+            LedgerField(text: $amount, placeholder: "0.00", decimal: true, marked: tried && !amountReady)
+                .background(EntryMark(id: "entry-amount"))
             FieldLabel(text: copy.name)
-            LedgerField(text: $title, placeholder: copy.namePh)
+            LedgerField(text: $title, placeholder: copy.namePh, marked: tried && !titleReady)
+                .background(EntryMark(id: "entry-title"))
             if !suggestions.isEmpty {
                 FieldLabel(text: copy.titleSuggestions)
                 ChipWrap(names: suggestions, selected: title) { title = $0 }
@@ -58,7 +62,8 @@ struct EntryFormView: View {
             if splitOn && existing == nil {
                 VStack(alignment: .leading, spacing: 14) {
                     FieldLabel(text: copy.splitAmount)
-                    LedgerField(text: $otherAmount, placeholder: "0.00", decimal: true)
+                    LedgerField(text: $otherAmount, placeholder: "0.00", decimal: true, marked: tried && splitOn && existing == nil && !otherReady)
+                        .background(EntryMark(id: "entry-other"))
                     FieldLabel(text: copy.category)
                     CategoryGrid(names: store.book.categories, marks: store.book.categoryMarks, selected: otherCategory, rows: 4, addTitle: copy.add, onSelect: { otherCategory = $0 }, onAdd: { screen.open(.categoryForm(slot: "other")) })
                     checkRow(copy.shared, on: otherShared) { otherShared.toggle() }
@@ -66,7 +71,8 @@ struct EntryFormView: View {
                 .transition(.opacity)
             }
             FieldLabel(text: copy.date)
-            DateField(copy: copy, iso: $date, label: copy.date)
+            DateField(copy: copy, iso: $date, label: copy.date, marked: tried && !dateReady)
+                .background(EntryMark(id: "entry-date"))
             FieldLabel(text: copy.account)
             if store.openAccounts(keeping: accountID).isEmpty {
                 Text(copy.accountNone)
@@ -75,8 +81,9 @@ struct EntryFormView: View {
                     .padding(.horizontal, 14)
                     .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
                     .background(Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Palette.line, lineWidth: 1))
+                    .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(tried && !accountReady ? Palette.down : Palette.line, lineWidth: 1))
                     .allowsHitTesting(false)
+                    .background(EntryMark(id: "entry-account"))
             } else {
                 accountField
             }
@@ -111,7 +118,14 @@ struct EntryFormView: View {
                 }
                 .transition(.opacity)
             }
-            PillButton(title: copy.save, enabled: canSave) { save(existing: existing) }
+            PillButton(title: copy.save, faded: !canSave) {
+                guard canSave else {
+                    tried = true
+                    if let id = firstGap { revealEntry(id) }
+                    return
+                }
+                save(existing: existing)
+            }
             if let existing, existing.isOut, existing.refundOf.isEmpty {
                 let refunded = store.book.entries.contains { $0.refundOf == existing.id }
                 if refunded {
@@ -163,9 +177,10 @@ struct EntryFormView: View {
         let choices = store.openAccounts(keeping: accountID)
         let name = choices.first { $0.id == accountID }?.name ?? ""
         let options = choices.map { ChoiceOption(id: $0.id, title: $0.name) }
-        return ChoiceField(label: store.copy.account, title: name, options: options, selectedID: accountID) {
+        return ChoiceField(label: store.copy.account, title: name, options: options, selectedID: accountID, marked: tried && !accountReady) {
             accountID = $0
         }
+        .background(EntryMark(id: "entry-account"))
     }
 
     private func sharedBox(_ copy: LedgerCopy) -> some View {
@@ -233,17 +248,91 @@ struct EntryFormView: View {
         }
     }
 
+    private var amountReady: Bool {
+        LedgerMoney.cents(LedgerMoney.solve(amount.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0) > 0
+    }
+
+    private var titleReady: Bool {
+        !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var dateReady: Bool {
+        !date.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var accountReady: Bool {
+        entryID != nil || store.openAccounts(keeping: accountID).contains { $0.id == accountID && !$0.id.hasPrefix("sample-") }
+    }
+
+    private var otherReady: Bool {
+        let other = LedgerMoney.cents(LedgerMoney.solve(otherAmount.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0)
+        return other > 0 && !otherCategory.isEmpty
+    }
+
     private var canSave: Bool {
-        let value = LedgerMoney.cents(LedgerMoney.solve(amount.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0)
-        let titled = !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        let ownAccount = store.openAccounts(keeping: accountID).contains { $0.id == accountID && !$0.id.hasPrefix("sample-") }
-        let editing = entryID != nil
-        guard titled, value > 0, ownAccount || editing else { return false }
-        if splitOn, entryID == nil {
-            let other = LedgerMoney.cents(LedgerMoney.solve(otherAmount.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0)
-            return other > 0 && !otherCategory.isEmpty
-        }
+        guard titleReady, amountReady, dateReady, accountReady else { return false }
+        if splitOn, entryID == nil { return otherReady }
         return true
+    }
+
+    private struct EntryMark: UIViewRepresentable {
+        var id: String
+
+        func makeUIView(context: Context) -> UIView {
+            let view = UIView()
+            view.isUserInteractionEnabled = false
+            view.backgroundColor = .clear
+            view.accessibilityIdentifier = id
+            return view
+        }
+
+        func updateUIView(_ view: UIView, context: Context) {
+            view.accessibilityIdentifier = id
+        }
+    }
+
+    private func revealEntry(_ id: String) {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        scrollEntry(id)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { scrollEntry(id) }
+    }
+
+    private func scrollEntry(_ id: String) {
+        let windows = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+        for window in windows {
+            guard let target = markedView(id, in: window), let scroll = scrollOwner(of: target) else { continue }
+            let rect = target.convert(target.bounds, to: scroll).insetBy(dx: 0, dy: -36)
+            scroll.scrollRectToVisible(rect, animated: true)
+            return
+        }
+    }
+
+    private func markedView(_ id: String, in view: UIView) -> UIView? {
+        if view.accessibilityIdentifier == id { return view }
+        for child in view.subviews {
+            if let found = markedView(id, in: child) { return found }
+        }
+        return nil
+    }
+
+    private func scrollOwner(of view: UIView) -> UIScrollView? {
+        var current = view.superview
+        while let next = current {
+            if let scroll = next as? UIScrollView { return scroll }
+            current = next.superview
+        }
+        return nil
+    }
+
+    private var firstGap: String? {
+        if !amountReady { return "entry-amount" }
+        if !titleReady { return "entry-title" }
+        if splitOn, entryID == nil, !otherReady { return "entry-other" }
+        if !dateReady { return "entry-date" }
+        if !accountReady { return "entry-account" }
+        return nil
     }
 
     private func fill(_ existing: Entry?) {

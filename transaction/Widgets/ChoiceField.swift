@@ -19,6 +19,7 @@ struct ChoiceField: View {
     var title: String
     var options: [ChoiceOption]
     var selectedID: String
+    var marked = false
     var onSelect: (String) -> Void
     @State private var open = false
     @State private var placeAbove = true
@@ -49,7 +50,7 @@ struct ChoiceField: View {
             .frame(minHeight: 48)
             .frame(maxWidth: .infinity)
             .background(Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Palette.line, lineWidth: 1))
+            .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(marked ? Palette.down : Palette.line, lineWidth: 1))
         }
         .buttonStyle(.plain)
         .accessibilityLabel(label)

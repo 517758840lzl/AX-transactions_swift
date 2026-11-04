@@ -14,6 +14,7 @@ struct DateField: View {
     @Binding var iso: String
     var label = ""
     var latest = LedgerDay.today()
+    var marked = false
     @State private var open = false
 
     var body: some View {
@@ -28,7 +29,7 @@ struct DateField: View {
                 .padding(.horizontal, 14)
                 .frame(minHeight: 48)
                 .background(Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Palette.line, lineWidth: 1))
+                .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(marked ? Palette.down : Palette.line, lineWidth: 1))
         }
         .buttonStyle(.plain)
         .accessibilityLabel(label.isEmpty ? iso : label)

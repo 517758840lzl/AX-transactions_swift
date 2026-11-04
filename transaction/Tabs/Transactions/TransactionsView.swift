@@ -271,7 +271,7 @@ struct TransactionsView: View {
         let rows = wrappedFilters(items, width: filterWidth)
         return VStack(alignment: .leading, spacing: 8) {
             ForEach(rows.indices, id: \.self) { index in
-                HStack(spacing: 8) {
+                HStack(spacing: 12) {
                     ForEach(rows[index], id: \.value) { item in
                         statusChip(item.title, item.value)
                     }
@@ -295,7 +295,7 @@ struct TransactionsView: View {
         let font = UIFont.systemFont(ofSize: 13, weight: .semibold)
         for item in items {
             let chip = ceil((item.title as NSString).size(withAttributes: [.font: font]).width) + 24
-            let next = row.isEmpty ? chip : used + 8 + chip
+            let next = row.isEmpty ? chip : used + 12 + chip
             if !row.isEmpty, next > limit {
                 rows.append(row)
                 row = [item]

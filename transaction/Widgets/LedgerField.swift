@@ -13,6 +13,7 @@ struct LedgerField: View {
     var text: Binding<String>
     var placeholder: String
     var decimal = false
+    var marked = false
 
     var body: some View {
         Group {
@@ -26,7 +27,7 @@ struct LedgerField: View {
         .padding(.horizontal, 14)
         .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
         .background(Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Palette.line, lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(marked ? Palette.down : Palette.line, lineWidth: 1))
     }
 }
 
