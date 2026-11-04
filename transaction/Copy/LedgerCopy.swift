@@ -183,6 +183,15 @@ struct LedgerCopy {
     var streakDays: String
     var streakToday: String
     var streakNone: String
+    var markTitle: String
+    var markDays: String
+    var markRemain: String
+    var markReached: String
+    var markFirst: String
+    var markWeek: String
+    var markMonth: String
+    var markHundred: String
+    var markYear: String
     var privacyTitle: String
     var exportBackup: String
     var dataExportNote: String
@@ -573,7 +582,10 @@ private let chinese = LedgerCopy(
     reminderNote: "到点后由系统发通知，点开进入记一笔。",
     reminderDenied: "通知权限未开启，请在系统设置中允许 {name} 发送提醒。",
     reminderOff: "关闭", reminderPing: "该记账了",
-    streakDays: "连续记账", streakToday: "今日已记", streakNone: "今天还没记", privacyTitle: "隐私协议",
+    streakDays: "连续记账", streakToday: "今日已记", streakNone: "今天还没记",
+    markTitle: "等级", markDays: "已记录 {count} 天", markRemain: "还差 {count} 天", markReached: "已达到",
+    markFirst: "青铜", markWeek: "白银", markMonth: "黄金", markHundred: "铂金", markYear: "钻石",
+    privacyTitle: "隐私协议",
     exportBackup: "导出 JSON 备份", dataExportNote: "账户、流水、预算和灵感都会写进这一份 JSON。",
     exportExcel: "导出 Excel", dataExcelNote: "流水、账户和预算会写成表格，可以用 Excel 打开。",
     exportBook: "导出账本", dataManage: "数据管理", clearBook: "清除数据",
@@ -684,7 +696,10 @@ private let englishCopy = LedgerCopy(
     reminderNote: "The system notifies you at this time. Tap it to add a transaction.",
     reminderDenied: "Notifications are off. Allow {name} to send reminders in Settings.",
     reminderOff: "Off", reminderPing: "Time to log a transaction",
-    streakDays: "Streak", streakToday: "Logged today", streakNone: "Not logged today", privacyTitle: "Privacy",
+    streakDays: "Streak", streakToday: "Logged today", streakNone: "Not logged today",
+    markTitle: "Rank", markDays: "{count} days logged", markRemain: "{count} days to go", markReached: "Reached",
+    markFirst: "Bronze", markWeek: "Silver", markMonth: "Gold", markHundred: "Platinum", markYear: "Diamond",
+    privacyTitle: "Privacy",
     exportBackup: "Export JSON backup", dataExportNote: "Accounts, activity, budgets and ideas go into this JSON.",
     exportExcel: "Export Excel", dataExcelNote: "Activity, accounts and budgets become a spreadsheet Excel can open.",
     exportBook: "Export book", dataManage: "Data", clearBook: "Clear data",

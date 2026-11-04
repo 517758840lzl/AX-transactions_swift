@@ -57,4 +57,9 @@ extension BookMath {
     static func loggedToday(_ entries: [Entry], now: Date = Date()) -> Bool {
         entries.contains { $0.date == LedgerDay.today(now) }
     }
+
+    /// Distinct days that have a saved entry. Sample rows do not count.
+    static func loggedDays(_ entries: [Entry]) -> Int {
+        Set(entries.filter { !$0.id.hasPrefix("sample-") }.map(\.date)).count
+    }
 }

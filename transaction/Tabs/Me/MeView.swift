@@ -58,6 +58,12 @@ struct MeView: View {
                 .buttonStyle(.plain)
             }
 
+            PanelCard(card: true) {
+                RecordMarkCard(days: BookMath.loggedDays(store.book.entries), copy: copy) {
+                    screen.open(.entry(id: nil))
+                }
+            }
+
             PanelCard(title: copy.sparks, titleSize: 13, card: true, trailing: {
                 let count = store.book.sparks.count
                 if count > 0 {

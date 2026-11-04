@@ -246,12 +246,16 @@ struct SparksListView: View {
                     .font(.system(size: 14, weight: .bold))
                     .foregroundStyle(Palette.down)
             }
-            Button(copy.sparkPicture, action: pick)
-                .font(.system(size: 15, weight: .bold))
-                .foregroundStyle(Palette.ink)
-                .frame(maxWidth: .infinity, minHeight: 44)
-                .background(Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Palette.line, lineWidth: 1))
+            Button(action: pick) {
+                Text(copy.sparkPicture)
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundStyle(Palette.ink)
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .background(Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Palette.line, lineWidth: 1))
+                    .contentShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            }
+            .buttonStyle(.plain)
         }
     }
 }
@@ -297,12 +301,16 @@ struct SparkFormView: View {
                     .font(.system(size: 14, weight: .bold))
                     .foregroundStyle(Palette.down)
             }
-            Button(copy.sparkPicture) { picking = true }
-                .font(.system(size: 15, weight: .bold))
-                .foregroundStyle(Palette.ink)
-                .frame(maxWidth: .infinity, minHeight: 44)
-                .background(Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Palette.line, lineWidth: 1))
+            Button { picking = true } label: {
+                Text(copy.sparkPicture)
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundStyle(Palette.ink)
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .background(Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Palette.line, lineWidth: 1))
+                    .contentShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            }
+            .buttonStyle(.plain)
             Button {
                 favorite.toggle()
             } label: {
