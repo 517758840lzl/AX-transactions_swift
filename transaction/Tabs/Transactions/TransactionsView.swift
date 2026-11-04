@@ -32,7 +32,7 @@ struct TransactionsView: View {
         let accountName = store.book.accounts.first { $0.id == screen.accountId }?.name
         let listTitle = screen.showCalendar ? copy.dayChip(screen.calendarDay ?? LedgerDay.today()) : copy.periodChip(mode: screen.txMode, from: screen.txFrom, to: screen.txTo)
 
-        PageScroll(bottom: 128) {
+        PageScroll(place: "activity", bottom: 128) {
             HStack {
                 Text(copy.transactions).font(.system(size: 26, weight: .bold)).tracking(-0.4).foregroundStyle(Palette.ink)
                 Spacer()

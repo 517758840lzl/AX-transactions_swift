@@ -55,13 +55,22 @@ struct YearReportClassify: View {
     var titles: (String) -> [YearBucket]
     var openSlice: (YearBucket) -> Void
     var openTitle: (String, String) -> Void
+    var onAdd: () -> Void
 
     var body: some View {
         YearReportCard(title: copy.yearClassify) {
             if slices.isEmpty {
-                Text(copy.statsEmpty)
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(Palette.muted)
+                HStack(spacing: 0) {
+                    Text(copy.statsEmpty)
+                        .foregroundColor(Palette.muted)
+                    Button(action: onAdd) {
+                        Text(copy.statsEmptyAdd)
+                            .foregroundColor(Palette.ink)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .font(.system(size: 13, weight: .semibold))
+                .frame(maxWidth: .infinity)
             } else {
                 ring(slices, total: total)
                 ForEach(Array(slices.enumerated()), id: \.element.id) { index, slice in

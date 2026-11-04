@@ -9,6 +9,7 @@ import Combine
 import SwiftUI
 
 struct PageScroll<Content: View>: View {
+    var place: String
     var bottom: CGFloat = 28
     @ViewBuilder var content: () -> Content
 
@@ -21,7 +22,7 @@ struct PageScroll<Content: View>: View {
             .padding(.horizontal, 18)
             .padding(.top, 12)
             .padding(.bottom, bottom)
-            .immediateScroll()
+            .immediateScroll(place: place)
         }
         .background(Palette.stage)
     }

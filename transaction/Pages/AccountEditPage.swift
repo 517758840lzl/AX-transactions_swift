@@ -39,7 +39,7 @@ struct AccountFormView: View {
     var body: some View {
         let copy = store.copy
         let editing = store.book.accounts.contains { $0.id == accountID }
-        FormPage(title: editing ? copy.editAccount : copy.newAccount, back: copy.back) {
+        FormPage(title: editing ? copy.editAccount : copy.newAccount, back: copy.back, place: "account-form-\(accountID ?? "new")") {
             FieldLabel(text: copy.accountName)
             LedgerField(text: $name, placeholder: copy.accountNamePh)
             FieldLabel(text: copy.accountKindLabel)

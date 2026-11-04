@@ -20,7 +20,7 @@ struct AccountsView: View {
         let empty = own.isEmpty
         let showSample = !empty && !store.book.sampleCleared && store.book.accounts.contains { $0.id.hasPrefix("sample-") }
 
-        PageScroll(bottom: 16) {
+        PageScroll(place: "accounts", bottom: 16) {
             HStack(alignment: .center, spacing: 0) {
                 Text(copy.accounts)
                     .font(.system(size: 26, weight: .bold))

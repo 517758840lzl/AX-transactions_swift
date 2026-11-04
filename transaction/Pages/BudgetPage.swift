@@ -17,7 +17,7 @@ struct BudgetFormView: View {
 
     var body: some View {
         let copy = store.copy
-        FormPage(title: copy.monthlyBudget, back: copy.back) {
+        FormPage(title: copy.monthlyBudget, back: copy.back, place: "budget") {
             Text(copy.budgetHint).font(.system(size: 13)).foregroundStyle(Palette.muted)
             LedgerField(text: $monthly, placeholder: "5000.00", decimal: true)
             Text(copy.categoryBudget).font(.system(size: 16, weight: .bold))

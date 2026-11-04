@@ -19,7 +19,7 @@ struct TransferFormView: View {
 
     var body: some View {
         let copy = store.copy
-        FormPage(title: copy.transferTitle, back: copy.back) {
+        FormPage(title: copy.transferTitle, back: copy.back, place: "transfer") {
             FieldLabel(text: copy.transferFrom)
             accountChoice(copy.transferFrom, id: fromID) { fromID = $0 }
             FieldLabel(text: copy.transferTo)

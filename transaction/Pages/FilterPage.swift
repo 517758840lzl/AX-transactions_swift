@@ -21,7 +21,7 @@ struct FilterFormView: View {
 
     var body: some View {
         let copy = store.copy
-        FormPage(title: copy.filter, back: copy.back) {
+        FormPage(title: copy.filter, back: copy.back, place: "filter-\(which)") {
             PanelCard(title: copy.filterScope) {
                 ChoiceRow(labels: [copy.scopeMine, copy.scopeFamily], index: scope == .mine ? 0 : 1) { index in
                     scope = index == 0 ? .mine : .family

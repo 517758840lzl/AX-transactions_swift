@@ -16,7 +16,7 @@ struct ProfileFormView: View {
 
     var body: some View {
         let copy = store.copy
-        FormPage(title: copy.profileTitle, back: copy.back) {
+        FormPage(title: copy.profileTitle, back: copy.back, place: "profile") {
             FieldLabel(text: copy.avatarTitle)
             AvatarMark(gender: gender, size: 72)
             FieldLabel(text: copy.nicknameTitle)

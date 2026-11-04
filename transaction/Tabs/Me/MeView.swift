@@ -24,7 +24,7 @@ struct MeView: View {
         let logged = BookMath.loggedToday(store.book.entries)
         let name = store.book.nickname.isEmpty ? copy.unsetName : store.book.nickname
         let languageName = store.book.locale.title
-        PageScroll(bottom: 16) {
+        PageScroll(place: "me", bottom: 16) {
             Text(copy.me).font(.system(size: 26, weight: .bold)).tracking(-0.4).foregroundStyle(Palette.ink)
             PanelCard(card: true) {
                 Button { screen.open(.profile) } label: {

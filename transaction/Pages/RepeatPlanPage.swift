@@ -26,7 +26,7 @@ struct RepeatPlanFormView: View {
     var body: some View {
         let copy = store.copy
         let existing = store.book.repeats.first { $0.id == planID }
-        FormPage(title: copy.recurringTitle, back: copy.back) {
+        FormPage(title: copy.recurringTitle, back: copy.back, place: "repeat-\(planID ?? "new")") {
             ChoiceRow(labels: [copy.periodSpend, copy.monthIncome], index: direction == .out ? 0 : 1) { index in
                 direction = index == 0 ? .out : .income
             }

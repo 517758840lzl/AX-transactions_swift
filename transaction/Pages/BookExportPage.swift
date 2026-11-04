@@ -15,7 +15,7 @@ struct BookExportPage: View {
     var body: some View {
         let copy = store.copy
         let book = store.book
-        FormPage(title: copy.dataManage, back: copy.back) {
+        FormPage(title: copy.dataManage, back: copy.back, place: "export") {
             PanelCard {
                 HStack(spacing: 0) {
                     stat(book.entries.count, copy.transactions) { showTab(1) }

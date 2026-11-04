@@ -112,7 +112,7 @@ struct WorthTrendPage: View {
             entries: store.book.entries,
             days: days
         )
-        FormPage(title: copy.netAssets, back: copy.back) {
+        FormPage(title: copy.netAssets, back: copy.back, place: "worth") {
             WorthSummary(store: store, screen: screen, opens: false)
             TrendChart(
                 amounts: snapshot.amounts,

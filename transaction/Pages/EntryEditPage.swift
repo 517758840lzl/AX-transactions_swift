@@ -36,7 +36,7 @@ struct EntryFormView: View {
         let copy = store.copy
         let existing = store.book.entries.first { $0.id == entryID }
         let suggestions = BookMath.titleSuggestions(store.book.entries, locale: store.book.locale, transferCategory: copy.transferCategory)
-        FormPage(title: existing == nil ? copy.entryNew : copy.entryEdit, back: copy.back) {
+        FormPage(title: existing == nil ? copy.entryNew : copy.entryEdit, back: copy.back, place: "entry-\(entryID ?? "new")") {
             ChoiceRow(labels: [copy.periodSpend, copy.monthIncome], index: direction == .out ? 0 : 1) { index in
                 withAnimation(LedgerScreen.fold) {
                     direction = index == 0 ? .out : .income

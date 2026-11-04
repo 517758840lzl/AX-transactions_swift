@@ -83,7 +83,8 @@ struct YearReportPage: View {
                     },
                     openTitle: { category, title in
                         openFeed(month: nil, category: category, title: title, account: nil)
-                    }
+                    },
+                    onAdd: { screen.open(.entry(id: nil)) }
                 )
                 YearReportCompare(
                     copy: copy,
@@ -128,7 +129,7 @@ struct YearReportPage: View {
             .padding(.horizontal, 18)
             .padding(.top, 8)
             .padding(.bottom, 32)
-            .immediateScroll()
+            .immediateScroll(place: "year")
         }
         .background(Palette.stage)
     }

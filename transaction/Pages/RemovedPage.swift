@@ -12,7 +12,7 @@ struct RemovedListView: View {
 
     var body: some View {
         let copy = store.copy
-        FormPage(title: copy.removedTitle, back: copy.back) {
+        FormPage(title: copy.removedTitle, back: copy.back, place: "removed") {
             PanelCard(card: true) {
                 if store.book.removed.isEmpty {
                     Text(copy.removedEmpty)

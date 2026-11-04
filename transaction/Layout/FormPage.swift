@@ -11,6 +11,7 @@ import SwiftUI
 struct FormPage<Content: View>: View {
     var title: String
     var back: String
+    var place: String
     @ViewBuilder var content: () -> Content
     @Environment(\.pageBack) private var pageBack
 
@@ -23,7 +24,7 @@ struct FormPage<Content: View>: View {
             .padding(.horizontal, 18)
             .padding(.top, 8)
             .padding(.bottom, 32)
-            .immediateScroll()
+            .immediateScroll(place: place)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Color.white)

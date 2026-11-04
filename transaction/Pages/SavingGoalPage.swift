@@ -14,7 +14,7 @@ struct SavingGoalsListView: View {
 
     var body: some View {
         let copy = store.copy
-        FormPage(title: copy.savingGoals, back: copy.back) {
+        FormPage(title: copy.savingGoals, back: copy.back, place: "goals") {
             PillButton(title: copy.add) { screen.open(.savingGoal(id: nil)) }
             ForEach(store.book.goals) { goal in
                 let kept = BookMath.goalKept(goal, entries: store.book.entries)
@@ -66,7 +66,7 @@ struct SavingGoalFormView: View {
     var body: some View {
         let copy = store.copy
         let existing = store.book.goals.first { $0.id == goalID }
-        FormPage(title: copy.savingGoals, back: copy.back) {
+        FormPage(title: copy.savingGoals, back: copy.back, place: "goal-\(goalID ?? "new")") {
             FieldLabel(text: copy.name)
             LedgerField(text: $title, placeholder: copy.namePh)
             FieldLabel(text: copy.savingTarget)

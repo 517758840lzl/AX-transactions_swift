@@ -135,7 +135,7 @@ struct CategoryFormView: View {
         let copy = store.copy
         let pending = name.trimmingCharacters(in: .whitespacesAndNewlines)
         let taken = !pending.isEmpty && store.book.categories.contains(pending)
-        FormPage(title: copy.newCategory, back: copy.back) {
+        FormPage(title: copy.newCategory, back: copy.back, place: "category-form") {
             CategoryMarkPicker(selected: markKey) { markKey = $0 }
             FieldLabel(text: copy.name)
             LedgerField(text: $name, placeholder: copy.newCategory)

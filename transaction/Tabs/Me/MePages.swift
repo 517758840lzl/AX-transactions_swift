@@ -15,7 +15,7 @@ struct CategoryManageView: View {
 
     var body: some View {
         let copy = store.copy
-        FormPage(title: copy.categories, back: copy.back) {
+        FormPage(title: copy.categories, back: copy.back, place: "categories") {
             HStack {
                 Spacer()
                 Button(editing ? copy.done : copy.edit) { editing.toggle() }
@@ -40,7 +40,7 @@ struct LanguagePickView: View {
 
     var body: some View {
         let copy = store.copy
-        FormPage(title: copy.language, back: copy.back) {
+        FormPage(title: copy.language, back: copy.back, place: "language") {
             pickCard(BookLocale.allCases.map { locale in
                 (locale.title, store.book.locale == locale, { store.setLocale(locale) })
             })
@@ -53,7 +53,7 @@ struct CurrencyPickView: View {
 
     var body: some View {
         let copy = store.copy
-        FormPage(title: copy.currency, back: copy.back) {
+        FormPage(title: copy.currency, back: copy.back, place: "currency") {
             pickCard(CurrencyCode.allCases.map { code in
                 ("\(code.rawValue)  \(code.mark)", store.book.currency == code, { store.setCurrency(code) })
             })

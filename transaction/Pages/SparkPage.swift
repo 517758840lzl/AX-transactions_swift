@@ -27,7 +27,7 @@ struct SparksListView: View {
         let copy = store.copy
         let kinds = SparkKind.allCases
         let visible = store.book.sparks.filter { sparkVisible($0, copy: copy) }
-        FormPage(title: copy.sparks, back: copy.back) {
+        FormPage(title: copy.sparks, back: copy.back, place: "sparks") {
             ChoiceRow(labels: kinds.map { copy.sparkKindTitle($0) }, index: draftKind, columns: 2) { draftKind = $0 }
             WritingBox(text: $draft, placeholder: copy.sparkPlaceholder)
             FieldLabel(text: copy.sparkTags)
@@ -278,7 +278,7 @@ struct SparkFormView: View {
         let copy = store.copy
         let kinds = SparkKind.allCases
         let existing = store.book.sparks.first { $0.id == sparkID }
-        FormPage(title: copy.sparks, back: copy.back) {
+        FormPage(title: copy.sparks, back: copy.back, place: "spark-\(sparkID ?? "new")") {
             ChoiceRow(labels: kinds.map { copy.sparkKindTitle($0) }, index: kind, columns: 2) { kind = $0 }
             WritingBox(text: $bodyText, placeholder: copy.sparkPlaceholder)
             FieldLabel(text: copy.sparkTags)

@@ -78,9 +78,20 @@ struct DashboardStatsPanel: View {
             }
             .frame(height: 168, alignment: .bottom)
             if total == 0 {
-                Text(copy.statsEmpty)
-                    .font(.system(size: 14))
-                    .foregroundStyle(Palette.muted)
+                HStack(spacing: 0) {
+                    Text(copy.statsEmpty)
+                        .foregroundStyle(Palette.muted)
+                    Button {
+                        screen.open(.entry(id: nil))
+                    } label: {
+                        Text(copy.statsEmptyAdd)
+                            .foregroundStyle(Palette.ink)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .font(.system(size: 13, weight: .semibold))
+                .frame(maxWidth: .infinity)
+                .padding(.top, 2)
             } else {
                 Text(copy.statsCompose(when, kind: kindName))
                     .font(.system(size: 13, weight: .bold))

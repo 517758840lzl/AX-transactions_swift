@@ -73,6 +73,7 @@ struct ReminderPage: View {
             .padding(.horizontal, 18)
             .padding(.top, 8)
             .padding(.bottom, 32)
+            .immediateScroll(place: "reminder")
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             if pickingTime {
