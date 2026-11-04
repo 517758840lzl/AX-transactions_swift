@@ -60,9 +60,19 @@ struct SparksListView: View {
                 draftImage = nil
                 draftDay = LedgerDay.today()
             }
-            LedgerField(text: $query, placeholder: copy.sparkSearch)
-            ChoiceRow(labels: [copy.filterAll, copy.sparkIdea, copy.sparkDiary, copy.sparkThought, copy.sparkSummary, copy.sparkFavorite], index: filter, columns: 3) { filter = $0 }
-            ChoiceRow(labels: [copy.sparkNotes, copy.sparkTimeline], index: timeline ? 1 : 0) { timeline = $0 == 1 }
+            VStack(alignment: .leading, spacing: 8) {
+                SparkLookup(text: $query, placeholder: copy.sparkSearch)
+                SparkMode(notes: copy.sparkNotes, timelineTitle: copy.sparkTimeline, timeline: timeline) { timeline = $0 }
+                SparkFilters(labels: [copy.filterAll, copy.sparkIdea, copy.sparkDiary, copy.sparkThought, copy.sparkSummary, "★ \(copy.sparkFavorite)"], index: filter) { filter = $0 }
+            }
+            .padding(.horizontal, 14)
+            .padding(.top, 14)
+            .padding(.bottom, 12)
+            .background(Color(red: 1, green: 250 / 255, blue: 251 / 255), in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).stroke(Palette.line, lineWidth: 1))
+            .compositingGroup()
+            .shadow(color: Color(red: 232 / 255, green: 93 / 255, blue: 117 / 255).opacity(0.07), radius: 14, y: 8)
+            .padding(.top, 8)
             if timeline {
                 timelineList(copy, sparks: visible)
             } else {
@@ -395,6 +405,177 @@ private func sparkMatches(_ spark: Spark, query: String, copy: LedgerCopy) -> Bo
     if spark.writtenOn.contains(needle) { return true }
     if copy.sparkKindTitle(spark.kind).localizedCaseInsensitiveContains(needle) { return true }
     return spark.tags.contains { $0.localizedCaseInsensitiveContains(needle) }
+}
+
+private struct SparkLookup: View {
+    @Binding var text: String
+    var placeholder: String
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(Palette.down)
+            TextField(placeholder, text: $text)
+                .font(.system(size: 15))
+                .foregroundStyle(Palette.ink)
+        }
+        .padding(.horizontal, 12)
+        .frame(maxWidth: .infinity, minHeight: 42, alignment: .leading)
+        .background(Palette.neutral, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+}
+
+private struct SparkMode: View {
+    var notes: String
+    var timelineTitle: String
+    var timeline: Bool
+    var onChange: (Bool) -> Void
+
+    var body: some View {
+        HStack(spacing: 2) {
+            mode(notes, on: !timeline) { onChange(false) }
+            mode(timelineTitle, on: timeline) { onChange(true) }
+        }
+        .padding(3)
+        .background(Palette.neutral, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+    private func mode(_ title: String, on: Bool, action: @escaping () -> Void) -> some View {
+        Button {
+            withAnimation(.easeOut(duration: 0.18)) { action() }
+        } label: {
+            Text(title)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(on ? Palette.ink : Palette.faint)
+                .frame(maxWidth: .infinity, minHeight: 32)
+                .background(on ? Color.white : Color.clear, in: RoundedRectangle(cornerRadius: 11, style: .continuous))
+                .shadow(color: on ? Color.black.opacity(0.06) : Color.clear, radius: 1, y: 1)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct SparkFilters: View {
+    var labels: [String]
+    var index: Int
+    var onChange: (Int) -> Void
+
+    var body: some View {
+        SparkFilterLane(labels: labels, index: index, onChange: onChange)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(height: 32)
+    }
+}
+
+private struct SparkFilterLane: UIViewRepresentable {
+    var labels: [String]
+    var index: Int
+    var onChange: (Int) -> Void
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onChange: onChange)
+    }
+
+    func makeUIView(context: Context) -> FilterLaneHost {
+        FilterLaneHost()
+    }
+
+    func updateUIView(_ host: FilterLaneHost, context: Context) {
+        context.coordinator.onChange = onChange
+        host.render(labels: labels, index: index, target: context.coordinator)
+    }
+
+    final class Coordinator: NSObject {
+        var onChange: (Int) -> Void
+
+        init(onChange: @escaping (Int) -> Void) {
+            self.onChange = onChange
+        }
+
+        @objc func tap(_ sender: UIButton) {
+            onChange(sender.tag)
+        }
+    }
+}
+
+private final class FilterLaneHost: UIView {
+    private let scroll = UIScrollView()
+    private let stack = UIStackView()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        clipsToBounds = true
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+        scroll.showsHorizontalScrollIndicator = false
+        scroll.showsVerticalScrollIndicator = false
+        scroll.alwaysBounceHorizontal = true
+        scroll.alwaysBounceVertical = false
+        scroll.isDirectionalLockEnabled = true
+        scroll.delaysContentTouches = true
+        scroll.canCancelContentTouches = true
+        scroll.clipsToBounds = true
+        stack.axis = .horizontal
+        stack.alignment = .center
+        stack.spacing = 4
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(scroll)
+        scroll.addSubview(stack)
+        NSLayoutConstraint.activate([
+            scroll.leadingAnchor.constraint(equalTo: leadingAnchor),
+            scroll.trailingAnchor.constraint(equalTo: trailingAnchor),
+            scroll.topAnchor.constraint(equalTo: topAnchor),
+            scroll.bottomAnchor.constraint(equalTo: bottomAnchor),
+            stack.leadingAnchor.constraint(equalTo: scroll.contentLayoutGuide.leadingAnchor),
+            stack.trailingAnchor.constraint(equalTo: scroll.contentLayoutGuide.trailingAnchor, constant: -8),
+            stack.topAnchor.constraint(equalTo: scroll.contentLayoutGuide.topAnchor),
+            stack.bottomAnchor.constraint(equalTo: scroll.contentLayoutGuide.bottomAnchor),
+            stack.heightAnchor.constraint(equalTo: scroll.frameLayoutGuide.heightAnchor),
+        ])
+        setContentHuggingPriority(.defaultLow, for: .horizontal)
+        setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+    }
+
+    required init?(coder: NSCoder) { nil }
+
+    override var intrinsicContentSize: CGSize {
+        CGSize(width: UIView.noIntrinsicMetric, height: 32)
+    }
+
+    func render(labels: [String], index: Int, target: SparkFilterLane.Coordinator) {
+        if stack.arrangedSubviews.count != labels.count {
+            stack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+            for item in labels.indices {
+                let button = UIButton(type: .system)
+                button.tag = item
+                button.setContentHuggingPriority(.required, for: .horizontal)
+                button.setContentCompressionResistancePriority(.required, for: .horizontal)
+                button.addTarget(target, action: #selector(SparkFilterLane.Coordinator.tap(_:)), for: .touchUpInside)
+                stack.addArrangedSubview(button)
+            }
+        }
+        for item in labels.indices {
+            guard let button = stack.arrangedSubviews[item] as? UIButton else { continue }
+            let on = item == index
+            var config = UIButton.Configuration.plain()
+            config.title = labels[item]
+            config.baseForegroundColor = on
+                ? UIColor(red: 11 / 255, green: 5 / 255, blue: 29 / 255, alpha: 1)
+                : UIColor(red: 155 / 255, green: 150 / 255, blue: 163 / 255, alpha: 1)
+            config.background.backgroundColor = on
+                ? UIColor(red: 1, green: 179 / 255, blue: 199 / 255, alpha: 1)
+                : .clear
+            config.background.cornerRadius = 14
+            config.contentInsets = NSDirectionalEdgeInsets(top: 4, leading: 6, bottom: 4, trailing: 6)
+            config.titlePadding = 0
+            config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+                var outgoing = incoming
+                outgoing.font = .systemFont(ofSize: 13, weight: .semibold)
+                return outgoing
+            }
+            button.configuration = config
+        }
+    }
 }
 
 private struct PictureLook: View {
