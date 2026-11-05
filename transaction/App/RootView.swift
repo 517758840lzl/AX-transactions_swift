@@ -238,15 +238,18 @@ struct RootView: View {
 
     private func tabBar(_ copy: LedgerCopy) -> some View {
         let labels = [copy.tabDashboard, copy.tabTransactions, copy.tabAccounts, copy.tabMe]
-        let icons = ["square.grid.2x2", "list.bullet", "wallet.pass", "person"]
+        let icons = ["TabOverview", "TabLedger", "TabAccounts", "TabProfile"]
         return HStack(spacing: 0) {
             ForEach(labels.indices, id: \.self) { index in
                 Button {
                     screen.selectTab(index)
                 } label: {
                     VStack(spacing: 4) {
-                        Image(systemName: icons[index])
-                            .font(.system(size: 18))
+                        Image(icons[index])
+                            .renderingMode(.template)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 22, height: 22)
                             .foregroundStyle(Palette.ink)
                             .padding(screen.tab == index ? 4 : 0)
                             .background(screen.tab == index ? Palette.pink : Color.clear, in: RoundedRectangle(cornerRadius: 8))
