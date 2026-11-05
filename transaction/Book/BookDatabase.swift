@@ -72,6 +72,20 @@ final class BookDatabase {
         return false
     }
 
+    /// A consistent copy, including the image blobs, while the live file stays in WAL mode.
+    func snapshot(to url: URL) -> Bool {
+        guard let db else { return false }
+        try? FileManager.default.removeItem(at: url)
+        var dest: OpaquePointer?
+        let flags = SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE
+        guard sqlite3_open_v2(url.path, &dest, flags, nil) == SQLITE_OK, let dest else { return false }
+        defer { sqlite3_close(dest) }
+        guard let backup = sqlite3_backup_init(dest, "main", db, "main") else { return false }
+        let step = sqlite3_backup_step(backup, -1)
+        sqlite3_backup_finish(backup)
+        return step == SQLITE_DONE
+    }
+
     private func createTables() {
         let statements = [
             """

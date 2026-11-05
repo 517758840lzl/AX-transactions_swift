@@ -145,6 +145,8 @@ struct MeView: View {
             }
 
             PanelCard(title: copy.meData, titleSize: 13, card: true) {
+                settingsRow(copy.cloudTitle, trailing: cloudTrailing(copy), opens: true) { screen.open(.cloud) }
+                divider
                 settingsRow(copy.exportBook, opens: true) { screen.open(.export) }
                 divider
                 settingsRow(copy.importData, opens: true) { pickingFile = true }
@@ -197,6 +199,13 @@ struct MeView: View {
 
     private var divider: some View {
         Rectangle().fill(Palette.line.opacity(0.95)).frame(height: 1).padding(.vertical, 4)
+    }
+
+    private func cloudTrailing(_ copy: LedgerCopy) -> String {
+        guard let on = store.cloudOn else { return "" }
+        if !on { return copy.cloudOff }
+        guard let when = store.cloudWhen else { return copy.cloudNone }
+        return store.cloudClock(when)
     }
 
     private func reminderText(_ copy: LedgerCopy) -> String {

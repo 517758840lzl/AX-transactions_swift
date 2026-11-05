@@ -27,10 +27,17 @@ enum BundleTitle {
 final class BookStore: ObservableObject {
     @Published var book: Book
     @Published var note: String?
+    /// nil until the iPhone's iCloud sign-in has been checked.
+    @Published var cloudOn: Bool?
+    @Published var cloudWhen: Date?
 
     private let database: BookDatabase
     private let legacyURL: URL
     private var noteTask: Task<Void, Never>?
+    private var uploadTask: Task<Void, Never>?
+    private var uploadChain: Task<Date?, Never>?
+    private var cloudReady = false
+    private var cloudEpoch = 0
 
     init(book: Book, database: BookDatabase, legacyURL: URL) {
         self.book = book
@@ -74,6 +81,7 @@ final class BookStore: ObservableObject {
         }
         store.settleRepeats()
         store.purgeRemoved()
+        store.startCloud()
         return store
     }
 
@@ -209,6 +217,114 @@ final class BookStore: ObservableObject {
         }
         BillReminder.shared.refresh(book: book)
         DailyReminder.shared.sync(book, ask: false)
+        if cloudReady, hasUserRecords(book) {
+            scheduleUpload()
+        }
+    }
+
+    func refreshCloud() {
+        Task { [weak self] in
+            guard let self else { return }
+            let stamp = await BookCloud.stamp()
+            cloudOn = stamp.signedIn
+            cloudWhen = stamp.savedAt
+        }
+    }
+
+    func saveToCloud() async -> Bool {
+        await uploadBook() != nil
+    }
+
+    func bringFromCloud(announce: Bool) async -> Bool {
+        cloudEpoch += 1
+        let epoch = cloudEpoch
+        let temp = FileManager.default.temporaryDirectory.appendingPathComponent("ledger-cloud-in-\(UUID().uuidString).sqlite")
+        let copied = await Task.detached { BookCloud.read(into: temp) }.value
+        defer { try? FileManager.default.removeItem(at: temp) }
+        guard copied, epoch == cloudEpoch else { return false }
+        let loaded: Book? = {
+            let incoming = BookDatabase(url: temp)
+            return incoming.load()
+        }()
+        guard let loaded, database.replace(loaded) else { return false }
+        book = loaded
+        BillReminder.shared.refresh(book: book)
+        DailyReminder.shared.sync(book, ask: false)
+        if announce { flash(copy.cloudBrought) }
+        return true
+    }
+
+    func cloudClock(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        let code = book.locale.rawValue == "zh" ? "zh_CN" : book.locale.rawValue
+        formatter.locale = Locale(identifier: code)
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
+    }
+
+    private func startCloud() {
+        Task { [weak self] in
+            guard let self else { return }
+            let stamp = await BookCloud.stamp()
+            cloudOn = stamp.signedIn
+            cloudWhen = stamp.savedAt
+            cloudReady = true
+            if stamp.signedIn, hasUserRecords(book) {
+                _ = await uploadBook()
+            }
+        }
+    }
+
+    private func scheduleUpload() {
+        guard cloudOn == true else { return }
+        uploadTask?.cancel()
+        uploadTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 1_500_000_000)
+            guard let self, !Task.isCancelled else { return }
+            _ = await uploadBook()
+        }
+    }
+
+    private func uploadBook() async -> Date? {
+        let previous = uploadChain
+        let task = Task { [weak self] () -> Date? in
+            _ = await previous?.value
+            guard let self else { return nil }
+            return await self.writeSnapshot()
+        }
+        uploadChain = task
+        return await task.value
+    }
+
+    private func writeSnapshot() async -> Date? {
+        let epoch = cloudEpoch
+        let temp = FileManager.default.temporaryDirectory.appendingPathComponent("ledger-cloud-\(UUID().uuidString).sqlite")
+        guard database.snapshot(to: temp) else { return nil }
+        guard epoch == cloudEpoch else {
+            try? FileManager.default.removeItem(at: temp)
+            return nil
+        }
+        let when = await Task.detached {
+            let date = BookCloud.write(temp)
+            try? FileManager.default.removeItem(at: temp)
+            return date
+        }.value
+        guard epoch == cloudEpoch else { return nil }
+        if let when {
+            cloudOn = true
+            cloudWhen = when
+        }
+        return when
+    }
+
+    private func hasUserRecords(_ book: Book) -> Bool {
+        !book.entries.isEmpty
+            || !book.accounts.isEmpty
+            || !book.sparks.isEmpty
+            || !book.goals.isEmpty
+            || !book.removed.isEmpty
+            || !book.repeats.isEmpty
     }
 
     @discardableResult

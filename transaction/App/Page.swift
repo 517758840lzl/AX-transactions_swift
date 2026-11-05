@@ -28,6 +28,7 @@ enum Page: Hashable {
     case privacy
     case reminder
     case export
+    case cloud
     case removed
     case worthTrend
 }

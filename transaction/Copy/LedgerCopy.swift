@@ -198,6 +198,18 @@ struct LedgerCopy {
     var exportExcel: String
     var dataExcelNote: String
     var exportBook: String
+    var cloudTitle: String
+    var cloudOff: String
+    var cloudMissing: String
+    var cloudSettings: String
+    var cloudNone: String
+    var cloudWhenLine: String
+    var cloudSave: String
+    var cloudSaved: String
+    var cloudBring: String
+    var cloudBringAsk: String
+    var cloudBrought: String
+    var cloudFailed: String
     var dataManage: String
     var clearBook: String
     var clearBookConfirm: String
@@ -589,7 +601,13 @@ private let chinese = LedgerCopy(
     privacyTitle: "隐私协议",
     exportBackup: "导出 JSON 备份", dataExportNote: "账户、流水、预算和灵感都会写进这一份 JSON。",
     exportExcel: "导出 Excel", dataExcelNote: "流水、账户和预算会写成表格，可以用 Excel 打开。",
-    exportBook: "导出账本", dataManage: "数据管理", clearBook: "清除数据",
+    exportBook: "导出账本",
+    cloudTitle: "iCloud", cloudOff: "未登录", cloudMissing: "这部手机还没登录 iCloud。", cloudSettings: "打开设置",
+    cloudNone: "还没保存", cloudWhenLine: "上次保存 {time}",
+    cloudSave: "保存到 iCloud", cloudSaved: "已保存到 iCloud",
+    cloudBring: "取回这本账", cloudBringAsk: "取回会换成 iCloud 里的那本账。",
+    cloudBrought: "已取回", cloudFailed: "没能完成",
+    dataManage: "数据管理", clearBook: "清除数据",
     clearBookConfirm: "清除后，账户、流水、预算和灵感都会去掉，并且不会再填回示例。", clearBookDone: "账本数据已清除",
     importData: "导入账本", importPaste: "粘贴导出的 JSON", importDone: "导入成功", importInvalid: "JSON 无效，请检查内容",
     importConfirm: "这份文件会换掉现在的账本，包括账户和流水。",
@@ -703,7 +721,13 @@ private let englishCopy = LedgerCopy(
     privacyTitle: "Privacy",
     exportBackup: "Export JSON backup", dataExportNote: "Accounts, activity, budgets and ideas go into this JSON.",
     exportExcel: "Export Excel", dataExcelNote: "Activity, accounts and budgets become a spreadsheet Excel can open.",
-    exportBook: "Export book", dataManage: "Data", clearBook: "Clear data",
+    exportBook: "Export book",
+    cloudTitle: "iCloud", cloudOff: "Signed out", cloudMissing: "This iPhone is not signed in to iCloud.", cloudSettings: "Open Settings",
+    cloudNone: "Not saved yet", cloudWhenLine: "Last saved {time}",
+    cloudSave: "Save to iCloud", cloudSaved: "Saved to iCloud",
+    cloudBring: "Bring this book back", cloudBringAsk: "This replaces the book on this iPhone with the iCloud copy.",
+    cloudBrought: "Brought back", cloudFailed: "Could not finish",
+    dataManage: "Data", clearBook: "Clear data",
     clearBookConfirm: "Accounts, transactions, budgets and ideas will be removed, and the sample book will not come back.",
     clearBookDone: "Book data cleared",
     importData: "Import book", importPaste: "Paste exported JSON", importDone: "Import complete",

@@ -227,6 +227,8 @@ struct RootView: View {
             ReminderPage(store: store)
         case .export:
             BookExportPage(store: store, screen: screen)
+        case .cloud:
+            CloudPage(store: store)
         case .removed:
             RemovedListView(store: store)
         case .worthTrend:
