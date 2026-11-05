@@ -31,15 +31,17 @@ P12_PASSWORD="$(printf '%s' "$IOS_DIST_P12_PASSWORD" | tr -d '\r\n')"
 decode_base64_to_file "$IOS_DIST_P12_BASE64" "$P12_PATH"
 decode_base64_to_file "$IOS_PROVISION_PROFILE_BASE64" "$PROFILE_PATH"
 
-if ! openssl pkcs12 -in "$P12_PATH" -noout -passin "pass:${P12_PASSWORD}" 2>/dev/null; then
+# -legacy matches the loan calculator pack script. A p12 made elsewhere can be
+# readable by openssl and still rejected by the macOS keychain import.
+if ! openssl pkcs12 -in "$P12_PATH" -noout -passin "pass:${P12_PASSWORD}" -legacy 2>/dev/null; then
   echo "error: p12 does not match IOS_DIST_P12_PASSWORD (check base64 and password secret)"
   exit 1
 fi
 echo "p12 password OK ($(wc -c <"$P12_PATH" | tr -d ' ') bytes)"
 
 P12_APPLE="$WORKDIR/dist-apple.p12"
-openssl pkcs12 -in "$P12_PATH" -passin "pass:${P12_PASSWORD}" -nocerts -nodes -out "$WORKDIR/key.pem"
-openssl pkcs12 -in "$P12_PATH" -passin "pass:${P12_PASSWORD}" -clcerts -nokeys -out "$WORKDIR/cert.pem"
+openssl pkcs12 -in "$P12_PATH" -passin "pass:${P12_PASSWORD}" -legacy -nocerts -nodes -out "$WORKDIR/key.pem"
+openssl pkcs12 -in "$P12_PATH" -passin "pass:${P12_PASSWORD}" -legacy -clcerts -nokeys -out "$WORKDIR/cert.pem"
 openssl pkcs12 -export -legacy -inkey "$WORKDIR/key.pem" -in "$WORKDIR/cert.pem" \
   -passout "pass:${P12_PASSWORD}" -out "$P12_APPLE"
 P12_PATH="$P12_APPLE"
@@ -66,36 +68,103 @@ PROFILE_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
 mkdir -p "$PROFILE_DIR"
 cp "$PROFILE_PATH" "$PROFILE_DIR/${PROFILE_UUID}.mobileprovision"
 
-BUNDLE_ID="luozhilin.com.trans.transaction"
-export IOS_TEAM_ID PROFILE_NAME BUNDLE_ID
+export IOS_TEAM_ID PROFILE_NAME
+BUNDLE_ID="$(
 python3 - <<'PY'
 import os
+import re
 from pathlib import Path
 
 team = os.environ["IOS_TEAM_ID"]
-profile = os.environ["PROFILE_NAME"]
-bundle = os.environ["BUNDLE_ID"]
+profile = os.environ["PROFILE_NAME"].replace("\\", "\\\\").replace('"', '\\"')
 path = Path("transaction.xcodeproj/project.pbxproj")
 text = path.read_text()
-marker = f"PRODUCT_BUNDLE_IDENTIFIER = {bundle};"
-blocks = text.split("buildSettings = {")
-if len(blocks) < 2:
-    raise SystemExit("no build settings in project")
-rewritten = [blocks[0]]
+
+parts = text.split("isa = PBXNativeTarget;")
+app_head = ""
+for part in parts[1:]:
+    head = part.split("isa = ", 1)[0]
+    if 'productType = "com.apple.product-type.application";' in head:
+        app_head = head
+        break
+if not app_head:
+    raise SystemExit("application target not found")
+list_id = re.search(r"buildConfigurationList = ([A-F0-9]{24})", app_head)
+if not list_id:
+    raise SystemExit("application target has no configuration list")
+list_body = re.search(
+    rf"\t\t{list_id.group(1)} /\* Build configuration list for PBXNativeTarget .*? \*/ = \{{\n"
+    rf"\t\t\tisa = XCConfigurationList;\n"
+    rf"\t\t\tbuildConfigurations = \((.*?)\);",
+    text,
+    re.S,
+)
+if not list_body:
+    raise SystemExit("application configuration list not found")
+config_ids = re.findall(r"([A-F0-9]{24})", list_body.group(1))
+if not config_ids:
+    raise SystemExit("application target has no build configurations")
+
+text = re.sub(
+    r"DEVELOPMENT_TEAM = [^;]+;",
+    f"DEVELOPMENT_TEAM = {team};",
+    text,
+)
+
+def signing_settings(body: str) -> str:
+    if "CODE_SIGN_STYLE = " in body:
+        body = re.sub(r"CODE_SIGN_STYLE = [^;]+;", "CODE_SIGN_STYLE = Manual;", body, count=1)
+    else:
+        body = "\t\t\t\tCODE_SIGN_STYLE = Manual;\n" + body
+    body = re.sub(r'\t*"CODE_SIGN_IDENTITY\[sdk=iphoneos\*\]" = [^;]+;\n', "", body)
+    body = re.sub(r"\t*CODE_SIGN_IDENTITY = [^;]+;\n", "", body)
+    body = re.sub(r'\t*PROVISIONING_PROFILE_SPECIFIER = "[^"]*";\n', "", body)
+
+    found = {}
+
+    def bundle_line(match: re.Match) -> str:
+        indent = match.group(1)
+        current = match.group(2).strip().strip('"')
+        found["id"] = current
+        return (
+            f'{indent}CODE_SIGN_IDENTITY = "Apple Distribution";\n'
+            f'{indent}"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";\n'
+            f'{indent}PROVISIONING_PROFILE_SPECIFIER = "{profile}";\n'
+            f"{indent}PRODUCT_BUNDLE_IDENTIFIER = {match.group(2)};"
+        )
+
+    updated, count = re.subn(
+        r"^(\s*)PRODUCT_BUNDLE_IDENTIFIER = ([^;]+);",
+        bundle_line,
+        body,
+        count=1,
+        flags=re.M,
+    )
+    if count != 1 or "id" not in found:
+        raise SystemExit("application configuration has no bundle id")
+    bundle_ids.append(found["id"])
+    return updated
+
+bundle_ids = []
 patched = 0
-for block in blocks[1:]:
-    if marker in block.split("name = ", 1)[0]:
-        block = block.replace("CODE_SIGN_STYLE = Automatic;", "CODE_SIGN_STYLE = Manual;", 1)
-        block = block.replace("DEVELOPMENT_TEAM = 3FA7WCR8G7;", f"DEVELOPMENT_TEAM = {team};", 1)
-        identity = '\t\t\t\tCODE_SIGN_IDENTITY = "Apple Distribution";\n\t\t\t\t"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";\n'
-        specifier = f'\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "{profile}";\n'
-        block = block.replace(marker, identity + specifier + marker, 1)
-        patched += 1
-    rewritten.append("buildSettings = {" + block)
-if patched != 2:
-    raise SystemExit(f"expected 2 app signing configs, patched {patched}")
-path.write_text("".join(rewritten))
+for config_id in config_ids:
+    match = re.search(
+        rf"(\t\t{config_id} /\* .*? \*/ = \{{\n\t\t\tisa = XCBuildConfiguration;\n\t\t\tbuildSettings = \{{\n)(.*?)(\n\t\t\t\}};\n)",
+        text,
+        re.S,
+    )
+    if not match:
+        raise SystemExit(f"build configuration {config_id} not found")
+    text = text[: match.start()] + match.group(1) + signing_settings(match.group(2)) + match.group(3) + text[match.end() :]
+    patched += 1
+
+if len(set(bundle_ids)) != 1:
+    raise SystemExit(f"application bundle ids differ: {bundle_ids}")
+path.write_text(text)
+print(bundle_ids[0])
 PY
+)"
+[[ -n "$BUNDLE_ID" ]] || { echo "Bundle ID not found"; exit 1; }
 
 EXPORT_PLIST="ios/ExportOptions.ci.plist"
 mkdir -p ios

@@ -20,6 +20,8 @@ rm -rf "$ARCHIVE" "$EXPORT_DIR"
 
 export NSUnbufferedIO=YES
 
+# Signing is already set on the application target in project.pbxproj.
+# Do not pass PROVISIONING_PROFILE_SPECIFIER or CODE_SIGN_STYLE here.
 echo "Archiving with xcodebuild (profile: ${PROFILE_NAME})..."
 xcodebuild \
   -project "$ROOT/transaction.xcodeproj" \
