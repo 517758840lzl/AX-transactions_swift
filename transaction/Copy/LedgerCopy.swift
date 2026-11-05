@@ -310,6 +310,10 @@ struct LedgerCopy {
     var statsEmpty: String
     var statsEmptyAdd: String
     var statsQuiet: String
+    var bannerEntryTitle: String
+    var bannerEntryNote: String
+    var bannerBudgetTitle: String
+    var bannerBudgetNote: String
     var statsThisMonth: String
     var statsThisYear: String
     var statsPrev: String
@@ -640,7 +644,10 @@ private let chinese = LedgerCopy(
     statsCountFormat: "{count} 笔{kind}，合计",
     statsCompareMonthFormat: "月{kind}对比", statsCompareYearFormat: "年{kind}对比",
     statsComposeFormat: "{when} {kind}构成", statsRankFormat: "{when} {kind}排行（前 10）",
-    statsEmpty: "空空如也，", statsEmptyAdd: "记录一笔", statsQuiet: "轻松记一笔", statsThisMonth: "本月", statsThisYear: "本年",
+    statsEmpty: "空空如也，", statsEmptyAdd: "记录一笔", statsQuiet: "轻松记一笔",
+    bannerEntryTitle: "记下第一笔", bannerEntryNote: "支出和收入会在上面的图里长出来",
+    bannerBudgetTitle: "给这个月一个上限", bannerBudgetNote: "设好预算，花了多少就能对上",
+    statsThisMonth: "本月", statsThisYear: "本年",
     statsPrev: "上一期", statsNext: "下一期",
     yearClassify: "分类", yearCompare: "月对比", yearTopFormat: "大额{kind}",
     yearAccountOut: "支出方式", yearAccountIn: "入账账户",
@@ -764,7 +771,10 @@ private let englishCopy = LedgerCopy(
     statsCountFormat: "{count} {kind}, total",
     statsCompareMonthFormat: "Monthly {kind} comparison", statsCompareYearFormat: "Annual {kind} comparison",
     statsComposeFormat: "{when} {kind} mix", statsRankFormat: "{when} {kind} ranking (top 10)",
-    statsEmpty: "Nothing here, ", statsEmptyAdd: "add one", statsQuiet: "Add one in a tap", statsThisMonth: "This month", statsThisYear: "This year",
+    statsEmpty: "Nothing here, ", statsEmptyAdd: "add one", statsQuiet: "Add one in a tap",
+    bannerEntryTitle: "Log the first one", bannerEntryNote: "Spending and income grow on the chart above",
+    bannerBudgetTitle: "Cap this month", bannerBudgetNote: "Set a budget, then spending has a line to meet",
+    statsThisMonth: "This month", statsThisYear: "This year",
     statsPrev: "Previous", statsNext: "Next",
     yearClassify: "Classification", yearCompare: "Monthly comparison", yearTopFormat: "Top {kind}",
     yearAccountOut: "Payment method", yearAccountIn: "Received into",

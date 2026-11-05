@@ -78,14 +78,17 @@ struct DashboardStatsPanel: View {
             }
             .frame(height: 168, alignment: .bottom)
             if total == 0 {
-                HStack(spacing: 0) {
+                HStack(spacing: 6) {
+                    EmptyDocMark()
+                        .stroke(Palette.muted, style: StrokeStyle(lineWidth: 1.4, lineCap: .round))
+                        .frame(width: 16, height: 16)
                     Text(copy.statsEmpty)
                         .foregroundStyle(Palette.muted)
                     Button {
                         screen.open(.entry(id: nil))
                     } label: {
                         Text(copy.statsEmptyAdd)
-                            .foregroundStyle(Palette.ink)
+                            .foregroundStyle(Palette.muted)
                     }
                     .buttonStyle(.plain)
                 }
@@ -371,5 +374,23 @@ private struct ToolsWidthKey: PreferenceKey {
     static var defaultValue: CGFloat = 0
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
         value = nextValue()
+    }
+}
+
+private struct EmptyDocMark: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let box = rect.insetBy(dx: 1.2, dy: 1.2)
+        path.addRoundedRect(in: box, cornerSize: CGSize(width: 2.2, height: 2.2))
+        let left = rect.minX + rect.width * 0.31
+        let longRight = rect.maxX - rect.width * 0.25
+        let shortRight = rect.maxX - rect.width * 0.44
+        let first = rect.minY + rect.height * 0.39
+        let second = rect.minY + rect.height * 0.58
+        path.move(to: CGPoint(x: left, y: first))
+        path.addLine(to: CGPoint(x: longRight, y: first))
+        path.move(to: CGPoint(x: left, y: second))
+        path.addLine(to: CGPoint(x: shortRight, y: second))
+        return path
     }
 }
