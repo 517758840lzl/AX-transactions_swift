@@ -39,12 +39,10 @@ struct RootView: View {
                 .safeAreaInset(edge: .bottom, spacing: 0) {
                     tabBar(copy)
                 }
-                .ignoresSafeArea(.keyboard, edges: .bottom)
                 if screen.path.isEmpty, screen.tab == 0 || screen.tab == 1 {
                     EntryButton(title: copy.entryNew) {
                         screen.openNewRecord(store: store)
                     }
-                    .ignoresSafeArea(.keyboard, edges: .bottom)
                 }
                 if let note = store.note {
                     Text(note)
@@ -79,7 +77,7 @@ struct RootView: View {
                         .zIndex(Double(index + 1))
                         .transition(.move(edge: .trailing))
                 }
-                if !opening {
+                if !opening && !guide {
                     statusBarCover
                         .zIndex(30)
                 }
@@ -224,8 +222,6 @@ struct RootView: View {
             SparkHomeView(store: store, screen: screen)
         case .sparkShelf(let kind):
             SparksListView(store: store, screen: screen, kind: kind)
-        case .sparkBoard:
-            SparkBoardView(store: store, screen: screen)
         case .accountsHome:
             AccountsView(store: store, screen: screen)
         case .spark(let id):

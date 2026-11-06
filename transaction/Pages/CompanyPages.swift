@@ -7,7 +7,7 @@ import SwiftUI
 
 private let companyName = "LIGACAO VITAL - COMERCIO E SERVICOS, (SU), LDA"
 private let companyMail = "office@ligacaovital.com"
-private let companyRightsPrefix = "© 2026 LIGACAO VITAL - COMERCIO E SERVICOS, (SU), LDA."
+private let companyRights = "© 2026 LIGACAO VITAL - COMERCIO E SERVICOS, (SU), LDA. All rights reserved."
 
 struct AboutPage: View {
     var copy: LedgerCopy
@@ -134,7 +134,7 @@ private struct CompanyContact: View {
                 .foregroundStyle(Palette.muted)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 12)
-            Text("\(companyRightsPrefix) \(copy.rightsReserved)")
+            Text(companyRights)
                 .font(.system(size: 13))
                 .foregroundStyle(Palette.muted)
                 .fixedSize(horizontal: false, vertical: true)

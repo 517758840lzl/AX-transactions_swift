@@ -6,67 +6,87 @@
 //
 
 import SwiftUI
+import UIKit
 
-/// A pencil inside the floating button. The tip points down-left and tips back and forth.
+/// A pen that draws one short stroke, rests, then draws it again.
 struct WritingPen: View {
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
     var body: some View {
-        Group {
-            if reduceMotion {
-                PencilGlyph()
-                    .rotationEffect(.degrees(138))
-                    .scaleEffect(1.12)
-            } else {
-                TimelineView(.animation(minimumInterval: 1.0 / 30)) { context in
-                    let wave = sin(context.date.timeIntervalSinceReferenceDate * .pi * 2 / 1.4)
-                    PencilGlyph()
-                        .rotationEffect(.degrees(138 + wave * 7))
-                        .scaleEffect(1.12)
-                }
-            }
+        TimelineView(.animation(minimumInterval: 1.0 / 30)) { context in
+            WritingPenFrame(date: context.date)
         }
-        .frame(width: 40, height: 40)
+        .frame(width: 34, height: 34)
         .accessibilityHidden(true)
     }
 }
 
-private struct PencilGlyph: View {
+private struct WritingPenFrame: View {
+    var date: Date
+
+    var body: some View {
+        let draw = Self.draw(at: date)
+        ZStack {
+            WritingStroke()
+                .trim(from: 0, to: draw.shown)
+                .stroke(Color.white, style: StrokeStyle(lineWidth: 1.8, lineCap: .round))
+                .opacity(draw.fade)
+            PenBody()
+                .position(WritingStroke.point(draw.shown))
+                .opacity(draw.fade)
+        }
+        .frame(width: 34, height: 34)
+    }
+
+    private static func draw(at date: Date) -> (shown: CGFloat, fade: Double) {
+        let cycle = 2.6
+        let phase = date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: cycle) / cycle
+        if UIAccessibility.isReduceMotionEnabled { return (1, 1) }
+        if phase < 0.45 { return (CGFloat(phase / 0.45), 1) }
+        if phase < 0.78 { return (1, 1) }
+        return (1, 1 - (phase - 0.78) / 0.22)
+    }
+}
+
+private struct WritingStroke: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: Self.point(0))
+        path.addQuadCurve(to: Self.point(1), control: Self.control)
+        return path
+    }
+
+    static let start = CGPoint(x: 8, y: 24)
+    static let control = CGPoint(x: 14, y: 22)
+    static let end = CGPoint(x: 24, y: 12)
+
+    static func point(_ t: CGFloat) -> CGPoint {
+        let u = 1 - t
+        return CGPoint(
+            x: u * u * start.x + 2 * u * t * control.x + t * t * end.x,
+            y: u * u * start.y + 2 * u * t * control.y + t * t * end.y
+        )
+    }
+}
+
+private struct PenBody: View {
     var body: some View {
         Canvas { context, size in
-            let ox = (size.width - 36) / 2
-            let oy = (size.height - 14) / 2
-            func box(_ x: CGFloat, _ y: CGFloat, _ w: CGFloat, _ h: CGFloat, _ r: CGFloat) -> Path {
-                Path(roundedRect: CGRect(x: ox + x, y: oy + y, width: w, height: h), cornerRadius: r)
-            }
-            func fill(_ path: Path, _ color: Color) {
-                context.fill(path, with: .color(color))
-            }
-
-            var wood = Path()
-            wood.move(to: CGPoint(x: ox + 22.4, y: oy + 2.2))
-            wood.addLine(to: CGPoint(x: ox + 22.4, y: oy + 11.8))
-            wood.addLine(to: CGPoint(x: ox + 33.0, y: oy + 7))
-            wood.closeSubpath()
-            fill(wood, Color(red: 0.95, green: 0.84, blue: 0.66))
-
-            fill(box(0.4, 2.6, 6.2, 8.8, 2.8), Color(red: 0.86, green: 0.33, blue: 0.48))
-            fill(box(5.6, 2.0, 4.0, 10.0, 0.6), Color(red: 0.95, green: 0.93, blue: 0.90))
-            fill(box(7.1, 2.0, 0.9, 10.0, 0), Color(red: 0.70, green: 0.67, blue: 0.64))
-            fill(box(9.0, 2.2, 16.0, 9.6, 0.4), Color(red: 0.98, green: 0.78, blue: 0.20))
-
-            var shine = Path()
-            shine.move(to: CGPoint(x: ox + 11, y: oy + 4.2))
-            shine.addLine(to: CGPoint(x: ox + 23.4, y: oy + 4.2))
-            context.stroke(shine, with: .color(.white.opacity(0.7)), style: StrokeStyle(lineWidth: 1.2, lineCap: .round))
-
-            var lead = Path()
-            lead.move(to: CGPoint(x: ox + 30.2, y: oy + 5.3))
-            lead.addLine(to: CGPoint(x: ox + 30.2, y: oy + 8.7))
-            lead.addLine(to: CGPoint(x: ox + 34.8, y: oy + 7))
-            lead.closeSubpath()
-            fill(lead, Palette.ink)
+            let nib = CGPoint(x: size.width / 2, y: size.height / 2)
+            var barrel = Path()
+            barrel.addRoundedRect(
+                in: CGRect(x: nib.x - 13, y: nib.y - 2.1, width: 11, height: 4.2),
+                cornerSize: CGSize(width: 2, height: 2)
+            )
+            context.fill(barrel, with: .color(.white))
+            var tip = Path()
+            tip.move(to: nib)
+            tip.addLine(to: CGPoint(x: nib.x - 3.4, y: nib.y - 2.3))
+            tip.addLine(to: CGPoint(x: nib.x - 3.4, y: nib.y + 2.3))
+            tip.closeSubpath()
+            context.fill(tip, with: .color(.white))
         }
+        .frame(width: 22, height: 22)
+        .rotationEffect(.degrees(48))
+        .shadow(color: Palette.ink.opacity(0.28), radius: 1.5, y: 1)
     }
 }
 

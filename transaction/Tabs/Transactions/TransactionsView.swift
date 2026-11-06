@@ -13,8 +13,6 @@ struct TransactionsView: View {
     @ObservedObject var store: BookStore
     @ObservedObject var screen: LedgerScreen
     @State private var filterWidth: CGFloat = 320
-    @State private var searchOpen = false
-    @FocusState private var searchFocused: Bool
 
     var body: some View {
         let copy = store.copy
@@ -32,39 +30,26 @@ struct TransactionsView: View {
         let previous = BookMath.prevMonthOutByCategory(store.book.entries.filter { !$0.id.hasPrefix("sample-") })
         let spendByDay = Dictionary(grouping: period.filter { $0.isOut && !$0.isTransfer }, by: \.date).mapValues { $0.reduce(0) { $0 + $1.amount } }
         let accountName = store.book.accounts.first { $0.id == screen.accountId }?.name
-        let listTitle = screen.showCalendar ? copy.dayChip(screen.calendarDay ?? LedgerDay.today()) : heading(copy)
+        let listTitle = screen.showCalendar ? copy.dayChip(screen.calendarDay ?? LedgerDay.today()) : copy.periodChip(mode: screen.txMode, from: screen.txFrom, to: screen.txTo)
 
         VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 8) {
-                Text(copy.transactions)
-                    .font(.system(size: 26, weight: .bold))
-                    .tracking(-0.4)
-                    .foregroundStyle(Palette.ink)
-                    .lineLimit(1)
-                    .layoutPriority(1)
-                Spacer(minLength: 8)
-                monthControl(copy)
-                headerIcon(searchOpen ? "xmark" : "magnifyingglass", label: copy.searchPlaceholder) {
-                    searchOpen.toggle()
-                    if !searchOpen { screen.search = "" }
+            HStack {
+                Text(copy.transactions).font(.system(size: 26, weight: .bold)).tracking(-0.4).foregroundStyle(Palette.ink)
+                Spacer()
+                Button(copy.periodChip(mode: screen.txMode, from: screen.txFrom, to: screen.txTo)) {
+                    screen.open(.filter(which: "transactions"))
                 }
-                headerIcon(screen.showCalendar ? "list.bullet" : "calendar", label: screen.showCalendar ? copy.txViewList : copy.txViewCalendar) {
-                    screen.showCalendar.toggle()
-                    if screen.showCalendar, screen.calendarDay == nil { screen.calendarDay = LedgerDay.today() }
-                }
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(Palette.ink)
+                .padding(.horizontal, 13)
+                .padding(.vertical, 7)
+                .background(Color.white, in: Capsule())
+                .overlay(Capsule().stroke(Palette.line, lineWidth: 1))
             }
             .pageTitleBar()
-            if searchOpen {
-                searchField(copy)
-                    .padding(.horizontal, 18)
-                    .padding(.bottom, 8)
-            }
             PageScroll(place: "activity", bottom: 128) {
                 flowStrip(copy, spend: spend, income: income)
-                SegmentControl(labels: [copy.filterAll, copy.filterOpen, copy.filterDone], index: statusIndex) { index in
-                    screen.status = ["all", "open", "done"][index]
-                }
-                activeFilters(copy, accountName: accountName)
+                toolbar(copy, accountName: accountName)
                 VStack(alignment: .leading, spacing: 12) {
                     if !parts.isEmpty {
                         PanelCard(
@@ -86,7 +71,7 @@ struct TransactionsView: View {
                         }
                     }
                     if screen.showCalendar {
-                        CalendarMonth(copy: copy, spend: spendByDay, anchor: monthAnchor, selected: screen.calendarDay ?? LedgerDay.today()) { day in
+                        CalendarMonth(copy: copy, spend: spendByDay, selected: screen.calendarDay ?? LedgerDay.today()) { day in
                             screen.calendarDay = day
                         }
                         .transition(.opacity)
@@ -99,125 +84,36 @@ struct TransactionsView: View {
                         }
                     }
                 }
-            .animation(LedgerScreen.fold, value: screen.showCalendar)
-            .onChange(of: searchOpen) { open in
-                searchFocused = open
+                .animation(LedgerScreen.fold, value: screen.showCalendar)
             }
         }
-        }
     }
 
-    private func headerIcon(_ name: String, label: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: name)
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(Palette.ink)
-                .frame(width: 32, height: 32)
-                .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(label)
-    }
-
-    private func monthControl(_ copy: LedgerCopy) -> some View {
-        HStack(spacing: 0) {
-            Button { stepMonth(-1) } label: {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(Palette.ink)
-                    .frame(width: 22, height: 32)
-                    .contentShape(Rectangle())
+    private func toolbar(_ copy: LedgerCopy, accountName: String?) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Palette.muted)
+                TextField(copy.searchPlaceholder, text: $screen.search)
+                    .textInputAutocapitalization(.never)
+                    .disableAutocorrection(true)
+                    .submitLabel(.search)
+                    .font(.system(size: 15))
             }
-            .buttonStyle(.plain)
-            Button {
-                screen.open(.filter(which: "transactions"))
-            } label: {
-                Text(heading(copy))
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(Palette.ink)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(Color.white, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(Palette.line, lineWidth: 1))
+            SegmentControl(labels: [copy.txViewList, copy.txViewCalendar], index: screen.showCalendar ? 1 : 0) { index in
+                screen.showCalendar = index == 1
+                if index == 1, screen.calendarDay == nil { screen.calendarDay = LedgerDay.today() }
             }
-            .buttonStyle(.plain)
-            Button { stepMonth(1) } label: {
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(canStepForward ? Palette.ink : Palette.faint)
-                    .frame(width: 22, height: 32)
-                    .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .disabled(!canStepForward)
+            filterRow(copy, accountName: accountName)
         }
-    }
-
-    private func searchField(_ copy: LedgerCopy) -> some View {
-        HStack(spacing: 8) {
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(Palette.muted)
-            TextField(copy.searchPlaceholder, text: $screen.search)
-                .focused($searchFocused)
-                .textInputAutocapitalization(.never)
-                .disableAutocorrection(true)
-                .submitLabel(.search)
-                .font(.system(size: 15))
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .background(Color.white, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(Palette.line, lineWidth: 1))
-    }
-
-    private var monthAnchor: Date {
-        LedgerDay.parse(LedgerDay.bounds(mode: screen.txMode, from: screen.txFrom, to: screen.txTo).start)
-    }
-
-    private var canStepForward: Bool {
-        LedgerDay.bounds(mode: screen.txMode, from: screen.txFrom, to: screen.txTo).start < LedgerDay.monthStart()
-    }
-
-    private func heading(_ copy: LedgerCopy) -> String {
-        if let month = wholeMonthNumber() { return copy.monthUnit(month) }
-        return copy.periodChip(mode: screen.txMode, from: screen.txFrom, to: screen.txTo)
-    }
-
-    /// A range that covers one calendar month reads as that month. Today and custom spans keep their own label.
-    private func wholeMonthNumber() -> Int? {
-        if screen.txMode == .today { return nil }
-        if screen.txMode == .month { return LedgerDay.month(of: Date()) }
-        let start = min(screen.txFrom, screen.txTo)
-        let end = max(screen.txFrom, screen.txTo)
-        let bits = start.split(separator: "-")
-        guard bits.count == 3, bits[2] == "01", let year = Int(bits[0]), let month = Int(bits[1]) else { return nil }
-        let count = Calendar.current.range(of: .day, in: .month, for: LedgerDay.parse(start))?.count ?? 0
-        if end == LedgerDay.iso(year: year, month: month, day: count) { return month }
-        return nil
-    }
-
-    private func stepMonth(_ delta: Int) {
-        if delta > 0, !canStepForward { return }
-        let anchor = LedgerDay.bounds(mode: screen.txMode, from: screen.txFrom, to: screen.txTo).start
-        guard let shifted = Calendar.current.date(byAdding: .month, value: delta, to: LedgerDay.parse(anchor)) else { return }
-        let parts = Calendar.current.dateComponents([.year, .month], from: shifted)
-        let year = parts.year ?? 2026
-        let month = parts.month ?? 1
-        let start = LedgerDay.iso(year: year, month: month, day: 1)
-        if start > LedgerDay.monthStart() { return }
-        if start == LedgerDay.monthStart() {
-            screen.txMode = .month
-            screen.txFrom = start
-            screen.txTo = LedgerDay.today()
-        } else {
-            let count = Calendar.current.range(of: .day, in: .month, for: shifted)?.count ?? 28
-            screen.txMode = .range
-            screen.txFrom = start
-            screen.txTo = LedgerDay.iso(year: year, month: month, day: count)
-        }
-        let today = LedgerDay.today()
-        if screen.showCalendar {
-            screen.calendarDay = today.hasPrefix(String(start.prefix(7))) ? today : start
-        }
+        .padding(12)
+        .background(Palette.neutral, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Palette.line, lineWidth: 1))
     }
 
     private func emptyPeriod(_ copy: LedgerCopy) -> some View {
@@ -306,7 +202,7 @@ struct TransactionsView: View {
             flowCell(copy.periodIncome, income, active: screen.txDirection == "in", color: Palette.up) {
                 screen.txDirection = screen.txDirection == "in" ? "all" : "in"
             }
-            flowCell(copy.periodBalance, balance, active: false, color: balance >= 0 ? Palette.up : Palette.down, signed: true) {
+            flowCell(copy.periodBalance, balance, active: screen.txDirection == "all", color: balance >= 0 ? Palette.up : Palette.down, signed: true) {
                 screen.txDirection = "all"
             }
         }
@@ -322,12 +218,11 @@ struct TransactionsView: View {
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(Palette.muted)
                 MoneyText(value: value, mark: store.book.mark, size: 16, signed: signed, color: color)
-                Capsule()
-                    .fill(active ? color : Color.clear)
-                    .frame(width: 16, height: 2)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 8)
+            .background(active ? Palette.wash : Color.clear, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(active ? Palette.line : Color.clear, lineWidth: 1))
         }
         .buttonStyle(.plain)
     }
@@ -384,16 +279,12 @@ struct TransactionsView: View {
         }
     }
 
-    private var statusIndex: Int {
-        switch screen.status {
-        case "open": return 1
-        case "done": return 2
-        default: return 0
-        }
-    }
-
-    private func activeFilters(_ copy: LedgerCopy, accountName: String?) -> some View {
-        var items: [(title: String, value: String)] = []
+    private func filterRow(_ copy: LedgerCopy, accountName: String?) -> some View {
+        var items: [(title: String, value: String)] = [
+            (copy.filterAll, "all"),
+            (copy.filterOpen, "open"),
+            (copy.filterDone, "done"),
+        ]
         if !screen.feedKind.isEmpty {
             items.append(("\(copy.statsKindName(screen.feedKind)) ×", "feed"))
         }
@@ -404,25 +295,21 @@ struct TransactionsView: View {
             items.append(("\(copy.filterAccount) \(accountName) ×", "account"))
         }
         let rows = wrappedFilters(items, width: filterWidth)
-        return Group {
-            if !items.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(rows.indices, id: \.self) { index in
-                        HStack(spacing: 12) {
-                            ForEach(rows[index], id: \.value) { item in
-                                statusChip(item.title, item.value)
-                            }
-                        }
+        return VStack(alignment: .leading, spacing: 8) {
+            ForEach(rows.indices, id: \.self) { index in
+                HStack(spacing: 12) {
+                    ForEach(rows[index], id: \.value) { item in
+                        statusChip(item.title, item.value)
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(GeometryReader { proxy in
-                    Color.clear.preference(key: FilterWidthKey.self, value: proxy.size.width)
-                })
-                .onPreferenceChange(FilterWidthKey.self) { next in
-                    if abs(next - filterWidth) > 0.5 { filterWidth = next }
-                }
             }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(GeometryReader { proxy in
+            Color.clear.preference(key: FilterWidthKey.self, value: proxy.size.width)
+        })
+        .onPreferenceChange(FilterWidthKey.self) { next in
+            if abs(next - filterWidth) > 0.5 { filterWidth = next }
         }
     }
 

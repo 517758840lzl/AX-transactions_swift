@@ -37,8 +37,6 @@ final class LedgerScreen: ObservableObject {
     @Published var statsKind = "out"
     /// Kind used when a new idea page opens.
     var sparkDraftKind = SparkKind.idea.rawValue
-    /// Words carried from the inspiration tab into the full note list.
-    var sparkLookup = ""
     @Published var entryDirection = Direction.out
     @Published var categoryPickSlot = ""
     @Published var categoryPickName = ""

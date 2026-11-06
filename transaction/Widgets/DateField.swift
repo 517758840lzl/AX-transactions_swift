@@ -13,11 +13,8 @@ struct DateField: View {
     var copy: LedgerCopy
     @Binding var iso: String
     var label = ""
-    var title = ""
     var latest = LedgerDay.today()
     var marked = false
-    var plain = false
-    var sheet = false
     @State private var open = false
 
     var body: some View {
@@ -25,73 +22,20 @@ struct DateField: View {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             open = true
         } label: {
-            dateLabel
+            Text(iso)
+                .font(.system(size: 16))
+                .foregroundStyle(Palette.ink)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 14)
+                .frame(minHeight: 48)
+                .background(Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(marked ? Palette.down : Palette.line, lineWidth: 1))
         }
         .buttonStyle(.plain)
         .accessibilityLabel(label.isEmpty ? iso : label)
         .fullScreenCover(isPresented: $open) {
             DatePop(copy: copy, iso: $iso, latest: latest) { open = false }
         }
-    }
-
-    private var dateLabel: some View {
-        let shown = title.isEmpty ? iso : title
-        return Group {
-            if sheet {
-                sheetFace
-            } else if plain {
-                HStack(spacing: 6) {
-                    Text(shown)
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(Palette.ink)
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(Palette.muted)
-                    Spacer(minLength: 0)
-                }
-                .frame(maxWidth: .infinity, minHeight: 32, alignment: .leading)
-            } else {
-                Text(shown)
-                    .font(.system(size: 16))
-                    .foregroundStyle(Palette.ink)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 14)
-                    .frame(minHeight: 48)
-                    .background(Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(marked ? Palette.down : Palette.line, lineWidth: 1))
-            }
-        }
-    }
-
-    private var sheetFace: some View {
-        let parts = iso.split(separator: "-")
-        let month = Int(parts.count > 1 ? parts[1] : "") ?? 1
-        let day = Int(parts.count > 2 ? parts[2] : "") ?? 1
-        let weekdayIndex = Calendar.current.component(.weekday, from: LedgerDay.parse(iso)) - 1
-        let weekday = copy.weekdays.indices.contains(weekdayIndex) ? copy.weekdays[weekdayIndex] : ""
-        return HStack(alignment: .center, spacing: 12) {
-            Text("\(day)")
-                .font(.system(size: 52, weight: .bold))
-                .foregroundStyle(Palette.ink)
-                .frame(minWidth: 54, alignment: .leading)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(copy.monthUnit(month))
-                    .font(.system(size: 17, weight: .bold))
-                    .foregroundStyle(Palette.ink)
-                if !weekday.isEmpty {
-                    Text(weekday)
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(Palette.muted)
-                }
-            }
-            Spacer(minLength: 0)
-            Image(systemName: "calendar")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(Palette.muted)
-                .frame(width: 36, height: 36)
-                .background(Palette.wash, in: Circle())
-        }
-        .frame(maxWidth: .infinity, minHeight: 64, alignment: .leading)
     }
 }
 

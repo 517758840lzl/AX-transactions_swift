@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 /// Three first-launch pages. Skip on any page, or finish on the last one, and it does not return.
 struct GuideDeck: View {
@@ -12,43 +13,82 @@ struct GuideDeck: View {
 
     var body: some View {
         let copy = GuideWords.current
-        VStack(spacing: 0) {
-            ZStack(alignment: .topTrailing) {
+        let leaf = copy.leaves[min(max(page, 0), copy.leaves.count - 1)]
+        ZStack {
+            GuideWash(scene: leaf.scene)
+                .ignoresSafeArea()
+            GeometryReader { geo in
                 TabView(selection: $page) {
-                    ForEach(Array(copy.leaves.enumerated()), id: \.offset) { index, leaf in
-                        GuideLeafView(leaf: leaf)
-                            .tag(index)
+                    ForEach(Array(copy.leaves.enumerated()), id: \.offset) { index, item in
+                        ZStack {
+                            GuideWash(scene: item.scene)
+                            Image(Self.assetName(item.scene))
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: geo.size.width, height: geo.size.height)
+                        }
+                        .frame(width: geo.size.width, height: geo.size.height)
+                        .ignoresSafeArea()
+                        .tag(index)
                     }
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                Button(copy.skip, action: onFinish)
-                    .font(.system(size: 16, weight: .medium, design: .rounded))
-                    .foregroundStyle(Palette.ink)
+                .background(WashBackdrop())
+                .frame(width: geo.size.width, height: geo.size.height)
+            }
+            .ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                HStack {
+                    Spacer()
+                    Button(copy.skip, action: onFinish)
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(Palette.muted)
+                        .padding(.horizontal, 22)
+                        .padding(.vertical, 10)
+                }
+                Spacer()
+                    .allowsHitTesting(false)
+                VStack(spacing: 0) {
+                    Text(leaf.body)
+                        .font(.system(size: 18, weight: .regular))
+                        .foregroundStyle(Palette.muted)
+                        .lineSpacing(6)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, 40)
+                    HStack(spacing: 8) {
+                        ForEach(copy.leaves.indices, id: \.self) { index in
+                            Capsule()
+                                .fill(index == page ? Palette.ink : Palette.line)
+                                .frame(width: index == page ? 18 : 7, height: 7)
+                        }
+                    }
+                    .padding(.top, 22)
+                    .animation(.easeOut(duration: 0.2), value: page)
+                    PillButton(title: page == copy.leaves.count - 1 ? copy.start : copy.next) {
+                        if page < copy.leaves.count - 1 {
+                            withAnimation(.easeOut(duration: 0.25)) { page += 1 }
+                        } else {
+                            onFinish()
+                        }
+                    }
                     .padding(.horizontal, 22)
-                    .padding(.vertical, 10)
-            }
-            HStack(spacing: 8) {
-                ForEach(copy.leaves.indices, id: \.self) { index in
-                    Capsule()
-                        .fill(index == page ? Palette.ink : Palette.line)
-                        .frame(width: index == page ? 18 : 7, height: 7)
+                    .padding(.top, 18)
+                    .padding(.bottom, 12)
                 }
             }
-            .padding(.top, 8)
-            .animation(.easeOut(duration: 0.2), value: page)
-            PillButton(title: page == copy.leaves.count - 1 ? copy.start : copy.next) {
-                if page < copy.leaves.count - 1 {
-                    withAnimation(.easeOut(duration: 0.25)) { page += 1 }
-                } else {
-                    onFinish()
-                }
-            }
-            .padding(.horizontal, 22)
-            .padding(.top, 18)
-            .padding(.bottom, 12)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Palette.stage.ignoresSafeArea())
+        .background(GuideWash(scene: leaf.scene).ignoresSafeArea())
+    }
+
+    private static func assetName(_ scene: Int) -> String {
+        switch scene {
+        case 0: return "GuideFlow"
+        case 1: return "GuideMonth"
+        default: return "GuideAside"
+        }
     }
 
     static let seenKey = "guideSeen"
@@ -62,214 +102,88 @@ struct GuideDeck: View {
     }
 }
 
+/// Clears the page controller's own white fill so the wash can reach the status bar and the home edge.
+private struct WashBackdrop: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        view.isUserInteractionEnabled = false
+        view.backgroundColor = .clear
+        return view
+    }
+
+    func updateUIView(_ view: UIView, context: Context) {
+        DispatchQueue.main.async {
+            view.superview?.backgroundColor = .clear
+            view.superview?.superview?.backgroundColor = .clear
+        }
+    }
+}
+
+/// Full-page color. A soft light sits in the blush, then the same hue eases down.
+private struct GuideWash: View {
+    var scene: Int
+
+    var body: some View {
+        ZStack {
+            LinearGradient(colors: fall, startPoint: .top, endPoint: .bottom)
+            RadialGradient(colors: [glow, glow.opacity(0)], center: light, startRadius: 10, endRadius: 340)
+            RadialGradient(colors: [Color.white.opacity(0.55), Color.white.opacity(0)], center: lift, startRadius: 8, endRadius: 220)
+        }
+    }
+
+    private var fall: [Color] {
+        switch scene {
+        case 0:
+            return [
+                Color(red: 1, green: 0.75, blue: 0.82),
+                Color(red: 1, green: 0.88, blue: 0.91),
+                Color(red: 1, green: 0.96, blue: 0.97)
+            ]
+        case 1:
+            return [
+                Color(red: 1, green: 0.76, blue: 0.83),
+                Color(red: 1, green: 0.89, blue: 0.92),
+                Color(red: 1, green: 0.96, blue: 0.97)
+            ]
+        default:
+            return [
+                Color(red: 1, green: 0.76, blue: 0.84),
+                Color(red: 1, green: 0.89, blue: 0.93),
+                Color(red: 0.99, green: 0.96, blue: 0.97)
+            ]
+        }
+    }
+
+    private var glow: Color {
+        switch scene {
+        case 0: return Color(red: 1, green: 0.70, blue: 0.78)
+        case 1: return Color(red: 1, green: 0.71, blue: 0.80)
+        default: return Color(red: 1, green: 0.72, blue: 0.82)
+        }
+    }
+
+    private var light: UnitPoint {
+        switch scene {
+        case 0: return UnitPoint(x: 0.78, y: 0.18)
+        case 1: return UnitPoint(x: 0.22, y: 0.16)
+        default: return UnitPoint(x: 0.55, y: 0.22)
+        }
+    }
+
+    private var lift: UnitPoint {
+        switch scene {
+        case 0: return UnitPoint(x: 0.28, y: 0.42)
+        case 1: return UnitPoint(x: 0.72, y: 0.38)
+        default: return UnitPoint(x: 0.34, y: 0.46)
+        }
+    }
+}
+
 private struct GuideLeaf {
     var title: String
     var body: String
     var points: [String]
     var scene: Int
-}
-
-private struct GuideLeafView: View {
-    var leaf: GuideLeaf
-
-    var body: some View {
-        VStack(spacing: 0) {
-            GuidePoster(scene: leaf.scene)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            Text(leaf.title)
-                .font(.system(size: 32, weight: .bold))
-                .tracking(-0.5)
-                .foregroundStyle(Palette.ink)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, 32)
-            Text(leaf.body)
-                .font(.system(size: 17))
-                .foregroundStyle(Palette.muted)
-                .lineSpacing(5)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, 36)
-                .padding(.top, 12)
-                .padding(.bottom, 8)
-        }
-    }
-}
-
-/// Full-bleed pictures. They are scenes, not screens of the app.
-private struct GuidePoster: View {
-    var scene: Int
-
-    var body: some View {
-        GeometryReader { geo in
-            let w = geo.size.width
-            let h = geo.size.height
-            ZStack {
-                posterGround
-                switch scene {
-                case 0: dawn(w, h)
-                case 1: moon(w, h)
-                default: papers(w, h)
-                }
-            }
-            .frame(width: w, height: h)
-        }
-    }
-
-    private var posterGround: some View {
-        LinearGradient(
-            colors: ground,
-            startPoint: .top,
-            endPoint: .bottom
-        )
-    }
-
-    private var ground: [Color] {
-        switch scene {
-        case 0: return [Color(red: 1, green: 0.90, blue: 0.90), Palette.stage]
-        case 1: return [Color(red: 1, green: 0.96, blue: 0.90), Palette.stage]
-        default: return [Color(red: 0.95, green: 0.93, blue: 0.98), Palette.stage]
-        }
-    }
-
-    private func dawn(_ w: CGFloat, _ h: CGFloat) -> some View {
-        ZStack {
-            Circle()
-                .fill(Color(red: 1, green: 0.72, blue: 0.68))
-                .frame(width: w * 0.78)
-                .offset(x: w * 0.16, y: -h * 0.16)
-            Circle()
-                .fill(Color.white.opacity(0.55))
-                .frame(width: w * 0.34)
-                .offset(x: w * 0.28, y: -h * 0.28)
-            Ellipse()
-                .fill(Color.white.opacity(0.45))
-                .frame(width: w * 0.86, height: h * 0.16)
-                .offset(y: h * 0.30)
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color.white)
-                .frame(width: w * 0.42, height: h * 0.46)
-                .shadow(color: Palette.ink.opacity(0.08), radius: 16, y: 10)
-                .rotationEffect(.degrees(-11))
-                .offset(x: -w * 0.12, y: h * 0.02)
-            cup
-                .offset(x: w * 0.24, y: h * 0.12)
-            sprout
-                .offset(x: -w * 0.30, y: h * 0.16)
-        }
-    }
-
-    private var cup: some View {
-        VStack(spacing: 0) {
-            Ellipse()
-                .fill(Color(red: 0.98, green: 0.86, blue: 0.78))
-                .frame(width: 54, height: 16)
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(Color.white)
-                .frame(width: 58, height: 48)
-                .overlay(alignment: .trailing) {
-                    Capsule()
-                        .stroke(Palette.ink.opacity(0.18), lineWidth: 3)
-                        .frame(width: 16, height: 22)
-                        .offset(x: 10)
-                }
-        }
-    }
-
-    private var sprout: some View {
-        ZStack {
-            Capsule()
-                .fill(Color(red: 0.55, green: 0.72, blue: 0.52))
-                .frame(width: 6, height: 46)
-                .offset(y: 8)
-            Ellipse()
-                .fill(Color(red: 0.62, green: 0.78, blue: 0.55))
-                .frame(width: 28, height: 16)
-                .rotationEffect(.degrees(-28))
-                .offset(x: -12, y: -8)
-            Ellipse()
-                .fill(Color(red: 0.45, green: 0.68, blue: 0.48))
-                .frame(width: 26, height: 15)
-                .rotationEffect(.degrees(24))
-                .offset(x: 12, y: -4)
-        }
-    }
-
-    private func moon(_ w: CGFloat, _ h: CGFloat) -> some View {
-        ZStack {
-            Circle()
-                .fill(Color.white)
-                .frame(width: w * 0.72)
-                .shadow(color: Palette.ink.opacity(0.06), radius: 18, y: 8)
-                .offset(y: -h * 0.06)
-            Circle()
-                .fill(Color(red: 1, green: 0.96, blue: 0.90))
-                .frame(width: w * 0.58)
-                .offset(x: w * 0.16, y: -h * 0.10)
-            ForEach(0..<5, id: \.self) { index in
-                Circle()
-                    .fill(Color.white)
-                    .frame(width: index == 2 ? 18 : 8)
-                    .offset(x: CGFloat(index - 2) * w * 0.16, y: -h * 0.34)
-            }
-            HStack(alignment: .bottom, spacing: w * 0.04) {
-                pebble(28)
-                pebble(18)
-                pebble(40)
-                pebble(22)
-                pebble(32)
-            }
-            .offset(y: h * 0.28)
-        }
-    }
-
-    private func pebble(_ side: CGFloat) -> some View {
-        Ellipse()
-            .fill(Color.white)
-            .frame(width: side, height: side * 0.72)
-            .shadow(color: Palette.ink.opacity(0.05), radius: 4, y: 3)
-    }
-
-    private func papers(_ w: CGFloat, _ h: CGFloat) -> some View {
-        ZStack {
-            sheet(width: w * 0.46, height: h * 0.42, turn: -16, fill: Color.white)
-                .offset(x: -w * 0.16, y: h * 0.04)
-            sheet(width: w * 0.40, height: h * 0.36, turn: 12, fill: Palette.wash)
-                .offset(x: w * 0.18, y: -h * 0.08)
-            sheet(width: w * 0.34, height: h * 0.30, turn: -4, fill: Color.white)
-                .offset(x: w * 0.02, y: h * 0.16)
-            star
-                .offset(x: w * 0.30, y: -h * 0.28)
-        }
-    }
-
-    private func sheet(width: CGFloat, height: CGFloat, turn: Double, fill: Color) -> some View {
-        RoundedRectangle(cornerRadius: 18, style: .continuous)
-            .fill(fill)
-            .frame(width: width, height: height)
-            .shadow(color: Palette.ink.opacity(0.07), radius: 14, y: 8)
-            .rotationEffect(.degrees(turn))
-    }
-
-    private var star: some View {
-        Canvas { context, size in
-            var path = Path()
-            let cx = size.width / 2
-            let cy = size.height / 2
-            let tips: [(CGFloat, CGFloat)] = [
-                (0, -1), (0.22, -0.28), (1, -0.22), (0.36, 0.18),
-                (0.55, 1), (0, 0.42), (-0.55, 1), (-0.36, 0.18),
-                (-1, -0.22), (-0.22, -0.28)
-            ]
-            for (index, tip) in tips.enumerated() {
-                let point = CGPoint(x: cx + tip.0 * cx * 0.86, y: cy + tip.1 * cy * 0.86)
-                if index == 0 { path.move(to: point) } else { path.addLine(to: point) }
-            }
-            path.closeSubpath()
-            context.fill(path, with: .color(Palette.pink))
-        }
-        .frame(width: 36, height: 36)
-    }
 }
 
 private struct GuideWords {
@@ -299,20 +213,20 @@ private struct GuideWords {
                 skip: "跳过", next: "下一页", start: "开始使用",
                 leaves: [
                     GuideLeaf(
-                        title: "从一笔记账开始",
-                        body: "生活里的进出，写成自己的一笔。记在这台手机上，就够了。",
+                        title: "进出都记一笔",
+                        body: "花出去的和收进来的，都记在这台手机上。",
                         points: ["支出和收入", "账户转账", "分类可加"],
                         scene: 0
                     ),
                     GuideLeaf(
-                        title: "这个月看得清楚",
-                        body: "一个月过去，花出去的和留下来的，翻开就能看见。",
-                        points: ["月收支", "日历", "未核对"],
+                        title: "这个月花在哪",
+                        body: "这个月的钱去了哪里，翻开就能看见。",
+                        points: ["月收支", "分类", "账户"],
                         scene: 1
                     ),
                     GuideLeaf(
-                        title: "想法留在账旁边",
-                        body: "数字旁边，也可以留一句今天。这些字只在你自己这里。",
+                        title: "账旁边留一句",
+                        body: "数字旁边，也可以留一句今天。",
                         points: ["四种记录", "只在本机", "可存 iCloud"],
                         scene: 2
                     ),
@@ -322,72 +236,72 @@ private struct GuideWords {
             return GuideWords(
                 skip: "跳過", next: "下一頁", start: "開始使用",
                 leaves: [
-                    GuideLeaf(title: "從一筆記帳開始", body: "生活裡的進出，寫成自己的一筆。記在這台手機上，就夠了。", points: ["支出和收入", "帳戶轉帳", "分類可加"], scene: 0),
-                    GuideLeaf(title: "這個月看得清楚", body: "一個月過去，花出去的和留下來的，翻開就能看見。", points: ["月收支", "日曆", "未核對"], scene: 1),
-                    GuideLeaf(title: "想法留在帳旁邊", body: "數字旁邊，也可以留一句今天。這些字只在你自己這裡。", points: ["四種記錄", "只在本機", "可存 iCloud"], scene: 2),
+                    GuideLeaf(title: "進出都記一筆", body: "花出去的和收進來的，都記在這台手機上。", points: ["支出和收入", "帳戶轉帳", "分類可加"], scene: 0),
+                    GuideLeaf(title: "這個月花在哪", body: "這個月的錢去了哪裡，翻開就能看見。", points: ["月收支", "分類", "帳戶"], scene: 1),
+                    GuideLeaf(title: "帳旁邊留一句", body: "數字旁邊，也可以留一句今天。", points: ["四種記錄", "只在本機", "可存 iCloud"], scene: 2),
                 ]
             )
         case .ja:
             return GuideWords(
                 skip: "スキップ", next: "次へ", start: "はじめる",
                 leaves: [
-                    GuideLeaf(title: "まず一件を書く", body: "日々の出入りを、自分の一言として残す。この端末に書いてあれば、それで足ります。", points: ["支出と収入", "口座の振替", "分類を追加"], scene: 0),
-                    GuideLeaf(title: "今月が一目でわかる", body: "ひと月が過ぎたら、出ていったものと残ったものが、開けば見えます。", points: ["月の収支", "カレンダー", "未確認"], scene: 1),
-                    GuideLeaf(title: "思いつきは帳簿のそばに", body: "数字のそばに、今日の一文を置ける。その言葉は、あなただけのところにあります。", points: ["四つの記録", "端末の中だけ", "iCloud"], scene: 2),
+                    GuideLeaf(title: "出入りを一件ずつ", body: "出ていったお金も、入ってきたお金も、この端末に残します。", points: ["支出と収入", "口座の振替", "分類を追加"], scene: 0),
+                    GuideLeaf(title: "今月はどこに使ったか", body: "今月のお金が向かった先は、開けば見えます。", points: ["月の収支", "分類", "口座"], scene: 1),
+                    GuideLeaf(title: "帳簿のそばに一文", body: "数字のそばに、今日の一文を置けます。", points: ["四つの記録", "端末の中だけ", "iCloud"], scene: 2),
                 ]
             )
         case .ko:
             return GuideWords(
                 skip: "건너뛰기", next: "다음", start: "시작하기",
                 leaves: [
-                    GuideLeaf(title: "한 건부터 적기", body: "하루의 들어오고 나감을 내 기록으로 남깁니다. 이 휴대폰에 적혀 있으면 충분합니다.", points: ["지출과 수입", "계좌 이체", "분류 추가"], scene: 0),
-                    GuideLeaf(title: "이번 달이 한눈에", body: "한 달이 지나면, 나간 것과 남은 것이 펼치면 보입니다.", points: ["월 수지", "달력", "미확인"], scene: 1),
-                    GuideLeaf(title: "생각은 장부 옆에", body: "숫자 옆에 오늘의 한 줄을 둘 수 있습니다. 그 글은 당신만의 자리에 있습니다.", points: ["네 가지 기록", "기기 안에만", "iCloud"], scene: 2),
+                    GuideLeaf(title: "들어오고 나감을 한 건씩", body: "나간 돈과 들어온 돈, 이 휴대폰에 남겨 둡니다.", points: ["지출과 수입", "계좌 이체", "분류 추가"], scene: 0),
+                    GuideLeaf(title: "이번 달은 어디에 썼나", body: "이번 달 돈이 간 곳은, 펼치면 보입니다.", points: ["월 수지", "분류", "계좌"], scene: 1),
+                    GuideLeaf(title: "장부 옆에 한 줄", body: "숫자 옆에, 오늘의 한 줄을 둘 수 있습니다.", points: ["네 가지 기록", "기기 안에만", "iCloud"], scene: 2),
                 ]
             )
         case .es:
             return GuideWords(
                 skip: "Omitir", next: "Siguiente", start: "Empezar",
                 leaves: [
-                    GuideLeaf(title: "Empieza por un apunte", body: "Lo que entra y lo que sale se queda como algo tuyo. Con tenerlo en este teléfono, basta.", points: ["Gasto e ingreso", "Traspaso", "Nuevas categorías"], scene: 0),
-                    GuideLeaf(title: "El mes, de un vistazo", body: "Cuando pasa un mes, lo que se fue y lo que quedó se ve al abrir.", points: ["Mes", "Calendario", "Sin revisar"], scene: 1),
-                    GuideLeaf(title: "Las ideas, junto a las cuentas", body: "Junto a los números cabe una frase de hoy. Esas palabras se quedan contigo.", points: ["Cuatro tipos", "Solo en el dispositivo", "iCloud"], scene: 2),
+                    GuideLeaf(title: "Cada entrada y cada salida", body: "Lo que se gasta y lo que entra se queda en este teléfono.", points: ["Gasto e ingreso", "Traspaso", "Nuevas categorías"], scene: 0),
+                    GuideLeaf(title: "Dónde se fue este mes", body: "A dónde fue el dinero este mes se ve al abrir.", points: ["Mes", "Categorías", "Cuentas"], scene: 1),
+                    GuideLeaf(title: "Una frase junto a las cuentas", body: "Junto a los números cabe una frase de hoy.", points: ["Cuatro tipos", "Solo en el dispositivo", "iCloud"], scene: 2),
                 ]
             )
         case .pt:
             return GuideWords(
                 skip: "Ignorar", next: "Seguinte", start: "Começar",
                 leaves: [
-                    GuideLeaf(title: "Começa por um lançamento", body: "O que entra e o que sai fica como coisa tua. Estar neste telemóvel chega.", points: ["Despesa e receita", "Transferência", "Novas categorias"], scene: 0),
-                    GuideLeaf(title: "O mês, num olhar", body: "Passado um mês, o que saiu e o que ficou vê-se ao abrir.", points: ["Mês", "Calendário", "Por rever"], scene: 1),
-                    GuideLeaf(title: "As ideias, ao lado das contas", body: "Ao lado dos números cabe uma frase de hoje. Essas palavras ficam contigo.", points: ["Quatro tipos", "Só no dispositivo", "iCloud"], scene: 2),
+                    GuideLeaf(title: "Cada entrada e cada saída", body: "O que se gasta e o que entra fica neste telemóvel.", points: ["Despesa e receita", "Transferência", "Novas categorias"], scene: 0),
+                    GuideLeaf(title: "Para onde foi este mês", body: "Para onde foi o dinheiro este mês vê-se ao abrir.", points: ["Mês", "Categorias", "Contas"], scene: 1),
+                    GuideLeaf(title: "Uma frase ao lado das contas", body: "Ao lado dos números cabe uma frase de hoje.", points: ["Quatro tipos", "Só no dispositivo", "iCloud"], scene: 2),
                 ]
             )
         case .fr:
             return GuideWords(
                 skip: "Passer", next: "Suivant", start: "Commencer",
                 leaves: [
-                    GuideLeaf(title: "Commence par une écriture", body: "Ce qui entre et ce qui sort devient une note à toi. L'avoir sur ce téléphone suffit.", points: ["Dépense et recette", "Virement", "Catégories"], scene: 0),
-                    GuideLeaf(title: "Le mois d'un coup d'œil", body: "Le mois passé, ce qui est parti et ce qui reste se voit en ouvrant.", points: ["Mois", "Calendrier", "À vérifier"], scene: 1),
-                    GuideLeaf(title: "Les idées, à côté des comptes", body: "À côté des chiffres, une phrase d'aujourd'hui a sa place. Ces mots restent avec toi.", points: ["Quatre formes", "Sur l'appareil", "iCloud"], scene: 2),
+                    GuideLeaf(title: "Chaque entrée, chaque sortie", body: "Ce qui part et ce qui rentre reste sur ce téléphone.", points: ["Dépense et recette", "Virement", "Catégories"], scene: 0),
+                    GuideLeaf(title: "Où est passé ce mois", body: "Où est allé l'argent ce mois-ci se voit en ouvrant.", points: ["Mois", "Catégories", "Comptes"], scene: 1),
+                    GuideLeaf(title: "Une phrase à côté des comptes", body: "À côté des chiffres, une phrase d'aujourd'hui a sa place.", points: ["Quatre formes", "Sur l'appareil", "iCloud"], scene: 2),
                 ]
             )
         case .de:
             return GuideWords(
                 skip: "Überspringen", next: "Weiter", start: "Loslegen",
                 leaves: [
-                    GuideLeaf(title: "Beginne mit einer Buchung", body: "Was reingeht und rausgeht, wird zu deiner eigenen Notiz. Auf diesem Telefon zu sein, reicht.", points: ["Ausgabe und Einnahme", "Umbuchung", "Kategorien"], scene: 0),
-                    GuideLeaf(title: "Der Monat auf einen Blick", body: "Ist ein Monat vorbei, sieht man beim Aufschlagen, was wegging und was blieb.", points: ["Monat", "Kalender", "Offen"], scene: 1),
-                    GuideLeaf(title: "Einfälle neben den Konten", body: "Neben den Zahlen hat ein Satz von heute Platz. Diese Worte bleiben bei dir.", points: ["Vier Arten", "Nur auf dem Gerät", "iCloud"], scene: 2),
+                    GuideLeaf(title: "Jede Ausgabe, jede Einnahme", body: "Was rausgeht und was reinkommt, bleibt auf diesem Telefon.", points: ["Ausgabe und Einnahme", "Umbuchung", "Kategorien"], scene: 0),
+                    GuideLeaf(title: "Wohin das Geld diesen Monat ging", body: "Wohin das Geld diesen Monat ging, sieht man beim Öffnen.", points: ["Monat", "Kategorien", "Konten"], scene: 1),
+                    GuideLeaf(title: "Ein Satz neben den Zahlen", body: "Neben den Zahlen hat ein Satz von heute Platz.", points: ["Vier Arten", "Nur auf dem Gerät", "iCloud"], scene: 2),
                 ]
             )
         case .it:
             return GuideWords(
                 skip: "Salta", next: "Avanti", start: "Inizia",
                 leaves: [
-                    GuideLeaf(title: "Parti da una voce", body: "Quello che entra e quello che esce diventa una nota tua. Tenerlo su questo telefono basta.", points: ["Uscita ed entrata", "Giroconto", "Categorie"], scene: 0),
-                    GuideLeaf(title: "Il mese, a colpo d'occhio", body: "Passato un mese, ciò che è uscito e ciò che è rimasto si vede aprendo.", points: ["Mese", "Calendario", "Da controllare"], scene: 1),
-                    GuideLeaf(title: "Le idee, accanto ai conti", body: "Accanto ai numeri c'è posto per una frase di oggi. Quelle parole restano con te.", points: ["Quattro tipi", "Solo sul dispositivo", "iCloud"], scene: 2),
+                    GuideLeaf(title: "Ogni uscita, ogni entrata", body: "Ciò che esce e ciò che entra resta su questo telefono.", points: ["Uscita ed entrata", "Giroconto", "Categorie"], scene: 0),
+                    GuideLeaf(title: "Dove sono finiti i soldi", body: "Dove è andato il denaro questo mese si vede aprendo.", points: ["Mese", "Categorie", "Conti"], scene: 1),
+                    GuideLeaf(title: "Una frase accanto ai conti", body: "Accanto ai numeri c'è posto per una frase di oggi.", points: ["Quattro tipi", "Solo sul dispositivo", "iCloud"], scene: 2),
                 ]
             )
         case .en:
@@ -395,20 +309,20 @@ private struct GuideWords {
                 skip: "Skip", next: "Next", start: "Get started",
                 leaves: [
                     GuideLeaf(
-                        title: "Start with one entry",
-                        body: "What comes in and what goes out becomes a note of your own. Keeping it on this phone is enough.",
+                        title: "Money in, money out",
+                        body: "What you spend and what comes in stays on this phone.",
                         points: ["Spending and income", "Transfers", "Your categories"],
                         scene: 0
                     ),
                     GuideLeaf(
-                        title: "See the month clearly",
-                        body: "When a month has passed, what left and what stayed is there when you open it.",
-                        points: ["This month", "Calendar", "Unchecked"],
+                        title: "Where this month went",
+                        body: "Where the money went this month is there when you open it.",
+                        points: ["This month", "Categories", "Accounts"],
                         scene: 1
                     ),
                     GuideLeaf(
-                        title: "Keep ideas beside the book",
-                        body: "Next to the numbers, there is room for one line about today. Those words stay with you.",
+                        title: "One line beside the numbers",
+                        body: "Next to the numbers, there is room for one line about today.",
                         points: ["Four kinds", "On this device", "iCloud"],
                         scene: 2
                     ),
