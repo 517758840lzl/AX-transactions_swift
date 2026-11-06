@@ -19,6 +19,7 @@ enum Page: Hashable {
     case savingGoals
     case savingGoal(id: String?)
     case sparks
+    case sparkShelf(SparkKind)
     case accountsHome
     case spark(id: String?)
     case profile

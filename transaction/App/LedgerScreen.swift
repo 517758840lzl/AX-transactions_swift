@@ -35,6 +35,8 @@ final class LedgerScreen: ObservableObject {
     @Published var feedKind = ""
     /// Overview pills: "out", "in", or "other". A new entry follows this.
     @Published var statsKind = "out"
+    /// Kind used when a new idea page opens.
+    var sparkDraftKind = SparkKind.idea.rawValue
     @Published var entryDirection = Direction.out
     @Published var categoryPickSlot = ""
     @Published var categoryPickName = ""

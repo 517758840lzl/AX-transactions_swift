@@ -8,63 +8,90 @@ import PhotosUI
 import SwiftUI
 import UIKit
 
+struct SparkHomeView: View {
+    @ObservedObject var store: BookStore
+    @ObservedObject var screen: LedgerScreen
+
+    var body: some View {
+        let copy = store.copy
+        let recent = store.book.sparks.sorted { left, right in
+            if left.writtenOn != right.writtenOn { return left.writtenOn > right.writtenOn }
+            return left.id > right.id
+        }.prefix(3)
+        FormPage(title: copy.sparks, back: copy.back, place: "spark-home", showsBack: false) {
+            PillButton(title: copy.sparkPlaceholder) {
+                screen.sparkDraftKind = SparkKind.idea.rawValue
+                screen.open(.spark(id: nil))
+            }
+            PanelCard(card: true) {
+                ForEach(Array(SparkKind.allCases.enumerated()), id: \.element) { index, kind in
+                    if index > 0 {
+                        Rectangle().fill(Palette.line.opacity(0.95)).frame(height: 1).padding(.vertical, 4)
+                    }
+                    Button {
+                        screen.open(.sparkShelf(kind))
+                    } label: {
+                        HStack(spacing: 12) {
+                            Text(copy.sparkKindTitle(kind))
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(Palette.ink)
+                            Spacer(minLength: 8)
+                            Text("\(store.book.sparks.filter { $0.kind == kind }.count)")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundStyle(Palette.muted)
+                            Text("›")
+                                .font(.system(size: 20, weight: .regular))
+                                .foregroundStyle(Palette.muted)
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            ForEach(Array(recent)) { spark in
+                Button { screen.open(.spark(id: spark.id)) } label: {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(copy.sparkKindTitle(spark.kind))
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(Palette.muted)
+                        Text(spark.body.replacingOccurrences(of: "\n", with: " "))
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(Palette.ink)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .padding(14)
+                    .background(Palette.wash, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+}
+
 struct SparksListView: View {
     @ObservedObject var store: BookStore
     @ObservedObject var screen: LedgerScreen
-    var rooted = false
-    @State private var draft = ""
-    @State private var draftDay = LedgerDay.today()
-    @State private var draftKind = 0
-    @State private var draftTags = ""
-    @State private var draftFavorite = false
-    @State private var draftImage: Data?
-    @State private var picking = false
-    @State private var looking = false
+    var kind: SparkKind
     @State private var query = ""
     @State private var filter = 0
     @State private var timeline = false
 
     var body: some View {
         let copy = store.copy
-        let kinds = SparkKind.allCases
         let visible = store.book.sparks.filter { sparkVisible($0, copy: copy) }
-        FormPage(title: copy.sparks, back: copy.back, place: "sparks", showsBack: !rooted) {
-            ChoiceRow(labels: kinds.map { copy.sparkKindTitle($0) }, index: draftKind, columns: 2) { draftKind = $0 }
-            WritingBox(text: $draft, placeholder: copy.sparkPlaceholder)
-            FieldLabel(text: copy.sparkTags)
-            LedgerField(text: $draftTags, placeholder: copy.sparkTagHint)
-            FieldLabel(text: copy.date)
-            DateField(copy: copy, iso: $draftDay, label: copy.date)
-            pictureBox(copy, data: draftImage, pick: { picking = true }, clear: { draftImage = nil })
-            Button {
-                draftFavorite.toggle()
-            } label: {
-                Text(draftFavorite ? "★ \(copy.sparkFavorite)" : "☆ \(copy.sparkFavorite)")
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(draftFavorite ? Palette.ink : Palette.muted)
-                    .frame(maxWidth: .infinity, minHeight: 44)
-            }
-            .buttonStyle(.plain)
-            PillButton(title: copy.save, enabled: !draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty) {
-                store.saveSpark(Spark(
-                    id: LedgerID.make(),
-                    body: draft,
-                    writtenOn: draftDay,
-                    kind: kinds[min(draftKind, kinds.count - 1)],
-                    tags: SparkTags.parse(draftTags),
-                    favorite: draftFavorite,
-                    image: draftImage
-                ))
-                draft = ""
-                draftTags = ""
-                draftFavorite = false
-                draftImage = nil
-                draftDay = LedgerDay.today()
+        FormPage(title: copy.sparkKindTitle(kind), back: copy.back, place: "sparks-\(kind.rawValue)") {
+            PillButton(title: copy.sparkPlaceholder) {
+                screen.sparkDraftKind = kind.rawValue
+                screen.open(.spark(id: nil))
             }
             VStack(alignment: .leading, spacing: 8) {
                 SparkLookup(text: $query, placeholder: copy.sparkSearch)
                 SparkMode(notes: copy.sparkNotes, timelineTitle: copy.sparkTimeline, timeline: timeline) { timeline = $0 }
-                SparkFilters(labels: [copy.filterAll, copy.sparkIdea, copy.sparkDiary, copy.sparkThought, copy.sparkSummary, "★ \(copy.sparkFavorite)"], index: filter) { filter = $0 }
+                SparkFilters(labels: [copy.filterAll, "★ \(copy.sparkFavorite)"], index: filter) { filter = $0 }
             }
             .padding(.horizontal, 14)
             .padding(.top, 14)
@@ -80,22 +107,11 @@ struct SparksListView: View {
                 noteList(copy, sparks: visible)
             }
         }
-        .sheet(isPresented: $picking) {
-            PicturePick { data in
-                if let data { draftImage = data }
-                picking = false
-            }
-        }
-        .fullScreenCover(isPresented: $looking) {
-            if let draftImage, let picture = UIImage(data: draftImage) {
-                PictureLook(image: picture, closeTitle: store.copy.done) { looking = false }
-            }
-        }
     }
 
     private func sparkVisible(_ spark: Spark, copy: LedgerCopy) -> Bool {
-        if filter == 5 && !spark.favorite { return false }
-        if (1...4).contains(filter), spark.kind != SparkKind.allCases[filter - 1] { return false }
+        if spark.kind != kind { return false }
+        if filter == 1 && !spark.favorite { return false }
         return sparkMatches(spark, query: query, copy: copy)
     }
 
@@ -212,8 +228,9 @@ struct SparksListView: View {
     }
 
     private func dayEntries(_ day: String) -> [Entry] {
-        store.book.entries.filter { entry in
-            entry.date == day && !entry.isTransfer && (filter != 0 || entryMatches(entry))
+        guard filter == 0 else { return [] }
+        return store.book.entries.filter { entry in
+            entry.date == day && !entry.isTransfer && entryMatches(entry)
         }
     }
 
@@ -228,41 +245,11 @@ struct SparksListView: View {
         let text = LedgerMoney.text(entry.amount, mark: store.book.mark)
         return entry.isOut ? "−\(text)" : "+\(text)"
     }
-
-    private func pictureBox(_ copy: LedgerCopy, data: Data?, pick: @escaping () -> Void, clear: @escaping () -> Void) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            if let data, let picture = UIImage(data: data) {
-                Button { looking = true } label: {
-                    Image(uiImage: picture)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 140)
-                        .clipped()
-                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(copy.sparkPicture)
-                Button(copy.sparkPictureRemove, action: clear)
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(Palette.down)
-            }
-            Button(action: pick) {
-                Text(copy.sparkPicture)
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(Palette.ink)
-                    .frame(maxWidth: .infinity, minHeight: 44)
-                    .background(Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Palette.line, lineWidth: 1))
-                    .contentShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-            }
-            .buttonStyle(.plain)
-        }
-    }
 }
 
 struct SparkFormView: View {
     @ObservedObject var store: BookStore
+    @ObservedObject var screen: LedgerScreen
     var sparkID: String?
     @Environment(\.pageBack) private var pageBack
     @State private var bodyText = ""
@@ -281,7 +268,8 @@ struct SparkFormView: View {
         let existing = store.book.sparks.first { $0.id == sparkID }
         FormPage(title: copy.sparks, back: copy.back, place: "spark-\(sparkID ?? "new")") {
             ChoiceRow(labels: kinds.map { copy.sparkKindTitle($0) }, index: kind, columns: 2) { kind = $0 }
-            WritingBox(text: $bodyText, placeholder: copy.sparkPlaceholder)
+            WritingBox(text: $bodyText, placeholder: copy.sparkHint)
+            PanelCard(card: true) {
             FieldLabel(text: copy.sparkTags)
             LedgerField(text: $tags, placeholder: copy.sparkTagHint)
             FieldLabel(text: copy.date)
@@ -321,6 +309,7 @@ struct SparkFormView: View {
                     .frame(maxWidth: .infinity, minHeight: 44)
             }
             .buttonStyle(.plain)
+            }
             PillButton(title: copy.save, enabled: canSave) { save(existing: existing, kinds: kinds) }
             if existing != nil {
                 Button(copy.deleteEntry) {
@@ -353,7 +342,10 @@ struct SparkFormView: View {
     private func fill(_ existing: Spark?) {
         guard !ready else { return }
         ready = true
-        guard let existing else { return }
+        guard let existing else {
+            kind = SparkKind.allCases.firstIndex(of: SparkKind.read(screen.sparkDraftKind)) ?? 0
+            return
+        }
         bodyText = existing.body
         writtenOn = existing.writtenOn
         kind = SparkKind.allCases.firstIndex(of: existing.kind) ?? 0

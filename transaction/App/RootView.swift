@@ -29,7 +29,7 @@ struct RootView: View {
                     switch screen.tab {
                     case 0: DashboardView(store: store, screen: screen)
                     case 1: TransactionsView(store: store, screen: screen)
-                    case 2: SparksListView(store: store, screen: screen, rooted: true)
+                    case 2: SparkHomeView(store: store, screen: screen)
                     default: MeView(store: store, screen: screen)
                     }
                 }
@@ -209,11 +209,13 @@ struct RootView: View {
         case .savingGoal(let id):
             SavingGoalFormView(store: store, goalID: id)
         case .sparks:
-            SparksListView(store: store, screen: screen)
+            SparkHomeView(store: store, screen: screen)
+        case .sparkShelf(let kind):
+            SparksListView(store: store, screen: screen, kind: kind)
         case .accountsHome:
             AccountsView(store: store, screen: screen)
         case .spark(let id):
-            SparkFormView(store: store, sparkID: id)
+            SparkFormView(store: store, screen: screen, sparkID: id)
         case .profile:
             ProfileFormView(store: store)
         case .categories:

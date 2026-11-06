@@ -345,6 +345,7 @@ struct LedgerCopy {
     var accountMonthFlow: String
     var sparks: String
     var sparkPlaceholder: String
+    var sparkHint: String
     var sparkIdea: String
     var sparkDiary: String
     var sparkThought: String
@@ -675,7 +676,7 @@ private let chinese = LedgerCopy(
     yearExpand: "展开", yearFold: "收起", yearRefunded: "已退",
     yearPrev: "上一年", yearNext: "下一年",
     accountMonthFlow: "本月进出",
-    sparks: "灵感", sparkPlaceholder: "写下这一下",
+    sparks: "灵感", sparkPlaceholder: "记下这一刻", sparkHint: "写在这里",
     sparkIdea: "灵感", sparkDiary: "日记", sparkThought: "随想", sparkSummary: "每日总结",
     sparkFavorite: "收藏", sparkTags: "标签", sparkTagHint: "用空格分开",
     sparkPicture: "图片", sparkPictureRemove: "去掉图片",
@@ -810,7 +811,7 @@ private let englishCopy = LedgerCopy(
     yearExpand: "Expand", yearFold: "Collapse", yearRefunded: "Refunded",
     yearPrev: "Previous year", yearNext: "Next year",
     accountMonthFlow: "This month",
-    sparks: "Ideas", sparkPlaceholder: "Write it down",
+    sparks: "Ideas", sparkPlaceholder: "Write it down", sparkHint: "Write here",
     sparkIdea: "Idea", sparkDiary: "Diary", sparkThought: "Thought", sparkSummary: "Day note",
     sparkFavorite: "Favorite", sparkTags: "Tags", sparkTagHint: "Separate with spaces",
     sparkPicture: "Photo", sparkPictureRemove: "Remove photo",
