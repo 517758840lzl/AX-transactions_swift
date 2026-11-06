@@ -40,7 +40,8 @@ struct QCLanguagePickView: View {
     var body: some View {
         let copy = store.copy
         QCFormPage(title: copy.language, back: copy.back, place: "language") {
-            pickCard(QCBookLocale.allCases.map { locale in
+            let locales = [QCBookLocale.en] + QCBookLocale.allCases.filter { $0 != .en }
+            pickCard(locales.map { locale in
                 (locale.title, store.book.locale == locale, { store.setLocale(locale) })
             })
         }

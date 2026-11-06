@@ -19,18 +19,16 @@ struct QCAboutPage: View {
     var body: some View {
         QCCompanyFrame(title: copy.about, back: copy.back, onBack: pageBack) {
             QCPanelCard {
-                Text("SpendLogBook")
-                    .font(.system(size: 17, weight: .bold))
-                    .foregroundStyle(QCPalette.ink)
-                Text(copy.aboutLead)
-                    .font(.system(size: 15))
-                    .foregroundStyle(QCPalette.ink)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.top, 8)
+                VStack(alignment: .leading, spacing: 18) {
+                    Text("SpendLogBook")
+                        .font(.system(size: 17, weight: .bold))
+                        .foregroundStyle(QCPalette.ink)
+                    QCCompanyNote(text: copy.aboutLead, fill: QCPalette.neutral)
+                    aboutDoes(copy)
+                    aboutLimits(copy)
+                    QCCompanyContact(copy: copy)
+                }
             }
-            QCCompanyLines(title: copy.aboutDoesTitle, text: copy.aboutDoes)
-            QCCompanyLines(title: copy.aboutNotTitle, text: copy.aboutNot)
-            QCCompanyContact(copy: copy)
         }
     }
 }
@@ -42,16 +40,15 @@ struct QCDisclaimerPage: View {
     var body: some View {
         QCCompanyFrame(title: copy.disclaimer, back: copy.back, onBack: pageBack) {
             QCPanelCard {
-                VStack(alignment: .leading, spacing: 10) {
-                    ForEach(copy.disclaimerBody.components(separatedBy: "\n"), id: \.self) { line in
-                        Text(line)
-                            .font(.system(size: 15))
-                            .foregroundStyle(QCPalette.ink)
-                            .fixedSize(horizontal: false, vertical: true)
+                VStack(alignment: .leading, spacing: 14) {
+                    let lines = copy.disclaimerBody.components(separatedBy: "\n")
+                    ForEach(Array(lines.enumerated()), id: \.offset) { index, line in
+                        disclaimerLine(line, index: index, count: lines.count)
                     }
+                    QCCompanyContact(copy: copy)
+                        .padding(.top, 4)
                 }
             }
-            QCCompanyContact(copy: copy)
         }
     }
 }
@@ -83,25 +80,73 @@ private struct QCCompanyFrame<Content: View>: View {
     }
 }
 
-private struct QCCompanyLines: View {
-    var title: String
+private struct QCCompanyNote: View {
     var text: String
+    var ink: Color = QCPalette.ink
+    var fill: Color
 
     var body: some View {
-        QCPanelCard {
-            Text(title)
-                .font(.system(size: 15, weight: .bold))
-                .foregroundStyle(QCPalette.ink)
-            VStack(alignment: .leading, spacing: 8) {
-                ForEach(text.components(separatedBy: "\n"), id: \.self) { line in
-                    Text(line)
-                        .font(.system(size: 15))
-                        .foregroundStyle(QCPalette.ink)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+        Text(text)
+            .font(.system(size: 15))
+            .foregroundStyle(ink)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(fill, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+}
+
+private func companyTitle(_ title: String) -> some View {
+    Text(title)
+        .font(.system(size: 15, weight: .bold))
+        .foregroundStyle(QCPalette.ink)
+}
+
+private func companyLine(_ text: String, ink: Color = QCPalette.ink) -> some View {
+    Text(text)
+        .font(.system(size: 15))
+        .foregroundStyle(ink)
+        .fixedSize(horizontal: false, vertical: true)
+}
+
+private func aboutDoes(_ copy: QCLedgerCopy) -> some View {
+    let lines = copy.aboutDoes.components(separatedBy: "\n")
+    return VStack(alignment: .leading, spacing: 8) {
+        companyTitle(copy.aboutDoesTitle)
+        ForEach(Array(lines.enumerated()), id: \.offset) { index, line in
+            if index == lines.count - 1 {
+                QCCompanyNote(text: line, fill: QCPalette.wash)
+            } else {
+                companyLine(line)
             }
-            .padding(.top, 10)
         }
+    }
+}
+
+private func aboutLimits(_ copy: QCLedgerCopy) -> some View {
+    VStack(alignment: .leading, spacing: 8) {
+        companyTitle(copy.aboutNotTitle)
+        VStack(alignment: .leading, spacing: 8) {
+            ForEach(copy.aboutNot.components(separatedBy: "\n"), id: \.self) { line in
+                companyLine(line, ink: QCPalette.down)
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(QCPalette.wash, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+}
+
+@ViewBuilder
+private func disclaimerLine(_ line: String, index: Int, count: Int) -> some View {
+    if index == 0 {
+        QCCompanyNote(text: line, ink: QCPalette.down, fill: QCPalette.wash)
+    } else if count > 2 && index == count - 2 {
+        QCCompanyNote(text: line, fill: QCPalette.neutral)
+    } else if index == count - 1 {
+        companyLine(line, ink: QCPalette.muted)
+    } else {
+        companyLine(line)
     }
 }
 
@@ -109,7 +154,7 @@ private struct QCCompanyContact: View {
     var copy: QCLedgerCopy
 
     var body: some View {
-        QCPanelCard {
+        VStack(alignment: .leading, spacing: 0) {
             Text(copy.aboutOperator)
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(QCPalette.muted)

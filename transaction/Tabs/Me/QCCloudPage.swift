@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import UIKit
 
 struct QCCloudPage: View {
     @ObservedObject var store: QCBookStore
@@ -35,12 +34,8 @@ struct QCCloudPage: View {
             if store.cloudOn == false {
                 Text(copy.cloudMissing)
                     .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(QCPalette.ink)
+                    .foregroundStyle(QCPalette.muted)
                     .fixedSize(horizontal: false, vertical: true)
-                QCPillButton(title: copy.cloudSettings, filled: false) {
-                    guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
-                    UIApplication.shared.open(url)
-                }
             }
         }
         .alert(copy.cloudBring, isPresented: $confirmBring) {
