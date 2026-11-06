@@ -1,0 +1,39 @@
+//
+//  QCPage.swift
+//  transaction
+//
+//  Created by Lzl on 2026/10/2.
+//
+
+import Foundation
+
+enum QCPage: Hashable {
+    case entry(id: String?)
+    case filter(which: String)
+    case budget
+    case account(id: String)
+    case accountForm(id: String?, chooseKind: Bool)
+    case transfer
+    case repeatPlan(id: String?)
+    case yearReport
+    case savingGoals
+    case savingGoal(id: String?)
+    case sparks
+    case sparkShelf(QCSparkKind)
+    case sparkBoard
+    case accountsHome
+    case spark(id: String?)
+    case profile
+    case categories
+    case categoryForm(slot: String)
+    case language
+    case currency
+    case privacy
+    case about
+    case disclaimer
+    case reminder
+    case export
+    case cloud
+    case removed
+    case worthTrend
+}

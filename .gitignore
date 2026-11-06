@@ -1,0 +1,37 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode 构建产物
+build/
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Xcode 用户级配置（每个人不一样，不用提交）
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+
+# Playground
+timeline.xctimeline
+playground.xcworkspace
+
+# Swift Package Manager
+.swiftpm/
+.build/
+
+# 依赖管理（如果以后用 CocoaPods / Carthage）
+Pods/
+Carthage/Build/
+
+# 本地环境变量 / 签名材料，别提交上去
+*.p12
+*.mobileprovision
+*.p8
+Secrets.plist
+.env
