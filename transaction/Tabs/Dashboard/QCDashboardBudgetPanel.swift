@@ -19,29 +19,34 @@ struct QCDashboardBudgetPanel: View {
 
     var body: some View {
         if let budget, budget > 0, let left {
-            QCPanelCard(title: copy.monthlyBudget, trailing: {
-                Button(copy.edit) { screen.open(.budget) }
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundStyle(QCPalette.ink)
-            }) {
-                filled(budget: budget, left: left)
+            Button { screen.open(.budget) } label: {
+                QCPanelCard(title: copy.monthlyBudget, trailing: {
+                    Text("›")
+                        .font(.system(size: 20))
+                        .foregroundStyle(QCPalette.muted)
+                }) {
+                    filled(budget: budget, left: left)
+                }
             }
+            .buttonStyle(.plain)
         } else {
-            QCPanelCard {
-                Button { screen.open(.budget) } label: {
+            Button { screen.open(.budget) } label: {
+                QCPanelCard {
                     HStack {
                         Text(copy.budgetUnset)
                             .font(.system(size: 16, weight: .bold))
                             .tracking(-0.32)
                             .foregroundStyle(QCPalette.ink)
-                        Spacer()
+                        Spacer(minLength: 8)
                         Text("›")
                             .font(.system(size: 20))
                             .foregroundStyle(QCPalette.muted)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
             }
+            .buttonStyle(.plain)
         }
     }
 

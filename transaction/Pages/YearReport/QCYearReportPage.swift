@@ -90,8 +90,8 @@ struct QCYearReportPage: View {
                         openFeed(month: nil, category: category, title: title, account: nil)
                     },
                     onAdd: {
-                        screen.entryDirection = kind == "in" ? .income : .out
-                        screen.open(.entry(id: nil))
+                        screen.statsKind = kind == "in" ? "in" : "out"
+                        screen.openNewRecord(store: store)
                     }
                 )
                 QCYearReportCompare(

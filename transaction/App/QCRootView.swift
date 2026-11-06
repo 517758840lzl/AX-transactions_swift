@@ -38,6 +38,7 @@ struct QCRootView: View {
                 .safeAreaInset(edge: .bottom, spacing: 0) {
                     tabBar(copy)
                 }
+                .ignoresSafeArea(.keyboard, edges: .bottom)
                 if screen.path.isEmpty, screen.tab == 0 || screen.tab == 1 {
                     QCEntryButton(title: copy.entryNew) {
                         screen.openNewRecord(store: store)
@@ -194,8 +195,8 @@ struct QCRootView: View {
     private func openPendingEntry() {
         guard QCBillReminder.shared.takePendingEntry() else { return }
         if case .entry = screen.path.last { return }
-        screen.entryDirection = .out
-        screen.open(.entry(id: nil))
+        screen.statsKind = "out"
+        screen.openNewRecord(store: store)
     }
 
     @ViewBuilder

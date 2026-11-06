@@ -47,6 +47,9 @@ struct QCDashboardView: View {
         .pageTitleBar()
         QCPageScroll(place: "dashboard", bottom: 128) {
             QCDashboardStatsPanel(store: store, screen: screen, copy: copy, entries: scoped)
+            if store.book.monthlyBudget != nil || !scoped.isEmpty {
+                budgetCard(copy, entries: scoped)
+            }
             if scoped.isEmpty {
                 QCDashboardEmptyBanners(store: store, screen: screen, copy: copy)
             }
@@ -55,5 +58,30 @@ struct QCDashboardView: View {
             QCDashboardRecurringPanel(store: store, screen: screen, copy: copy)
         }
         }
+    }
+
+    private func budgetCard(_ copy: QCLedgerCopy, entries: [QCEntry]) -> some View {
+        let monthKey = QCLedgerDay.yearMonth(Date())
+        let monthOut = entries.reduce(0) { sum, entry in
+            guard entry.isOut, !entry.isTransfer, entry.countsInBudget, entry.date.hasPrefix(monthKey) else { return sum }
+            return sum + entry.amount
+        }
+        let budget = store.book.monthlyBudget
+        let left = budget.map { $0 - monthOut }
+        let days = max(QCBookMath.daysLeftInMonth(), 1)
+        let safe = left.map { $0 / Double(days) }
+        let pace = budget.map { value in
+            monthOut <= value && QCBookMath.paceOverBudget(monthOut: monthOut, budget: value)
+        } ?? false
+        return QCDashboardBudgetPanel(
+            store: store,
+            screen: screen,
+            copy: copy,
+            monthOut: monthOut,
+            budget: budget,
+            left: left,
+            safe: safe,
+            pace: pace
+        )
     }
 }

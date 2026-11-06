@@ -14,24 +14,36 @@ struct QCDashboardRecurringPanel: View {
 
     var body: some View {
         let month = QCLedgerDay.yearMonth(Date())
-        QCPanelCard(title: copy.recurringTitle, trailing: {
-            Button { screen.open(.repeatPlan(id: nil)) } label: {
-                Image(systemName: "plus")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(QCPalette.ink)
-                    .frame(width: 28, height: 28)
-                    .background(QCPalette.pink, in: Circle())
-                    .contentShape(Circle())
+        if store.book.repeats.isEmpty {
+            Button {
+                screen.openNewRecord(store: store)
+            } label: {
+                QCPanelCard(title: copy.recurringTitle, trailing: {
+                    Text(copy.entryNew)
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(QCPalette.ink)
+                }) {
+                    Text(copy.recurringEmpty)
+                        .font(.system(size: 13))
+                        .foregroundStyle(QCPalette.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
             .buttonStyle(.plain)
-            .accessibilityLabel(copy.add)
-        }) {
-            if store.book.repeats.isEmpty {
-                Text(copy.recurringEmpty)
-                    .font(.system(size: 13))
-                    .foregroundStyle(QCPalette.muted)
-                    .fixedSize(horizontal: false, vertical: true)
-            } else {
+        } else {
+            QCPanelCard(title: copy.recurringTitle, trailing: {
+                Button { screen.open(.repeatPlan(id: nil)) } label: {
+                    Image(systemName: "plus")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(QCPalette.ink)
+                        .frame(width: 28, height: 28)
+                        .background(QCPalette.pink, in: Circle())
+                        .contentShape(Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(copy.add)
+            }) {
                 ForEach(store.book.repeats) { plan in
                     Button {
                         screen.open(.repeatPlan(id: plan.id))
@@ -50,6 +62,7 @@ struct QCDashboardRecurringPanel: View {
                             QCMoneyText(value: plan.direction == .out ? -plan.amount : plan.amount, mark: store.book.mark, size: 13, signed: true)
                         }
                         .padding(.vertical, 10)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
