@@ -75,8 +75,9 @@ final class BookStore: ObservableObject {
         }
         let adopted = CategoryMarks.adopt(&book)
         let labeled = Self.labelSamples(&book)
+        let sparked = Self.placeSparkRows(&book)
         let store = BookStore(book: book, database: database, legacyURL: legacyURL)
-        if shortened || adopted || labeled || carried {
+        if shortened || adopted || labeled || carried || sparked {
             store.persist()
         }
         store.settleRepeats()
@@ -328,6 +329,37 @@ final class BookStore: ObservableObject {
     }
 
     @discardableResult
+    /// One pass of ten ledger notes, so an empty inspiration list can be opened.
+    private static func placeSparkRows(_ book: inout Book) -> Bool {
+        let key = "sparkRowsPlaced"
+        guard book.sparks.isEmpty, !UserDefaults.standard.bool(forKey: key) else { return false }
+        let today = LedgerDay.today()
+        let rows: [(String, SparkKind, [String], Bool, Int)] = [
+            ("午饭 28，记在餐饮", .idea, ["餐饮"], false, 0),
+            ("地铁来回 6 块", .diary, ["交通"], false, 0),
+            ("这杯咖啡 22，值不值", .thought, ["餐饮"], true, 1),
+            ("今天出去 86，最多是午饭", .summary, ["餐饮"], false, 1),
+            ("订阅 15，想单独记一笔", .idea, ["订阅"], false, 2),
+            ("超市买菜 63", .diary, ["日用"], false, 2),
+            ("周末那顿 128，最不该花", .thought, ["餐饮"], true, 3),
+            ("这三天吃饭占了一半", .summary, ["餐饮"], false, 3),
+            ("话费扣了 39", .diary, ["通讯"], false, 4),
+            ("下月房租 3200，先记上", .idea, ["居住"], false, 5),
+        ]
+        book.sparks = rows.enumerated().map { index, row in
+            Spark(
+                id: "preview-spark-\(index + 1)",
+                body: row.0,
+                writtenOn: LedgerDay.adding(days: -row.4, to: today),
+                kind: row.1,
+                tags: row.2,
+                favorite: row.3
+            )
+        }
+        UserDefaults.standard.set(true, forKey: key)
+        return true
+    }
+
     static func labelSamples(_ book: inout Book) -> Bool {
         guard !book.sampleCleared else { return false }
         var changed = false

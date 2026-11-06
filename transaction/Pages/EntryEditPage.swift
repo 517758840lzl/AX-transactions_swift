@@ -36,7 +36,7 @@ struct EntryFormView: View {
         let copy = store.copy
         let existing = store.book.entries.first { $0.id == entryID }
         let suggestions = BookMath.titleSuggestions(store.book.entries, locale: store.book.locale, transferCategory: copy.transferCategory)
-        FormPage(title: existing == nil ? copy.entryNew : copy.entryEdit, back: copy.back, place: "entry-\(entryID ?? "new")") {
+        FormPage(title: existing == nil ? copy.entryNew : copy.entryEdit, back: copy.back, place: "entry-\(entryID ?? "new")", side: 8) {
             ChoiceRow(labels: [copy.periodSpend, copy.monthIncome, copy.transfer], index: direction == .out ? 0 : 1) { index in
                 if index == 2 {
                     let own = store.book.accounts.filter { !$0.id.hasPrefix("sample-") }

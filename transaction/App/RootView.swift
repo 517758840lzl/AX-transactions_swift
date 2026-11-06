@@ -14,6 +14,7 @@ struct RootView: View {
     @StateObject private var screen = LedgerScreen()
     @Environment(\.scenePhase) private var scenePhase
     @State private var opening = true
+    @State private var guide = !GuideDeck.alreadySeen
     @State private var edgeDrag: CGFloat = 0
     @State private var edgePage = -1
     @State private var edgeTicket = 0
@@ -86,6 +87,15 @@ struct RootView: View {
                     OpeningCover(line: store.book.locale.openingLine) {
                         withAnimation(.easeOut(duration: 0.32)) {
                             opening = false
+                        }
+                    }
+                    .transition(.opacity)
+                    .zIndex(40)
+                } else if guide {
+                    GuideDeck {
+                        GuideDeck.markSeen()
+                        withAnimation(.easeOut(duration: 0.32)) {
+                            guide = false
                         }
                     }
                     .transition(.opacity)
@@ -214,6 +224,8 @@ struct RootView: View {
             SparkHomeView(store: store, screen: screen)
         case .sparkShelf(let kind):
             SparksListView(store: store, screen: screen, kind: kind)
+        case .sparkBoard:
+            SparkBoardView(store: store, screen: screen)
         case .accountsHome:
             AccountsView(store: store, screen: screen)
         case .spark(let id):

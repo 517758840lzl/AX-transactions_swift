@@ -38,7 +38,7 @@ let spanishCopy = LedgerCopy(
     accountIntroNameTitle: "Sin número de tarjeta", accountIntroNameBody: "Efectivo, tarjeta bancaria o de crédito. Ponle un nombre. No hace falta el número.",
     accountKindBank: "Banco", accountKindCash: "Efectivo", accountKindCard: "Tarjeta", accountKindOther: "Otro",
     addAccount: "Añadir cuenta", accountGuide: "Aún no hay una cuenta tuya. Añadir", accountNone: "Ninguna", editAccount: "Editar cuenta", newAccount: "Añadir cuenta",
-    accountName: "Nombre", accountNamePh: "Visa, efectivo, nómina", accountKindLabel: "Tipo de cuenta",
+    accountName: "Nombre", accountNamePh: "Efectivo, nómina, ahorro", accountKindLabel: "Tipo de cuenta",
     deleteAccount: "Eliminar cuenta y movimientos", accountBalance: "Saldo actual", accountDetailActivity: "Ver movimientos", filterAccount: "Cuenta",
     holdingsStock: "Acciones", holdingsFund: "Fondos", holdingsLabel: "Posiciones", holdingKindStock: "Acción", holdingKindEtf: "ETF", holdingKindFund: "Fondo",
     addHolding: "Añadir posición", editHolding: "Editar posición", newHolding: "Añadir posición", holdingKindLabel: "Tipo",
@@ -84,8 +84,8 @@ let spanishCopy = LedgerCopy(
     cloudNone: "Aún sin guardar", cloudWhenLine: "Último guardado {time}",
     cloudSave: "Guardar en iCloud", cloudSaved: "Guardado en iCloud",
     cloudBring: "Traer este libro", cloudBringAsk: "Esto sustituye el libro de este iPhone por la copia de iCloud.",
-    cloudBrought: "Traído", cloudFailed: "No se pudo terminar",
-    dataManage: "Datos", clearBook: "Borrar datos",
+    cloudBrought: "Traído", cloudFailed: "No se pudo guardar en iCloud. Inténtalo de nuevo.",
+    dataManage: "Datos", clearBook: "Vaciar el libro",
     clearBookConfirm: "Se quitarán cuentas, movimientos, presupuestos e ideas, y el ejemplo no volverá.",
     clearBookDone: "Datos del libro borrados",
     importData: "Importar libro", importPaste: "Pegar el JSON exportado", importDone: "Importación lista",
@@ -135,9 +135,10 @@ let spanishCopy = LedgerCopy(
     accountMonthFlow: "Este mes",
     sparks: "Ideas", sparkPlaceholder: "Escríbelo", sparkHint: "Escribe aquí",
     sparkIdea: "Idea", sparkDiary: "Diario", sparkThought: "Pensamiento", sparkSummary: "Resumen del día",
-    sparkFavorite: "Favorito", sparkTags: "Etiquetas", sparkTagHint: "Sepáralas con espacios",
+    sparkFavorite: "Favorito", sparkTags: "Etiquetas", sparkTagHint: "Etiquetas, como viaje cena",
     sparkPicture: "Foto", sparkPictureRemove: "Quitar foto",
-    sparkSearch: "Buscar texto, etiqueta o fecha", sparkNotes: "Notas", sparkTimeline: "Línea de tiempo"
+    sparkSearch: "Buscar texto, etiqueta o fecha", sparkNotes: "Notas", sparkTimeline: "Línea de tiempo",
+    rightsReserved: "Todos los derechos reservados."
 )
 
 let portugueseCopy = LedgerCopy(
@@ -171,7 +172,7 @@ let portugueseCopy = LedgerCopy(
     accountIntroNameTitle: "Sem número do cartão", accountIntroNameBody: "Dinheiro, cartão do banco ou de crédito. Dê um nome. O número não é preciso.",
     accountKindBank: "Banco", accountKindCash: "Dinheiro", accountKindCard: "Cartão", accountKindOther: "Outro",
     addAccount: "Adicionar conta", accountGuide: "Ainda não há uma conta sua. Adicionar", accountNone: "Nenhuma", editAccount: "Editar conta", newAccount: "Adicionar conta",
-    accountName: "Nome", accountNamePh: "Visa, dinheiro, salário", accountKindLabel: "Tipo de conta",
+    accountName: "Nome", accountNamePh: "Dinheiro, salário, poupança", accountKindLabel: "Tipo de conta",
     deleteAccount: "Excluir conta e movimentos", accountBalance: "Saldo atual", accountDetailActivity: "Ver movimentos", filterAccount: "Conta",
     holdingsStock: "Ações", holdingsFund: "Fundos", holdingsLabel: "Posições", holdingKindStock: "Ação", holdingKindEtf: "ETF", holdingKindFund: "Fundo",
     addHolding: "Adicionar posição", editHolding: "Editar posição", newHolding: "Adicionar posição", holdingKindLabel: "Tipo",
@@ -217,8 +218,8 @@ let portugueseCopy = LedgerCopy(
     cloudNone: "Ainda sem guardar", cloudWhenLine: "Último guardado {time}",
     cloudSave: "Guardar no iCloud", cloudSaved: "Guardado no iCloud",
     cloudBring: "Trazer este livro", cloudBringAsk: "Isto substitui o livro deste iPhone pela cópia do iCloud.",
-    cloudBrought: "Trazido", cloudFailed: "Não foi possível terminar",
-    dataManage: "Dados", clearBook: "Apagar dados",
+    cloudBrought: "Trazido", cloudFailed: "Não foi possível guardar no iCloud. Tente outra vez.",
+    dataManage: "Dados", clearBook: "Esvaziar o livro",
     clearBookConfirm: "Contas, movimentos, orçamentos e ideias serão removidos, e o exemplo não volta.",
     clearBookDone: "Dados do livro apagados",
     importData: "Importar livro", importPaste: "Colar o JSON exportado", importDone: "Importação concluída",
@@ -268,9 +269,10 @@ let portugueseCopy = LedgerCopy(
     accountMonthFlow: "Este mês",
     sparks: "Ideias", sparkPlaceholder: "Escreva agora", sparkHint: "Escreva aqui",
     sparkIdea: "Ideia", sparkDiary: "Diário", sparkThought: "Pensamento", sparkSummary: "Resumo do dia",
-    sparkFavorite: "Favorito", sparkTags: "Etiquetas", sparkTagHint: "Separe com espaços",
+    sparkFavorite: "Favorito", sparkTags: "Etiquetas", sparkTagHint: "Etiquetas, como viagem jantar",
     sparkPicture: "Foto", sparkPictureRemove: "Tirar foto",
-    sparkSearch: "Buscar texto, etiqueta ou data", sparkNotes: "Notas", sparkTimeline: "Linha do tempo"
+    sparkSearch: "Buscar texto, etiqueta ou data", sparkNotes: "Notas", sparkTimeline: "Linha do tempo",
+    rightsReserved: "Todos os direitos reservados."
 )
 
 let frenchCopy = LedgerCopy(
@@ -304,7 +306,7 @@ let frenchCopy = LedgerCopy(
     accountIntroNameTitle: "Sans numéro de carte", accountIntroNameBody: "Espèces, carte bancaire ou crédit. Donnez un nom. Le numéro n'est pas demandé.",
     accountKindBank: "Banque", accountKindCash: "Espèces", accountKindCard: "Carte", accountKindOther: "Autre",
     addAccount: "Ajouter un compte", accountGuide: "Pas encore de compte à vous. Ajouter", accountNone: "Aucun", editAccount: "Modifier le compte", newAccount: "Ajouter un compte",
-    accountName: "Nom du compte", accountNamePh: "Visa, espèces, salaire", accountKindLabel: "Type de compte",
+    accountName: "Nom du compte", accountNamePh: "Espèces, salaire, épargne", accountKindLabel: "Type de compte",
     deleteAccount: "Supprimer le compte et les opérations", accountBalance: "Solde actuel", accountDetailActivity: "Voir l’activité", filterAccount: "Compte",
     holdingsStock: "Actions", holdingsFund: "Fonds", holdingsLabel: "Positions", holdingKindStock: "Action", holdingKindEtf: "ETF", holdingKindFund: "Fonds",
     addHolding: "Ajouter une position", editHolding: "Modifier la position", newHolding: "Ajouter une position", holdingKindLabel: "Type",
@@ -350,8 +352,8 @@ let frenchCopy = LedgerCopy(
     cloudNone: "Pas encore enregistré", cloudWhenLine: "Dernier enregistrement {time}",
     cloudSave: "Enregistrer sur iCloud", cloudSaved: "Enregistré sur iCloud",
     cloudBring: "Reprendre ce livre", cloudBringAsk: "Cela remplace le livre de cet iPhone par la copie iCloud.",
-    cloudBrought: "Repris", cloudFailed: "Impossible de terminer",
-    dataManage: "Données", clearBook: "Effacer les données",
+    cloudBrought: "Repris", cloudFailed: "Impossible d'enregistrer dans iCloud. Réessayez.",
+    dataManage: "Données", clearBook: "Vider le carnet",
     clearBookConfirm: "Comptes, opérations, budgets et idées seront retirés, et l’exemple ne reviendra pas.",
     clearBookDone: "Données du livre effacées",
     importData: "Importer le livre", importPaste: "Coller le JSON exporté", importDone: "Import terminé",
@@ -401,9 +403,10 @@ let frenchCopy = LedgerCopy(
     accountMonthFlow: "Ce mois",
     sparks: "Idées", sparkPlaceholder: "Écris-le", sparkHint: "Écris ici",
     sparkIdea: "Idée", sparkDiary: "Journal", sparkThought: "Pensée", sparkSummary: "Bilan du jour",
-    sparkFavorite: "Favori", sparkTags: "Étiquettes", sparkTagHint: "Sépare par des espaces",
+    sparkFavorite: "Favori", sparkTags: "Étiquettes", sparkTagHint: "Étiquettes, comme voyage dîner",
     sparkPicture: "Photo", sparkPictureRemove: "Retirer la photo",
-    sparkSearch: "Chercher un mot, une étiquette ou une date", sparkNotes: "Notes", sparkTimeline: "Fil"
+    sparkSearch: "Chercher un mot, une étiquette ou une date", sparkNotes: "Notes", sparkTimeline: "Fil",
+    rightsReserved: "Tous droits réservés."
 )
 
 let germanCopy = LedgerCopy(
@@ -437,7 +440,7 @@ let germanCopy = LedgerCopy(
     accountIntroNameTitle: "Keine Kartennummer", accountIntroNameBody: "Bargeld, Bankkarte oder Kreditkarte. Ein Name genügt. Die Nummer bleibt weg.",
     accountKindBank: "Bank", accountKindCash: "Bargeld", accountKindCard: "Karte", accountKindOther: "Sonstiges",
     addAccount: "Konto hinzufügen", accountGuide: "Noch kein eigenes Konto. Hinzufügen", accountNone: "Keins", editAccount: "Konto bearbeiten", newAccount: "Konto hinzufügen",
-    accountName: "Kontoname", accountNamePh: "Visa, Bargeld, Gehalt", accountKindLabel: "Kontotyp",
+    accountName: "Kontoname", accountNamePh: "Bargeld, Gehalt, Sparkonto", accountKindLabel: "Kontotyp",
     deleteAccount: "Konto und Buchungen löschen", accountBalance: "Aktueller Saldo", accountDetailActivity: "Buchungen ansehen", filterAccount: "Konto",
     holdingsStock: "Aktien", holdingsFund: "Fonds", holdingsLabel: "Bestand", holdingKindStock: "Aktie", holdingKindEtf: "ETF", holdingKindFund: "Fonds",
     addHolding: "Bestand hinzufügen", editHolding: "Bestand bearbeiten", newHolding: "Bestand hinzufügen", holdingKindLabel: "Typ",
@@ -483,8 +486,8 @@ let germanCopy = LedgerCopy(
     cloudNone: "Noch nicht gesichert", cloudWhenLine: "Zuletzt gesichert {time}",
     cloudSave: "In iCloud sichern", cloudSaved: "In iCloud gesichert",
     cloudBring: "Dieses Buch zurückholen", cloudBringAsk: "Das Buch auf diesem iPhone wird durch die iCloud-Kopie ersetzt.",
-    cloudBrought: "Zurückgeholt", cloudFailed: "Konnte nicht abschließen",
-    dataManage: "Daten", clearBook: "Daten löschen",
+    cloudBrought: "Zurückgeholt", cloudFailed: "Speichern in iCloud ist fehlgeschlagen. Bitte erneut versuchen.",
+    dataManage: "Daten", clearBook: "Buch leeren",
     clearBookConfirm: "Konten, Buchungen, Budgets und Einfälle werden entfernt, und das Beispiel kommt nicht zurück.",
     clearBookDone: "Buchdaten gelöscht",
     importData: "Buch importieren", importPaste: "Exportiertes JSON einfügen", importDone: "Import fertig",
@@ -534,9 +537,10 @@ let germanCopy = LedgerCopy(
     accountMonthFlow: "Dieser Monat",
     sparks: "Einfälle", sparkPlaceholder: "Schreib es auf", sparkHint: "Hier schreiben",
     sparkIdea: "Einfall", sparkDiary: "Tagebuch", sparkThought: "Gedanke", sparkSummary: "Tagesfazit",
-    sparkFavorite: "Favorit", sparkTags: "Stichworte", sparkTagHint: "Mit Leerzeichen trennen",
+    sparkFavorite: "Favorit", sparkTags: "Stichworte", sparkTagHint: "Stichworte, etwa Reise Essen",
     sparkPicture: "Foto", sparkPictureRemove: "Foto entfernen",
-    sparkSearch: "Text, Stichwort oder Datum suchen", sparkNotes: "Notizen", sparkTimeline: "Zeitstrahl"
+    sparkSearch: "Text, Stichwort oder Datum suchen", sparkNotes: "Notizen", sparkTimeline: "Zeitstrahl",
+    rightsReserved: "Alle Rechte vorbehalten."
 )
 
 let italianCopy = LedgerCopy(
@@ -570,7 +574,7 @@ let italianCopy = LedgerCopy(
     accountIntroNameTitle: "Senza numero di carta", accountIntroNameBody: "Contanti, carta della banca o di credito. Dai un nome. Il numero non serve.",
     accountKindBank: "Banca", accountKindCash: "Contanti", accountKindCard: "Carta", accountKindOther: "Altro",
     addAccount: "Aggiungi conto", accountGuide: "Non c’è ancora un conto tuo. Aggiungi", accountNone: "Nessuno", editAccount: "Modifica conto", newAccount: "Aggiungi conto",
-    accountName: "Nome conto", accountNamePh: "Visa, contanti, stipendio", accountKindLabel: "Tipo di conto",
+    accountName: "Nome conto", accountNamePh: "Contanti, stipendio, risparmio", accountKindLabel: "Tipo di conto",
     deleteAccount: "Elimina conto e movimenti", accountBalance: "Saldo attuale", accountDetailActivity: "Vedi movimenti", filterAccount: "Conto",
     holdingsStock: "Azioni", holdingsFund: "Fondi", holdingsLabel: "Posizioni", holdingKindStock: "Azione", holdingKindEtf: "ETF", holdingKindFund: "Fondo",
     addHolding: "Aggiungi posizione", editHolding: "Modifica posizione", newHolding: "Aggiungi posizione", holdingKindLabel: "Tipo",
@@ -616,8 +620,8 @@ let italianCopy = LedgerCopy(
     cloudNone: "Non ancora salvato", cloudWhenLine: "Ultimo salvataggio {time}",
     cloudSave: "Salva su iCloud", cloudSaved: "Salvato su iCloud",
     cloudBring: "Riprendi questo libro", cloudBringAsk: "Questo sostituisce il libro su questo iPhone con la copia di iCloud.",
-    cloudBrought: "Ripreso", cloudFailed: "Non è stato possibile finire",
-    dataManage: "Dati", clearBook: "Cancella dati",
+    cloudBrought: "Ripreso", cloudFailed: "Impossibile salvare su iCloud. Riprova.",
+    dataManage: "Dati", clearBook: "Svuota il libro",
     clearBookConfirm: "Conti, movimenti, budget e idee verranno tolti, e l’esempio non torna.",
     clearBookDone: "Dati del libro cancellati",
     importData: "Importa libro", importPaste: "Incolla il JSON esportato", importDone: "Importazione fatta",
@@ -667,7 +671,8 @@ let italianCopy = LedgerCopy(
     accountMonthFlow: "Questo mese",
     sparks: "Idee", sparkPlaceholder: "Scrivilo", sparkHint: "Scrivi qui",
     sparkIdea: "Idea", sparkDiary: "Diario", sparkThought: "Pensiero", sparkSummary: "Riepilogo del giorno",
-    sparkFavorite: "Preferito", sparkTags: "Etichette", sparkTagHint: "Separale con spazi",
+    sparkFavorite: "Preferito", sparkTags: "Etichette", sparkTagHint: "Etichette, come viaggio cena",
     sparkPicture: "Foto", sparkPictureRemove: "Togli foto",
-    sparkSearch: "Cerca testo, etichetta o data", sparkNotes: "Note", sparkTimeline: "Cronologia"
+    sparkSearch: "Cerca testo, etichetta o data", sparkNotes: "Note", sparkTimeline: "Cronologia",
+    rightsReserved: "Tutti i diritti riservati."
 )

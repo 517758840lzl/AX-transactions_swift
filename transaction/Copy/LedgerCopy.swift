@@ -358,6 +358,7 @@ struct LedgerCopy {
     var sparkSearch: String
     var sparkNotes: String
     var sparkTimeline: String
+    var rightsReserved: String
 
     func monthTitle(now: Date = Date()) -> String {
         let month = LedgerDay.month(of: now)
@@ -587,7 +588,7 @@ private let chinese = LedgerCopy(
     accountIntroNameTitle: "不用填卡号", accountIntroNameBody: "现金、银行卡、信用卡都可以，自己起名即可，不用填账号。",
     accountKindBank: "银行卡", accountKindCash: "现金", accountKindCard: "信用卡", accountKindOther: "其他",
     addAccount: "添加账户", accountGuide: "还没有自己的账户，去添加", accountNone: "没有", editAccount: "编辑账户", newAccount: "添加账户",
-    accountName: "账户名称", accountNamePh: "Visa、现金、工资卡", accountKindLabel: "账户类型",
+    accountName: "账户名称", accountNamePh: "现金、工资卡、储蓄卡", accountKindLabel: "账户类型",
     deleteAccount: "删除账户及流水", accountBalance: "当前余额", accountDetailActivity: "查看流水", filterAccount: "账户",
     holdingsStock: "股票", holdingsFund: "基金", holdingsLabel: "持仓", holdingKindStock: "股票", holdingKindEtf: "ETF", holdingKindFund: "基金",
     addHolding: "添加持仓", editHolding: "编辑持仓", newHolding: "添加持仓", holdingKindLabel: "标的类型",
@@ -631,8 +632,8 @@ private let chinese = LedgerCopy(
     cloudNone: "还没保存", cloudWhenLine: "上次保存 {time}",
     cloudSave: "保存到 iCloud", cloudSaved: "已保存到 iCloud",
     cloudBring: "取回这本账", cloudBringAsk: "取回会换成 iCloud 里的那本账。",
-    cloudBrought: "已取回", cloudFailed: "没能完成",
-    dataManage: "数据管理", clearBook: "清除数据",
+    cloudBrought: "已取回", cloudFailed: "没能保存到 iCloud，请重试",
+    dataManage: "数据管理", clearBook: "清空账本",
     clearBookConfirm: "清除后，账户、流水、预算和灵感都会去掉，并且不会再填回示例。", clearBookDone: "账本数据已清除",
     importData: "导入账本", importPaste: "粘贴导出的 JSON", importDone: "导入成功", importInvalid: "JSON 无效，请检查内容",
     importConfirm: "这份文件会换掉现在的账本，包括账户和流水。",
@@ -678,9 +679,10 @@ private let chinese = LedgerCopy(
     accountMonthFlow: "本月进出",
     sparks: "灵感", sparkPlaceholder: "记下这一刻", sparkHint: "写在这里",
     sparkIdea: "灵感", sparkDiary: "日记", sparkThought: "随想", sparkSummary: "每日总结",
-    sparkFavorite: "收藏", sparkTags: "标签", sparkTagHint: "用空格分开",
+    sparkFavorite: "收藏", sparkTags: "标签", sparkTagHint: "标签，如 旅行 晚饭",
     sparkPicture: "图片", sparkPictureRemove: "去掉图片",
-    sparkSearch: "搜索文字、标签或日期", sparkNotes: "笔记", sparkTimeline: "时间轴"
+    sparkSearch: "搜索文字、标签或日期", sparkNotes: "笔记", sparkTimeline: "时间轴",
+    rightsReserved: "保留所有权利"
 )
 
 private let englishCopy = LedgerCopy(
@@ -715,7 +717,7 @@ private let englishCopy = LedgerCopy(
     accountIntroNameTitle: "No card number", accountIntroNameBody: "Cash, bank cards, and credit cards are fine. Name them yourself. No account number.",
     accountKindBank: "Bank", accountKindCash: "Cash", accountKindCard: "Credit", accountKindOther: "Other",
     addAccount: "Add account", accountGuide: "No account of your own yet. Add one", accountNone: "None", editAccount: "Edit account", newAccount: "Add account",
-    accountName: "Account name", accountNamePh: "Visa, Cash, Payroll", accountKindLabel: "Account type",
+    accountName: "Account name", accountNamePh: "Cash, payroll, savings", accountKindLabel: "Account type",
     deleteAccount: "Delete account & transactions", accountBalance: "Current balance",
     accountDetailActivity: "View activity", filterAccount: "Account",
     holdingsStock: "Stocks", holdingsFund: "Funds", holdingsLabel: "Holdings", holdingKindStock: "Stock", holdingKindEtf: "ETF", holdingKindFund: "Fund",
@@ -762,8 +764,8 @@ private let englishCopy = LedgerCopy(
     cloudNone: "Not saved yet", cloudWhenLine: "Last saved {time}",
     cloudSave: "Save to iCloud", cloudSaved: "Saved to iCloud",
     cloudBring: "Bring this book back", cloudBringAsk: "This replaces the book on this iPhone with the iCloud copy.",
-    cloudBrought: "Brought back", cloudFailed: "Could not finish",
-    dataManage: "Data", clearBook: "Clear data",
+    cloudBrought: "Brought back", cloudFailed: "Couldn't save to iCloud. Please try again.",
+    dataManage: "Data", clearBook: "Clear the book",
     clearBookConfirm: "Accounts, transactions, budgets and ideas will be removed, and the sample book will not come back.",
     clearBookDone: "Book data cleared",
     importData: "Import book", importPaste: "Paste exported JSON", importDone: "Import complete",
@@ -813,7 +815,8 @@ private let englishCopy = LedgerCopy(
     accountMonthFlow: "This month",
     sparks: "Ideas", sparkPlaceholder: "Write it down", sparkHint: "Write here",
     sparkIdea: "Idea", sparkDiary: "Diary", sparkThought: "Thought", sparkSummary: "Day note",
-    sparkFavorite: "Favorite", sparkTags: "Tags", sparkTagHint: "Separate with spaces",
+    sparkFavorite: "Favorite", sparkTags: "Tags", sparkTagHint: "Tags, like trip dinner",
     sparkPicture: "Photo", sparkPictureRemove: "Remove photo",
-    sparkSearch: "Search words, tags, or date", sparkNotes: "Notes", sparkTimeline: "Timeline"
+    sparkSearch: "Search words, tags, or date", sparkNotes: "Notes", sparkTimeline: "Timeline",
+    rightsReserved: "All rights reserved."
 )

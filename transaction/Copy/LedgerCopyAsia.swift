@@ -38,7 +38,7 @@ let traditionalCopy = LedgerCopy(
     accountIntroNameTitle: "不用填卡號", accountIntroNameBody: "現金、銀行卡、信用卡都可以，自己起名即可，不用填帳號。",
     accountKindBank: "銀行卡", accountKindCash: "現金", accountKindCard: "信用卡", accountKindOther: "其他",
     addAccount: "新增帳戶", accountGuide: "還沒有自己的帳戶，去新增", accountNone: "沒有", editAccount: "編輯帳戶", newAccount: "新增帳戶",
-    accountName: "帳戶名稱", accountNamePh: "Visa、現金、薪資卡", accountKindLabel: "帳戶類型",
+    accountName: "帳戶名稱", accountNamePh: "現金、薪資卡、儲蓄卡", accountKindLabel: "帳戶類型",
     deleteAccount: "刪除帳戶及流水", accountBalance: "目前餘額", accountDetailActivity: "查看流水", filterAccount: "帳戶",
     holdingsStock: "股票", holdingsFund: "基金", holdingsLabel: "持倉", holdingKindStock: "股票", holdingKindEtf: "ETF", holdingKindFund: "基金",
     addHolding: "新增持倉", editHolding: "編輯持倉", newHolding: "新增持倉", holdingKindLabel: "標的類型",
@@ -82,8 +82,8 @@ let traditionalCopy = LedgerCopy(
     cloudNone: "還沒保存", cloudWhenLine: "上次保存 {time}",
     cloudSave: "保存到 iCloud", cloudSaved: "已保存到 iCloud",
     cloudBring: "取回這本帳", cloudBringAsk: "取回會換成 iCloud 裡的那本帳。",
-    cloudBrought: "已取回", cloudFailed: "沒能完成",
-    dataManage: "資料管理", clearBook: "清除資料",
+    cloudBrought: "已取回", cloudFailed: "沒能儲存到 iCloud，請重試",
+    dataManage: "資料管理", clearBook: "清空帳本",
     clearBookConfirm: "清除後，帳戶、流水、預算和靈感都會去掉，並且不會再填回範例。", clearBookDone: "帳本資料已清除",
     importData: "匯入帳本", importPaste: "貼上匯出的 JSON", importDone: "匯入成功", importInvalid: "JSON 無效，請檢查內容",
     importConfirm: "這份檔案會換掉現在的帳本，包括帳戶和流水。",
@@ -129,9 +129,10 @@ let traditionalCopy = LedgerCopy(
     accountMonthFlow: "本月進出",
     sparks: "靈感", sparkPlaceholder: "記下這一刻", sparkHint: "寫在這裡",
     sparkIdea: "靈感", sparkDiary: "日記", sparkThought: "隨想", sparkSummary: "每日總結",
-    sparkFavorite: "收藏", sparkTags: "標籤", sparkTagHint: "用空格分開",
+    sparkFavorite: "收藏", sparkTags: "標籤", sparkTagHint: "標籤，如 旅行 晚飯",
     sparkPicture: "圖片", sparkPictureRemove: "去掉圖片",
-    sparkSearch: "搜文字、標籤或日期", sparkNotes: "筆記", sparkTimeline: "時間軸"
+    sparkSearch: "搜文字、標籤或日期", sparkNotes: "筆記", sparkTimeline: "時間軸",
+    rightsReserved: "保留所有權利"
 )
 
 let japaneseCopy = LedgerCopy(
@@ -165,7 +166,7 @@ let japaneseCopy = LedgerCopy(
     accountIntroNameTitle: "番号は不要", accountIntroNameBody: "現金、銀行カード、クレジットカード。名前を付ければよく、番号は入力しない。",
     accountKindBank: "銀行", accountKindCash: "現金", accountKindCard: "クレジット", accountKindOther: "その他",
     addAccount: "口座を追加", accountGuide: "自分の口座がまだありません。追加する", accountNone: "なし", editAccount: "口座を編集", newAccount: "口座を追加",
-    accountName: "口座名", accountNamePh: "Visa、現金、給与口座", accountKindLabel: "口座の種類",
+    accountName: "口座名", accountNamePh: "現金、給与口座、普通預金", accountKindLabel: "口座の種類",
     deleteAccount: "口座と明細を削除", accountBalance: "現在の残高", accountDetailActivity: "明細を見る", filterAccount: "口座",
     holdingsStock: "株式", holdingsFund: "ファンド", holdingsLabel: "保有", holdingKindStock: "株式", holdingKindEtf: "ETF", holdingKindFund: "ファンド",
     addHolding: "保有を追加", editHolding: "保有を編集", newHolding: "保有を追加", holdingKindLabel: "種類",
@@ -209,8 +210,8 @@ let japaneseCopy = LedgerCopy(
     cloudNone: "まだ保存していない", cloudWhenLine: "前回の保存 {time}",
     cloudSave: "iCloud に保存", cloudSaved: "iCloud に保存した",
     cloudBring: "この家計簿を戻す", cloudBringAsk: "戻すと、この iPhone の家計簿が iCloud の内容に替わります。",
-    cloudBrought: "戻した", cloudFailed: "完了できなかった",
-    dataManage: "データ", clearBook: "データを消去",
+    cloudBrought: "戻した", cloudFailed: "iCloud に保存できませんでした。もう一度お試しください。",
+    dataManage: "データ", clearBook: "家計簿を空にする",
     clearBookConfirm: "消去すると口座、明細、予算、ひらめきが消え、サンプルは戻りません。", clearBookDone: "家計簿のデータを消去しました",
     importData: "家計簿を読み込む", importPaste: "書き出したJSONを貼り付け", importDone: "読み込み完了", importInvalid: "JSONが無効です。内容を確認してください",
     importConfirm: "このファイルで現在の家計簿を置き換えます。口座と明細が含まれます。",
@@ -256,9 +257,10 @@ let japaneseCopy = LedgerCopy(
     accountMonthFlow: "今月の出入",
     sparks: "ひらめき", sparkPlaceholder: "いま浮かんだことを書く", sparkHint: "ここに書く",
     sparkIdea: "ひらめき", sparkDiary: "日記", sparkThought: "随想", sparkSummary: "一日のまとめ",
-    sparkFavorite: "お気に入り", sparkTags: "タグ", sparkTagHint: "スペースで区切る",
+    sparkFavorite: "お気に入り", sparkTags: "タグ", sparkTagHint: "タグ、例：旅行 夕食",
     sparkPicture: "写真", sparkPictureRemove: "写真を外す",
-    sparkSearch: "文字、タグ、日付で探す", sparkNotes: "メモ", sparkTimeline: "タイムライン"
+    sparkSearch: "文字、タグ、日付で探す", sparkNotes: "メモ", sparkTimeline: "タイムライン",
+    rightsReserved: "無断転載を禁じます。"
 )
 
 let koreanCopy = LedgerCopy(
@@ -292,7 +294,7 @@ let koreanCopy = LedgerCopy(
     accountIntroNameTitle: "카드번호 없음", accountIntroNameBody: "현금, 은행카드, 신용카드 모두 가능하다. 이름만 붙이고 번호는 적지 않는다.",
     accountKindBank: "은행", accountKindCash: "현금", accountKindCard: "신용카드", accountKindOther: "기타",
     addAccount: "계좌 추가", accountGuide: "아직 내 계좌가 없습니다. 추가하기", accountNone: "없음", editAccount: "계좌 편집", newAccount: "계좌 추가",
-    accountName: "계좌 이름", accountNamePh: "Visa, 현금, 급여 계좌", accountKindLabel: "계좌 유형",
+    accountName: "계좌 이름", accountNamePh: "현금, 급여 계좌, 예금", accountKindLabel: "계좌 유형",
     deleteAccount: "계좌와 내역 삭제", accountBalance: "현재 잔액", accountDetailActivity: "내역 보기", filterAccount: "계좌",
     holdingsStock: "주식", holdingsFund: "펀드", holdingsLabel: "보유", holdingKindStock: "주식", holdingKindEtf: "ETF", holdingKindFund: "펀드",
     addHolding: "보유 추가", editHolding: "보유 편집", newHolding: "보유 추가", holdingKindLabel: "유형",
@@ -336,8 +338,8 @@ let koreanCopy = LedgerCopy(
     cloudNone: "아직 저장 안 함", cloudWhenLine: "마지막 저장 {time}",
     cloudSave: "iCloud에 저장", cloudSaved: "iCloud에 저장됨",
     cloudBring: "이 장부 가져오기", cloudBringAsk: "가져오면 이 iPhone의 장부가 iCloud 내용으로 바뀝니다.",
-    cloudBrought: "가져왔습니다", cloudFailed: "끝내지 못했습니다",
-    dataManage: "데이터", clearBook: "데이터 지우기",
+    cloudBrought: "가져왔습니다", cloudFailed: "iCloud에 저장하지 못했습니다. 다시 시도해 주세요.",
+    dataManage: "데이터", clearBook: "장부 비우기",
     clearBookConfirm: "지우면 계좌, 내역, 예산, 아이디어가 삭제되고 샘플은 돌아오지 않습니다.", clearBookDone: "장부 데이터를 지웠습니다",
     importData: "장부 가져오기", importPaste: "내보낸 JSON 붙여넣기", importDone: "가져오기 완료", importInvalid: "JSON이 올바르지 않습니다. 내용을 확인하세요",
     importConfirm: "이 파일이 현재 장부를 바꿉니다. 계좌와 내역이 포함됩니다.",
@@ -383,7 +385,8 @@ let koreanCopy = LedgerCopy(
     accountMonthFlow: "이번 달 입출",
     sparks: "아이디어", sparkPlaceholder: "떠오른 것을 적기", sparkHint: "여기에 적기",
     sparkIdea: "아이디어", sparkDiary: "일기", sparkThought: "생각", sparkSummary: "하루 정리",
-    sparkFavorite: "즐겨찾기", sparkTags: "태그", sparkTagHint: "띄어쓰기로 구분",
+    sparkFavorite: "즐겨찾기", sparkTags: "태그", sparkTagHint: "태그, 예: 여행 저녁",
     sparkPicture: "사진", sparkPictureRemove: "사진 빼기",
-    sparkSearch: "글, 태그, 날짜 검색", sparkNotes: "노트", sparkTimeline: "타임라인"
+    sparkSearch: "글, 태그, 날짜 검색", sparkNotes: "노트", sparkTimeline: "타임라인",
+    rightsReserved: "모든 권리를 보유합니다."
 )

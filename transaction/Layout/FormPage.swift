@@ -13,6 +13,7 @@ struct FormPage<Content: View>: View {
     var back: String
     var place: String
     var showsBack = true
+    var side: CGFloat = 18
     @ViewBuilder var content: () -> Content
     @Environment(\.pageBack) private var pageBack
 
@@ -20,7 +21,7 @@ struct FormPage<Content: View>: View {
         VStack(alignment: .leading, spacing: 0) {
             if showsBack {
                 SubpageHead(title: title, back: back) { pageBack() }
-                    .padding(.horizontal, 18)
+                    .padding(.horizontal, side)
                     .padding(.top, 8)
                     .padding(.bottom, 14)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -37,7 +38,7 @@ struct FormPage<Content: View>: View {
                 VStack(alignment: .leading, spacing: 14) {
                     content()
                 }
-                .padding(.horizontal, 18)
+                .padding(.horizontal, side)
                 .padding(.bottom, 32)
                 .immediateScroll(place: place)
             }
