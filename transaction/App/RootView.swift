@@ -38,10 +38,12 @@ struct RootView: View {
                 .safeAreaInset(edge: .bottom, spacing: 0) {
                     tabBar(copy)
                 }
+                .ignoresSafeArea(.keyboard, edges: .bottom)
                 if screen.path.isEmpty, screen.tab == 0 || screen.tab == 1 {
                     EntryButton(title: copy.entryNew) {
                         screen.openNewRecord(store: store)
                     }
+                    .ignoresSafeArea(.keyboard, edges: .bottom)
                 }
                 if let note = store.note {
                     Text(note)

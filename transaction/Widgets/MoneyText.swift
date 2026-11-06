@@ -19,7 +19,7 @@ struct MoneyText: View {
     var body: some View {
         if amountsHidden {
             Text("***")
-                .font(.system(size: size, weight: digitWeight ?? .bold))
+                .font(.system(size: size, weight: .bold))
                 .foregroundStyle(color)
         } else {
             amountText
@@ -29,7 +29,7 @@ struct MoneyText: View {
     private var amountText: some View {
         let negative = value < 0
         let sign = signed && value > 0 ? "+" : (negative ? "−" : "")
-        let digits: Font.Weight = digitWeight ?? (size >= 16 ? .bold : .semibold)
+        let digits: Font.Weight = size >= 16 ? .bold : .semibold
         return (
             Text(sign + mark).font(.system(size: size, weight: .semibold))
                 + Text(LedgerMoney.body(value)).font(.system(size: size, weight: digits))
