@@ -76,7 +76,7 @@ struct QCRootView: View {
                         .zIndex(Double(index + 1))
                         .transition(.move(edge: .trailing))
                 }
-                if !opening && !guide {
+                if !opening && !guide, coverStatusBar {
                     statusBarCover
                         .zIndex(30)
                 }
@@ -125,6 +125,12 @@ struct QCRootView: View {
         .tint(QCPalette.ink)
     }
 
+    /// The writing page paints its own color through the status bar.
+    private var coverStatusBar: Bool {
+        if case .spark = screen.path.last { return false }
+        return true
+    }
+
     /// Covers the status bar with the page color so scrolling cards do not show through it.
     private var statusBarCover: some View {
         let height = Self.statusBarHeight
@@ -137,9 +143,7 @@ struct QCRootView: View {
 
     private var statusCoverFill: Color {
         switch screen.path.last {
-        case .yearReport, .reminder:
-            return QCPalette.stage
-        case nil:
+        case .yearReport, .reminder, .accountsHome, .about, .disclaimer, nil:
             return QCPalette.stage
         default:
             return .white

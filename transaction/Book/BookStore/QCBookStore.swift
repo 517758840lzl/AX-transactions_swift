@@ -74,6 +74,10 @@ final class QCBookStore: ObservableObject {
             book.sampleCleared = true
             shortened = true
         }
+        if book.sparks.contains(where: { $0.id.hasPrefix("preview-spark-") }) {
+            book.sparks.removeAll { $0.id.hasPrefix("preview-spark-") }
+            shortened = true
+        }
         let adopted = QCCategoryMarks.adopt(&book)
         let labeled = Self.labelSamples(&book)
         let store = QCBookStore(book: book, database: database, legacyURL: legacyURL)

@@ -160,10 +160,10 @@ struct QCSparkHomeView: View {
                         } label: {
                             HStack(spacing: 8) {
                                 Text(copy.filterAll)
-                                    .font(.system(size: 15, weight: .bold))
+                                    .font(.system(size: 15, weight: .medium))
                                     .foregroundStyle(QCPalette.ink)
                                 Text("\(matched.count)")
-                                    .font(.system(size: 14, weight: .bold))
+                                    .font(.system(size: 14, weight: .medium))
                                     .foregroundStyle(QCPalette.muted)
                                 Spacer(minLength: 0)
                                 Image(systemName: "chevron.right")
@@ -247,12 +247,12 @@ private struct QCSparkBrief: View {
         Button(action: action) {
             HStack(spacing: 10) {
                 Text(copy.sparkKindTitle(spark.kind))
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(QCPalette.muted)
                     .frame(width: 64, alignment: .leading)
                     .lineLimit(1)
                 Text(spark.body.replacingOccurrences(of: "\n", with: " "))
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.system(size: 15, weight: .medium))
                     .foregroundStyle(QCPalette.ink)
                     .lineLimit(1)
                 if spark.favorite {
@@ -262,7 +262,7 @@ private struct QCSparkBrief: View {
                 }
                 Spacer(minLength: 8)
                 Text(copy.dayChip(spark.writtenOn))
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.system(size: 12))
                     .foregroundStyle(QCPalette.faint)
                     .lineLimit(1)
             }
@@ -534,7 +534,7 @@ struct QCSparkFormView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(wash)
+        .background(wash.ignoresSafeArea())
         .animation(.easeOut(duration: 0.25), value: kind)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             paperTools(copy, existing: existing, kinds: kinds, wash: wash)

@@ -75,23 +75,29 @@ struct QCYearReportClassify: View {
                 ring(slices, total: total)
                 ForEach(Array(slices.enumerated()), id: \.element.id) { index, slice in
                     VStack(alignment: .leading, spacing: 8) {
-                        HStack(spacing: 8) {
+                        HStack(alignment: .center, spacing: 10) {
                             Button {
                                 openCategory = openCategory == slice.id ? "" : slice.id
                             } label: {
-                                HStack(spacing: 8) {
+                                HStack(alignment: .center, spacing: 10) {
                                     QCCategoryBadge(
                                         style: QCCategoryMarks.style(name: slice.name, marks: marks),
                                         selected: false,
                                         side: 28
                                     )
-                                    Text("\(index + 1). \(slice.name)  \(percent(slice.amount, total))")
-                                        .font(.system(size: 15, weight: .semibold))
-                                        .foregroundColor(QCPalette.ink)
-                                        .lineLimit(1)
-                                    Spacer(minLength: 4)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text("\(index + 1). \(slice.name)")
+                                            .font(.system(size: 15, weight: .semibold))
+                                            .foregroundColor(QCPalette.ink)
+                                            .lineLimit(1)
+                                        Text("\(percent(slice.amount, total)) · \(copy.yearCount(slice.count))")
+                                            .font(.system(size: 12))
+                                            .foregroundColor(QCPalette.muted)
+                                            .lineLimit(1)
+                                    }
+                                    Spacer(minLength: 8)
                                     Image(systemName: openCategory == slice.id ? "chevron.up" : "chevron.down")
-                                        .font(.system(size: 12, weight: .bold))
+                                        .font(.system(size: 11, weight: .bold))
                                         .foregroundColor(QCPalette.faint)
                                 }
                             }
@@ -99,15 +105,13 @@ struct QCYearReportClassify: View {
                             Button {
                                 openSlice(slice)
                             } label: {
-                                HStack(spacing: 4) {
+                                HStack(spacing: 2) {
                                     QCMoneyText(value: slice.amount, mark: mark, size: 14)
-                                    Text(copy.yearCount(slice.count))
-                                        .font(.system(size: 12, weight: .semibold))
-                                        .foregroundColor(QCPalette.muted)
                                     Image(systemName: "chevron.right")
-                                        .font(.system(size: 12, weight: .bold))
+                                        .font(.system(size: 11, weight: .bold))
                                         .foregroundColor(QCPalette.faint)
                                 }
+                                .fixedSize()
                             }
                             .buttonStyle(.plain)
                         }

@@ -65,6 +65,10 @@ struct QCMeView: View {
             }
 
             QCPanelCard(title: copy.meLedger, titleSize: 13, card: true) {
+                settingsRow(copy.accounts, trailing: "\(store.book.accounts.filter { !$0.id.hasPrefix("sample-") }.count)", opens: true) {
+                    screen.open(.accountsHome)
+                }
+                divider
                 settingsRow(copy.yearReport, opens: true) { screen.open(.yearReport) }
                 divider
                 settingsRow(copy.monthlyBudget, trailing: budgetText(copy), opens: true) { screen.open(.budget) }
