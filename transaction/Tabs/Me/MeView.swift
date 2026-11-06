@@ -62,14 +62,14 @@ struct MeView: View {
 
             PanelCard(card: true) {
                 RecordMarkCard(days: BookMath.loggedDays(store.book.entries), copy: copy) {
-                    screen.open(.entry(id: nil))
+                    screen.openNewRecord(store: store)
                 }
             }
 
             PanelCard(title: copy.sparks, titleSize: 13, card: true, trailing: {
                 let count = store.book.sparks.count
                 if count > 0 {
-                    Button { screen.open(.sparks) } label: {
+                    Button { screen.reveal(tab: 2) } label: {
                         HStack(spacing: 4) {
                             Text("\(count)")
                                 .font(.system(size: 14, weight: .bold))
@@ -81,7 +81,7 @@ struct MeView: View {
                     .buttonStyle(.plain)
                 }
             }) {
-                Button { screen.open(.sparks) } label: {
+                Button { screen.reveal(tab: 2) } label: {
                     Text(copy.sparkPlaceholder)
                         .font(.system(size: 16))
                         .foregroundStyle(Palette.muted)

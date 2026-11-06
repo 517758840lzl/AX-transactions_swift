@@ -6,6 +6,7 @@
 import SwiftUI
 
 struct DashboardEmptyBanners: View {
+    @ObservedObject var store: BookStore
     @ObservedObject var screen: LedgerScreen
     var copy: LedgerCopy
     private let artWeight: CGFloat = 7
@@ -13,7 +14,7 @@ struct DashboardEmptyBanners: View {
     var body: some View {
         VStack(spacing: 12) {
             banner(title: copy.bannerEntryTitle, note: copy.bannerEntryNote, wash: true) {
-                screen.open(.entry(id: nil))
+                screen.openNewRecord(store: store)
             } art: {
                 risingBars
             }

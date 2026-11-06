@@ -29,7 +29,7 @@ struct RootView: View {
                     switch screen.tab {
                     case 0: DashboardView(store: store, screen: screen)
                     case 1: TransactionsView(store: store, screen: screen)
-                    case 2: AccountsView(store: store, screen: screen)
+                    case 2: SparksListView(store: store, screen: screen, rooted: true)
                     default: MeView(store: store, screen: screen)
                     }
                 }
@@ -40,7 +40,7 @@ struct RootView: View {
                 }
                 if screen.path.isEmpty, screen.tab == 0 || screen.tab == 1 {
                     EntryButton(title: copy.entryNew) {
-                        screen.open(.entry(id: nil))
+                        screen.openNewRecord(store: store)
                     }
                 }
                 if let note = store.note {
@@ -181,6 +181,7 @@ struct RootView: View {
     private func openPendingEntry() {
         guard BillReminder.shared.takePendingEntry() else { return }
         if case .entry = screen.path.last { return }
+        screen.entryDirection = .out
         screen.open(.entry(id: nil))
     }
 
@@ -209,6 +210,8 @@ struct RootView: View {
             SavingGoalFormView(store: store, goalID: id)
         case .sparks:
             SparksListView(store: store, screen: screen)
+        case .accountsHome:
+            AccountsView(store: store, screen: screen)
         case .spark(let id):
             SparkFormView(store: store, sparkID: id)
         case .profile:
@@ -241,7 +244,7 @@ struct RootView: View {
     }
 
     private func tabBar(_ copy: LedgerCopy) -> some View {
-        let labels = [copy.tabDashboard, copy.tabTransactions, copy.tabAccounts, copy.tabMe]
+        let labels = [copy.tabDashboard, copy.tabTransactions, copy.sparks, copy.tabMe]
         let icons = ["TabOverview", "TabLedger", "TabAccounts", "TabProfile"]
         return HStack(spacing: 0) {
             ForEach(labels.indices, id: \.self) { index in

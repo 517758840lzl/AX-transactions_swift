@@ -107,7 +107,7 @@ let traditionalCopy = LedgerCopy(
     removedTitle: "回收站", removedRestore: "恢復", removedEmpty: "回收站是空的",
     lockOnOpen: "打開時解鎖", lockTitle: "解鎖後才能看帳", lockRetry: "再試一次",
     lockOnWord: "已開啟", lockOffWord: "未開啟",     amountSolve: "計算",
-    worthGrowth: "區間淨增長", worthPastWeek: "過去7天", worthPastMonth: "過去1個月", worthPastQuarter: "過去3個月", worthPastYear: "過去1年", worthPastAll: "全部",
+    worthGrowth: "區間結餘", worthPastWeek: "過去7天", worthPastMonth: "過去1個月", worthPastQuarter: "過去3個月", worthPastYear: "過去1年", worthPastAll: "全部",
     worthSpanWeek: "7天", worthSpanMonth: "1月", worthSpanQuarter: "3月", worthSpanYear: "1年", worthSpanAll: "全部",
     localeID: "zh_TW",
     billStatementFormat: "{name} 出帳了，本期 {amount}",

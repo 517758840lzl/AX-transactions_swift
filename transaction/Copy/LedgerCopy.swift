@@ -655,7 +655,7 @@ private let chinese = LedgerCopy(
     removedTitle: "回收站", removedRestore: "恢复", removedEmpty: "回收站是空的",
     lockOnOpen: "打开时解锁", lockTitle: "解锁后才能看账", lockRetry: "再试一次",
     lockOnWord: "已开启", lockOffWord: "未开启",     amountSolve: "计算",
-    worthGrowth: "区间净增长", worthPastWeek: "过去7天", worthPastMonth: "过去1个月", worthPastQuarter: "过去3个月", worthPastYear: "过去1年", worthPastAll: "全部",
+    worthGrowth: "区间结余", worthPastWeek: "过去7天", worthPastMonth: "过去1个月", worthPastQuarter: "过去3个月", worthPastYear: "过去1年", worthPastAll: "全部",
     worthSpanWeek: "7天", worthSpanMonth: "1月", worthSpanQuarter: "3月", worthSpanYear: "1年", worthSpanAll: "全部",
     localeID: "zh_CN",
     billStatementFormat: "{name} 出账了，本期 {amount}",

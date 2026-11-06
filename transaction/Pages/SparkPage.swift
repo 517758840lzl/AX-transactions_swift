@@ -11,6 +11,7 @@ import UIKit
 struct SparksListView: View {
     @ObservedObject var store: BookStore
     @ObservedObject var screen: LedgerScreen
+    var rooted = false
     @State private var draft = ""
     @State private var draftDay = LedgerDay.today()
     @State private var draftKind = 0
@@ -27,7 +28,7 @@ struct SparksListView: View {
         let copy = store.copy
         let kinds = SparkKind.allCases
         let visible = store.book.sparks.filter { sparkVisible($0, copy: copy) }
-        FormPage(title: copy.sparks, back: copy.back, place: "sparks") {
+        FormPage(title: copy.sparks, back: copy.back, place: "sparks", showsBack: !rooted) {
             ChoiceRow(labels: kinds.map { copy.sparkKindTitle($0) }, index: draftKind, columns: 2) { draftKind = $0 }
             WritingBox(text: $draft, placeholder: copy.sparkPlaceholder)
             FieldLabel(text: copy.sparkTags)

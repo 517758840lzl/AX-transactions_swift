@@ -33,10 +33,27 @@ final class LedgerScreen: ObservableObject {
     @Published var worthSpan = WorthSpan.month
     /// "", "out", "in", or "other". Set when a stats row opens the list.
     @Published var feedKind = ""
+    /// Overview pills: "out", "in", or "other". A new entry follows this.
+    @Published var statsKind = "out"
+    @Published var entryDirection = Direction.out
     @Published var categoryPickSlot = ""
     @Published var categoryPickName = ""
 
     var windowDays: Int { BookMath.windowDays[min(max(windowIndex, 0), 1)] }
+
+    func openNewRecord(store: BookStore) {
+        if statsKind == "other" {
+            let own = store.book.accounts.filter { !$0.id.hasPrefix("sample-") }
+            if own.count < 2 {
+                store.flash(store.copy.transferNeedTwo)
+            } else {
+                open(.transfer)
+            }
+            return
+        }
+        entryDirection = statsKind == "in" ? .income : .out
+        open(.entry(id: nil))
+    }
 
     func open(_ page: Page) {
         withAnimation(Self.pageSlide) {

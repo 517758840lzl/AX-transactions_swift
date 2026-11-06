@@ -20,7 +20,7 @@ struct BookExportPage: View {
                 HStack(spacing: 0) {
                     stat(book.entries.count, copy.transactions) { showTab(1) }
                     Rectangle().fill(Palette.line).frame(width: 1, height: 36)
-                    stat(book.accounts.count, copy.accounts) { showTab(2) }
+                    stat(book.accounts.count, copy.accounts) { screen.open(.accountsHome) }
                 }
             }
             Button {

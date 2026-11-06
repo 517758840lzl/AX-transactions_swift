@@ -45,7 +45,7 @@ struct DashboardView: View {
         PageScroll(place: "dashboard", bottom: 128) {
             DashboardStatsPanel(store: store, screen: screen, copy: copy, entries: scoped)
             if scoped.isEmpty {
-                DashboardEmptyBanners(screen: screen, copy: copy)
+                DashboardEmptyBanners(store: store, screen: screen, copy: copy)
             }
             DashboardClaimPanel(store: store, screen: screen, copy: copy)
             DashboardReviewPanel(store: store, screen: screen, copy: copy, queue: queue)

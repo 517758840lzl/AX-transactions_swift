@@ -37,7 +37,16 @@ struct EntryFormView: View {
         let existing = store.book.entries.first { $0.id == entryID }
         let suggestions = BookMath.titleSuggestions(store.book.entries, locale: store.book.locale, transferCategory: copy.transferCategory)
         FormPage(title: existing == nil ? copy.entryNew : copy.entryEdit, back: copy.back, place: "entry-\(entryID ?? "new")") {
-            ChoiceRow(labels: [copy.periodSpend, copy.monthIncome], index: direction == .out ? 0 : 1) { index in
+            ChoiceRow(labels: [copy.periodSpend, copy.monthIncome, copy.transfer], index: direction == .out ? 0 : 1) { index in
+                if index == 2 {
+                    let own = store.book.accounts.filter { !$0.id.hasPrefix("sample-") }
+                    if own.count < 2 {
+                        store.flash(copy.transferNeedTwo)
+                    } else {
+                        screen.open(.transfer)
+                    }
+                    return
+                }
                 withAnimation(LedgerScreen.fold) {
                     direction = index == 0 ? .out : .income
                 }
@@ -351,6 +360,7 @@ struct EntryFormView: View {
             claim = existing.claim
             goalId = existing.goalId
         } else {
+            direction = screen.entryDirection
             category = store.book.categories.first ?? store.copy.starterCategories[0]
             otherCategory = category
             accountID = store.openAccounts().first?.id ?? ""

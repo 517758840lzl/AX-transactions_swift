@@ -129,7 +129,7 @@ struct TransactionsView: View {
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
             PillButton(title: copy.entryNew) {
-                screen.open(.entry(id: nil))
+                screen.openNewRecord(store: store)
             }
             .frame(width: UIScreen.main.bounds.width / 2)
         }

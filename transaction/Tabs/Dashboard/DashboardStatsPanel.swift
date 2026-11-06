@@ -16,13 +16,13 @@ struct DashboardStatsPanel: View {
     var entries: [Entry]
 
     @State private var annual = false
-    @State private var kind = "out"
     @State private var cursor = LedgerDay.yearMonth(Date())
     @State private var toolsWidth: CGFloat = 0
 
     var body: some View {
         let current = LedgerDay.yearMonth(Date())
         let shown = cursor > current ? current : cursor
+        let kind = screen.statsKind
         let kindName = copy.statsKindName(kind)
         let window = windowEntries(shown)
         let total = window.reduce(0) { $0 + $1.amount }
@@ -85,7 +85,7 @@ struct DashboardStatsPanel: View {
                     Text(copy.statsEmpty)
                         .foregroundStyle(Palette.muted)
                     Button {
-                        screen.open(.entry(id: nil))
+                        screen.openNewRecord(store: store)
                     } label: {
                         Text(copy.statsEmptyAdd)
                             .foregroundStyle(Palette.muted)
@@ -172,8 +172,8 @@ struct DashboardStatsPanel: View {
     }
 
     private func kindTab(_ title: String, id: String) -> some View {
-        let on = kind == id
-        return Button { kind = id } label: {
+        let on = screen.statsKind == id
+        return Button { screen.statsKind = id } label: {
             Text(title)
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(on ? Palette.ink : Palette.muted)
@@ -281,7 +281,7 @@ struct DashboardStatsPanel: View {
     }
 
     private func matches(_ entry: Entry) -> Bool {
-        switch kind {
+        switch screen.statsKind {
         case "in": return !entry.isOut && !entry.isTransfer
         case "other": return entry.isTransfer && entry.isOut
         default: return entry.isOut && !entry.isTransfer

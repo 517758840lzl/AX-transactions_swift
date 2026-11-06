@@ -90,7 +90,10 @@ struct YearReportPage: View {
                     openTitle: { category, title in
                         openFeed(month: nil, category: category, title: title, account: nil)
                     },
-                    onAdd: { screen.open(.entry(id: nil)) }
+                    onAdd: {
+                        screen.entryDirection = kind == "in" ? .income : .out
+                        screen.open(.entry(id: nil))
+                    }
                 )
                 YearReportCompare(
                     copy: copy,
