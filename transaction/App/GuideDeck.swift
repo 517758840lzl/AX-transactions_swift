@@ -13,21 +13,20 @@ struct GuideDeck: View {
     var body: some View {
         let copy = GuideWords.current
         VStack(spacing: 0) {
-            HStack {
-                Spacer()
-                Button(copy.skip, action: onFinish)
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(Palette.muted)
-                    .padding(.horizontal, 18)
-                    .padding(.vertical, 12)
-            }
-            TabView(selection: $page) {
-                ForEach(Array(copy.leaves.enumerated()), id: \.offset) { index, leaf in
-                    GuideLeafView(leaf: leaf)
-                        .tag(index)
+            ZStack(alignment: .topTrailing) {
+                TabView(selection: $page) {
+                    ForEach(Array(copy.leaves.enumerated()), id: \.offset) { index, leaf in
+                        GuideLeafView(leaf: leaf)
+                            .tag(index)
+                    }
                 }
+                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                Button(copy.skip, action: onFinish)
+                    .font(.system(size: 16, weight: .medium, design: .rounded))
+                    .foregroundStyle(Palette.ink)
+                    .padding(.horizontal, 22)
+                    .padding(.vertical, 10)
             }
-            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             HStack(spacing: 8) {
                 ForEach(copy.leaves.indices, id: \.self) { index in
                     Capsule()
