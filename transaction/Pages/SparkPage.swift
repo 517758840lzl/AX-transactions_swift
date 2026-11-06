@@ -142,15 +142,7 @@ struct SparkHomeView: View {
                 .font(.system(size: 13, weight: .bold))
                 .foregroundStyle(Palette.muted)
             if matched.isEmpty && !searching {
-                VStack(alignment: .leading, spacing: 16) {
-                    ForEach([SparkKind.diary, .thought, .summary], id: \.self) { kind in
-                        Button { begin(kind) } label: {
-                            starterLine(copy, kind: kind)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .padding(.top, 4)
+                emptyPaper(copy)
             } else if !matched.isEmpty {
                 VStack(spacing: 0) {
                     ForEach(shown) { spark in
@@ -191,18 +183,40 @@ struct SparkHomeView: View {
         }
     }
 
-    private func starterLine(_ copy: LedgerCopy, kind: SparkKind) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(copy.sparkKindTitle(kind))
-                .font(.system(size: 13, weight: .bold))
-                .foregroundStyle(Palette.muted)
-            Text(PaperCue.pack(store.book.locale, kind).hint)
-                .font(.system(size: 15))
-                .foregroundStyle(Palette.faint)
-                .lineLimit(1)
+    private func emptyPaper(_ copy: LedgerCopy) -> some View {
+        let kinds = [SparkKind.diary, .thought, .summary]
+        return HStack(alignment: .top, spacing: 12) {
+            VStack(spacing: 0) {
+                ForEach(kinds, id: \.self) { _ in
+                    Circle()
+                        .stroke(Palette.line, lineWidth: 1.4)
+                        .frame(width: 10, height: 10)
+                        .frame(maxWidth: .infinity, minHeight: 48)
+                }
+            }
+            .frame(width: 22)
+            Rectangle()
+                .fill(Palette.pink)
+                .frame(width: 2)
+            VStack(spacing: 0) {
+                ForEach(kinds, id: \.self) { kind in
+                    Button { begin(kind) } label: {
+                        Text(PaperCue.pack(store.book.locale, kind).hint)
+                            .font(.system(size: 17))
+                            .foregroundStyle(Palette.faint)
+                            .lineLimit(1)
+                            .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .contentShape(Rectangle())
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+        .background(Color.white, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Palette.line, lineWidth: 1))
     }
 
     private static let previewCount = 5
