@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// A pencil inside the floating button. It tips back and forth, like a short writing stroke.
+/// A pencil inside the floating button. The tip points down-left and tips back and forth.
 struct WritingPen: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -94,7 +94,6 @@ struct EntryButton: View {
                 .overlay(Circle().stroke(Color.white, lineWidth: 3))
                 .shadow(color: Palette.ink.opacity(0.18), radius: 10, y: 6)
                 .scaleEffect(holding ? 1.06 : 1)
-                .animation(.spring(response: 0.28, dampingFraction: 0.72), value: holding)
                 .position(ready ? center : CGPoint(x: right, y: bottom))
                 .gesture(
                     DragGesture(minimumDistance: 0)
