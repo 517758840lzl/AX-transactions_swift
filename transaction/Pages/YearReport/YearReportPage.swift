@@ -47,9 +47,15 @@ struct YearReportPage: View {
             }
         )
 
+        VStack(alignment: .leading, spacing: 0) {
+            SubpageHead(title: "\(year) \(copy.yearReport)", back: copy.back) { pageBack() }
+                .padding(.horizontal, 18)
+                .padding(.top, 8)
+                .padding(.bottom, 16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Palette.stage)
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                SubpageHead(title: "\(year) \(copy.yearReport)", back: copy.back) { pageBack() }
                 HStack {
                     Button(copy.yearPrev) { shiftYear(-1) }
                     Spacer()
@@ -127,9 +133,9 @@ struct YearReportPage: View {
                 }
             }
             .padding(.horizontal, 18)
-            .padding(.top, 8)
             .padding(.bottom, 32)
             .immediateScroll(place: "year")
+        }
         }
         .background(Palette.stage)
     }

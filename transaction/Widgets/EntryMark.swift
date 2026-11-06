@@ -7,92 +7,65 @@
 
 import SwiftUI
 
-/// The little book on the add button. The line draws, then rests, then draws again.
-struct EntryMark: View {
+/// A pencil inside the floating button. It tips back and forth, like a short writing stroke.
+struct WritingPen: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 30)) { context in
-            EntryMarkFrame(date: context.date)
+        Group {
+            if reduceMotion {
+                PencilGlyph()
+                    .rotationEffect(.degrees(138))
+                    .scaleEffect(1.12)
+            } else {
+                TimelineView(.animation(minimumInterval: 1.0 / 30)) { context in
+                    let wave = sin(context.date.timeIntervalSinceReferenceDate * .pi * 2 / 1.4)
+                    PencilGlyph()
+                        .rotationEffect(.degrees(138 + wave * 7))
+                        .scaleEffect(1.12)
+                }
+            }
         }
+        .frame(width: 40, height: 40)
+        .accessibilityHidden(true)
     }
 }
 
-private struct EntryMarkFrame: View {
-    var date: Date
-
-    var body: some View {
-        let cycle = 2.6
-        let phase = date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: cycle) / cycle
-        let shown: CGFloat
-        let fade: Double
-        if phase < 0.45 {
-            shown = phase / 0.45
-            fade = 1
-        } else if phase < 0.78 {
-            shown = 1
-            fade = 1
-        } else {
-            shown = 1
-            fade = 1 - (phase - 0.78) / 0.22
-        }
-        let unit = CGFloat(34) / 32
-        return ZStack {
-            EntryBook()
-            EntryCurve()
-                .trim(from: 0, to: shown)
-                .stroke(Palette.down, style: StrokeStyle(lineWidth: 1.7 * unit, lineCap: .round))
-                .opacity(fade)
-            Circle()
-                .fill(Palette.down)
-                .frame(width: 2.9 * unit, height: 2.9 * unit)
-                .scaleEffect(shown > 0.72 ? 1 : 0.3)
-                .opacity(shown > 0.72 ? fade : 0)
-                .position(x: 23.15 * unit, y: 11.35 * unit)
-        }
-        .frame(width: 34, height: 34)
-    }
-}
-
-private struct EntryBook: View {
+private struct PencilGlyph: View {
     var body: some View {
         Canvas { context, size in
-            let unit = size.width / 32
-            func point(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
-                CGPoint(x: x * unit, y: y * unit)
+            let ox = (size.width - 36) / 2
+            let oy = (size.height - 14) / 2
+            func box(_ x: CGFloat, _ y: CGFloat, _ w: CGFloat, _ h: CGFloat, _ r: CGFloat) -> Path {
+                Path(roundedRect: CGRect(x: ox + x, y: oy + y, width: w, height: h), cornerRadius: r)
+            }
+            func fill(_ path: Path, _ color: Color) {
+                context.fill(path, with: .color(color))
             }
 
-            var cover = Path()
-            cover.addRoundedRect(
-                in: CGRect(x: 4 * unit, y: 18.2 * unit, width: 24 * unit, height: 6.2 * unit),
-                cornerSize: CGSize(width: 3 * unit, height: 3 * unit)
-            )
-            context.fill(cover, with: .color(Color(red: 236 / 255, green: 130 / 255, blue: 162 / 255)))
+            var wood = Path()
+            wood.move(to: CGPoint(x: ox + 22.4, y: oy + 2.2))
+            wood.addLine(to: CGPoint(x: ox + 22.4, y: oy + 11.8))
+            wood.addLine(to: CGPoint(x: ox + 33.0, y: oy + 7))
+            wood.closeSubpath()
+            fill(wood, Color(red: 0.95, green: 0.84, blue: 0.66))
 
-            var left = Path()
-            left.move(to: point(6.6, 11))
-            left.addQuadCurve(to: point(9, 8.6), control: point(6.6, 8.6))
-            left.addLine(to: point(15.1, 9.2))
-            left.addLine(to: point(15.1, 21.4))
-            left.addQuadCurve(to: point(6.6, 20.6), control: point(11, 22.2))
-            left.closeSubpath()
-            context.fill(left, with: .color(.white))
+            fill(box(0.4, 2.6, 6.2, 8.8, 2.8), Color(red: 0.86, green: 0.33, blue: 0.48))
+            fill(box(5.6, 2.0, 4.0, 10.0, 0.6), Color(red: 0.95, green: 0.93, blue: 0.90))
+            fill(box(7.1, 2.0, 0.9, 10.0, 0), Color(red: 0.70, green: 0.67, blue: 0.64))
+            fill(box(9.0, 2.2, 16.0, 9.6, 0.4), Color(red: 0.98, green: 0.78, blue: 0.20))
 
-            var right = Path()
-            right.move(to: point(16.9, 9.2))
-            right.addLine(to: point(23, 8.6))
-            right.addQuadCurve(to: point(25.4, 11), control: point(25.4, 8.6))
-            right.addLine(to: point(25.4, 20.6))
-            right.addQuadCurve(to: point(16.9, 21.4), control: point(21, 22.2))
-            right.closeSubpath()
-            context.fill(right, with: .color(.white))
+            var shine = Path()
+            shine.move(to: CGPoint(x: ox + 11, y: oy + 4.2))
+            shine.addLine(to: CGPoint(x: ox + 23.4, y: oy + 4.2))
+            context.stroke(shine, with: .color(.white.opacity(0.7)), style: StrokeStyle(lineWidth: 1.2, lineCap: .round))
 
-            var ribbon = Path()
-            ribbon.move(to: point(14.45, 8.9))
-            ribbon.addLine(to: point(17.55, 8.9))
-            ribbon.addLine(to: point(17.55, 14.2))
-            ribbon.addLine(to: point(16, 12.55))
-            ribbon.addLine(to: point(14.45, 14.2))
-            ribbon.closeSubpath()
-            context.fill(ribbon, with: .color(Color(red: 242 / 255, green: 138 / 255, blue: 171 / 255)))
+            var lead = Path()
+            lead.move(to: CGPoint(x: ox + 30.2, y: oy + 5.3))
+            lead.addLine(to: CGPoint(x: ox + 30.2, y: oy + 8.7))
+            lead.addLine(to: CGPoint(x: ox + 34.8, y: oy + 7))
+            lead.closeSubpath()
+            fill(lead, Palette.ink)
         }
     }
 }
@@ -109,16 +82,19 @@ struct EntryButton: View {
     var body: some View {
         GeometryReader { geo in
             let side: CGFloat = 56
-            let edge: CGFloat = 24
+            let edge: CGFloat = 12
             let top: CGFloat = max(geo.safeAreaInsets.top, 8) + side / 2
             let bottom = geo.size.height - 78 - side / 2
             let left = geo.safeAreaInsets.leading + edge + side / 2
             let right = geo.size.width - geo.safeAreaInsets.trailing - edge - side / 2
 
-            EntryMark()
+            WritingPen()
                 .frame(width: side, height: side)
                 .background(Palette.pink, in: Circle())
+                .overlay(Circle().stroke(Color.white, lineWidth: 3))
+                .shadow(color: Palette.ink.opacity(0.18), radius: 10, y: 6)
                 .scaleEffect(holding ? 1.06 : 1)
+                .animation(.spring(response: 0.28, dampingFraction: 0.72), value: holding)
                 .position(ready ? center : CGPoint(x: right, y: bottom))
                 .gesture(
                     DragGesture(minimumDistance: 0)
@@ -193,17 +169,4 @@ struct EntryButton: View {
 
     private static let sideKey = "entryDockSide"
     private static let heightKey = "entryDockHeight"
-}
-
-private struct EntryCurve: Shape {
-    func path(in rect: CGRect) -> Path {
-        let unit = rect.width / 32
-        func point(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
-            CGPoint(x: x * unit, y: y * unit)
-        }
-        var path = Path()
-        path.move(to: point(18.6, 18.8))
-        path.addCurve(to: point(23.15, 12.35), control1: point(20.4, 18.2), control2: point(21.8, 15))
-        return path
-    }
 }

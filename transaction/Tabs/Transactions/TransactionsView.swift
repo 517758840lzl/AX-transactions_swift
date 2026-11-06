@@ -32,7 +32,7 @@ struct TransactionsView: View {
         let accountName = store.book.accounts.first { $0.id == screen.accountId }?.name
         let listTitle = screen.showCalendar ? copy.dayChip(screen.calendarDay ?? LedgerDay.today()) : copy.periodChip(mode: screen.txMode, from: screen.txFrom, to: screen.txTo)
 
-        PageScroll(place: "activity", bottom: 128) {
+        VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Text(copy.transactions).font(.system(size: 26, weight: .bold)).tracking(-0.4).foregroundStyle(Palette.ink)
                 Spacer()
@@ -46,57 +46,65 @@ struct TransactionsView: View {
                 .background(Color.white, in: Capsule())
                 .overlay(Capsule().stroke(Palette.line, lineWidth: 1))
             }
-            flowStrip(copy, spend: spend, income: income)
-            toolbar(copy, accountName: accountName)
-            VStack(alignment: .leading, spacing: 12) {
-                if !parts.isEmpty {
-                    PanelCard(
-                        title: "\(copy.category) · \(copy.periodChip(mode: screen.txMode, from: screen.txFrom, to: screen.txTo))",
-                        titleSize: 15,
-                        card: true
-                    ) {
-                        HStack(alignment: .top, spacing: 12) {
-                            SpendDonut(parts: parts, total: total, mark: store.book.mark, caption: copy.periodSpend, active: screen.category) { name in
-                                screen.category = screen.category == name ? nil : name
-                            }
-                            VStack(alignment: .leading, spacing: 0) {
-                                ForEach(parts) { part in
-                                    rankRow(part, total: total, previous: previous[part.name] ?? 0, copy: copy)
+            .pageTitleBar()
+            PageScroll(place: "activity", bottom: 128) {
+                flowStrip(copy, spend: spend, income: income)
+                toolbar(copy, accountName: accountName)
+                VStack(alignment: .leading, spacing: 12) {
+                    if !parts.isEmpty {
+                        PanelCard(
+                            title: "\(copy.category) · \(copy.periodChip(mode: screen.txMode, from: screen.txFrom, to: screen.txTo))",
+                            titleSize: 15,
+                            card: true
+                        ) {
+                            HStack(alignment: .top, spacing: 12) {
+                                SpendDonut(parts: parts, total: total, mark: store.book.mark, caption: copy.periodSpend, active: screen.category) { name in
+                                    screen.category = screen.category == name ? nil : name
                                 }
+                                VStack(alignment: .leading, spacing: 0) {
+                                    ForEach(parts) { part in
+                                        rankRow(part, total: total, previous: previous[part.name] ?? 0, copy: copy)
+                                    }
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+                    if screen.showCalendar {
+                        CalendarMonth(copy: copy, spend: spendByDay, selected: screen.calendarDay ?? LedgerDay.today()) { day in
+                            screen.calendarDay = day
+                        }
+                        .transition(.opacity)
+                    }
+                    PanelCard(title: listTitle) {
+                        if listed.isEmpty {
+                            emptyPeriod(copy)
+                        } else {
+                            rows(listed, copy: copy)
                         }
                     }
                 }
-                if screen.showCalendar {
-                    CalendarMonth(copy: copy, spend: spendByDay, selected: screen.calendarDay ?? LedgerDay.today()) { day in
-                        screen.calendarDay = day
-                    }
-                    .transition(.opacity)
-                }
-                PanelCard(title: listTitle) {
-                    if listed.isEmpty {
-                        emptyPeriod(copy)
-                    } else {
-                        rows(listed, copy: copy)
-                    }
-                }
+                .animation(LedgerScreen.fold, value: screen.showCalendar)
             }
-            .animation(LedgerScreen.fold, value: screen.showCalendar)
         }
     }
 
     private func toolbar(_ copy: LedgerCopy, accountName: String?) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            TextField(copy.searchPlaceholder, text: $screen.search)
-                .textInputAutocapitalization(.never)
-                .disableAutocorrection(true)
-                .submitLabel(.search)
-                .font(.system(size: 15))
-                .padding(.horizontal, 12)
-                .padding(.vertical, 10)
-                .background(Color.white, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(Palette.line, lineWidth: 1))
+            HStack(spacing: 8) {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Palette.muted)
+                TextField(copy.searchPlaceholder, text: $screen.search)
+                    .textInputAutocapitalization(.never)
+                    .disableAutocorrection(true)
+                    .submitLabel(.search)
+                    .font(.system(size: 15))
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(Color.white, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(Palette.line, lineWidth: 1))
             SegmentControl(labels: [copy.txViewList, copy.txViewCalendar], index: screen.showCalendar ? 1 : 0) { index in
                 screen.showCalendar = index == 1
                 if index == 1, screen.calendarDay == nil { screen.calendarDay = LedgerDay.today() }

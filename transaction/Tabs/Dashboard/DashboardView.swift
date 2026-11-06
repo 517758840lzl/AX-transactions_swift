@@ -17,30 +17,32 @@ struct DashboardView: View {
         let scoped = BookMath.byScope(store.book.entries, screen.dashScope).filter { !$0.id.hasPrefix("sample-") }
         let queue = BookMath.reviewQueue(scoped)
 
-        PageScroll(place: "dashboard", bottom: 128) {
-            HStack(spacing: 8) {
-                Text(copy.monthTitle())
-                    .font(.system(size: 26, weight: .bold))
-                    .tracking(-0.4)
+        VStack(alignment: .leading, spacing: 0) {
+        HStack(spacing: 8) {
+            Text(copy.monthTitle())
+                .font(.system(size: 26, weight: .bold))
+                .tracking(-0.4)
+                .foregroundStyle(Palette.ink)
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
+            Spacer(minLength: 8)
+            Button {
+                screen.open(.filter(which: "dashboard"))
+            } label: {
+                Text(screen.dashScope == .mine ? copy.scopeChipMine : copy.scopeChipFamily)
+                    .font(.system(size: 13, weight: .bold))
                     .foregroundStyle(Palette.ink)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.72)
-                Spacer(minLength: 8)
-                Button {
-                    screen.open(.filter(which: "dashboard"))
-                } label: {
-                    Text(screen.dashScope == .mine ? copy.scopeChipMine : copy.scopeChipFamily)
-                        .font(.system(size: 13, weight: .bold))
-                        .foregroundStyle(Palette.ink)
-                        .lineLimit(1)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(Color.white, in: Capsule())
-                        .overlay(Capsule().stroke(Palette.line, lineWidth: 1))
-                }
-                .buttonStyle(.plain)
-                .fixedSize(horizontal: true, vertical: true)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(Color.white, in: Capsule())
+                    .overlay(Capsule().stroke(Palette.line, lineWidth: 1))
             }
+            .buttonStyle(.plain)
+            .fixedSize(horizontal: true, vertical: true)
+        }
+        .pageTitleBar()
+        PageScroll(place: "dashboard", bottom: 128) {
             DashboardStatsPanel(store: store, screen: screen, copy: copy, entries: scoped)
             if scoped.isEmpty {
                 DashboardEmptyBanners(screen: screen, copy: copy)
@@ -48,6 +50,7 @@ struct DashboardView: View {
             DashboardClaimPanel(store: store, screen: screen, copy: copy)
             DashboardReviewPanel(store: store, screen: screen, copy: copy, queue: queue)
             DashboardRecurringPanel(store: store, screen: screen, copy: copy)
+        }
         }
     }
 }

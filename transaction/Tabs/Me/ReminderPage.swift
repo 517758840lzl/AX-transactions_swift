@@ -17,9 +17,15 @@ struct ReminderPage: View {
     var body: some View {
         let copy = store.copy
         ZStack {
+            VStack(alignment: .leading, spacing: 0) {
+            SubpageHead(title: copy.reminderTitle, back: copy.back) { pageBack() }
+                .padding(.horizontal, 18)
+                .padding(.top, 8)
+                .padding(.bottom, 14)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Palette.stage)
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
-                    SubpageHead(title: copy.reminderTitle, back: copy.back) { pageBack() }
                     PanelCard {
                         HStack(spacing: 12) {
                             Text(copy.reminderDaily)
@@ -71,9 +77,9 @@ struct ReminderPage: View {
                     }
             }
             .padding(.horizontal, 18)
-            .padding(.top, 8)
             .padding(.bottom, 32)
             .immediateScroll(place: "reminder")
+            }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             if pickingTime {

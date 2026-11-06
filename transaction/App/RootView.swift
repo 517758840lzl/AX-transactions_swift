@@ -223,6 +223,10 @@ struct RootView: View {
             CurrencyPickView(store: store)
         case .privacy:
             PrivacyView(title: copy.privacyTitle)
+        case .about:
+            AboutPage(copy: copy)
+        case .disclaimer:
+            DisclaimerPage(copy: copy)
         case .reminder:
             ReminderPage(store: store)
         case .export:

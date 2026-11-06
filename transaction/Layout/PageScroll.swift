@@ -20,10 +20,20 @@ struct PageScroll<Content: View>: View {
                 content()
             }
             .padding(.horizontal, 18)
-            .padding(.top, 12)
             .padding(.bottom, bottom)
             .immediateScroll(place: place)
         }
         .background(Palette.stage)
+    }
+}
+
+extension View {
+    /// Keeps a page title above the scrolling content, aligned to the left.
+    func pageTitleBar(fill: Color = Palette.stage) -> some View {
+        padding(.horizontal, 18)
+            .padding(.top, 12)
+            .padding(.bottom, 12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(fill)
     }
 }

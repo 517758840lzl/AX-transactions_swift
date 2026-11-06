@@ -24,8 +24,10 @@ struct MeView: View {
         let logged = BookMath.loggedToday(store.book.entries)
         let name = store.book.nickname.isEmpty ? copy.unsetName : store.book.nickname
         let languageName = store.book.locale.title
+        VStack(alignment: .leading, spacing: 0) {
+        Text(copy.me).font(.system(size: 26, weight: .bold)).tracking(-0.4).foregroundStyle(Palette.ink)
+            .pageTitleBar()
         PageScroll(place: "me", bottom: 16) {
-            Text(copy.me).font(.system(size: 26, weight: .bold)).tracking(-0.4).foregroundStyle(Palette.ink)
             PanelCard(card: true) {
                 Button { screen.open(.profile) } label: {
                     HStack(spacing: 14) {
@@ -159,8 +161,13 @@ struct MeView: View {
             }
 
             PanelCard(card: true) {
+                settingsRow(copy.about, opens: true) { screen.open(.about) }
+                divider
+                settingsRow(copy.disclaimer, opens: true) { screen.open(.disclaimer) }
+                divider
                 settingsRow(copy.privacy, opens: true) { screen.open(.privacy) }
             }
+        }
         }
         .fileImporter(isPresented: $pickingFile, allowedContentTypes: [.json, .plainText]) { result in
             guard case .success(let url) = result, url.startAccessingSecurityScopedResource() else { return }

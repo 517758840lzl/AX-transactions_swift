@@ -20,18 +20,20 @@ struct AccountsView: View {
         let empty = own.isEmpty
         let showSample = !empty && !store.book.sampleCleared && store.book.accounts.contains { $0.id.hasPrefix("sample-") }
 
+        VStack(alignment: .leading, spacing: 0) {
+        HStack(alignment: .center, spacing: 0) {
+            Text(copy.accounts)
+                .font(.system(size: 26, weight: .bold))
+                .tracking(-0.4)
+                .foregroundStyle(Palette.ink)
+            Text("(\(own.count))")
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(Palette.muted)
+        }
+        .lineLimit(1)
+        .minimumScaleFactor(0.8)
+        .pageTitleBar()
         PageScroll(place: "accounts", bottom: 16) {
-            HStack(alignment: .center, spacing: 0) {
-                Text(copy.accounts)
-                    .font(.system(size: 26, weight: .bold))
-                    .tracking(-0.4)
-                    .foregroundStyle(Palette.ink)
-                Text("(\(own.count))")
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundStyle(Palette.muted)
-            }
-            .lineLimit(1)
-            .minimumScaleFactor(0.8)
             if empty {
                 AccountIntro(copy: copy)
             } else {
@@ -58,6 +60,7 @@ struct AccountsView: View {
             if showSample {
                 SampleBanner(title: copy.sampleBanner, actionTitle: copy.sampleClear) { store.clearSample() }
             }
+        }
         }
     }
 

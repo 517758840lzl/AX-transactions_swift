@@ -171,6 +171,17 @@ struct LedgerCopy {
     var categories: String
     var profileHint: String
     var privacy: String
+    var about: String
+    var disclaimer: String
+    var aboutLead: String
+    var aboutDoesTitle: String
+    var aboutDoes: String
+    var aboutNotTitle: String
+    var aboutNot: String
+    var aboutOperator: String
+    var aboutMail: String
+    var aboutWrite: String
+    var disclaimerBody: String
     var language: String
     var currency: String
     var reminderTitle: String
@@ -594,7 +605,16 @@ private let chinese = LedgerCopy(
     txViewList: "列表", txViewCalendar: "日历",
     weekdays: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
     calendarWeek: ["日", "一", "二", "三", "四", "五", "六"],
-    me: "我的", meLedger: "账本", meDisplay: "显示", meData: "数据", categories: "分类", profileHint: "点击填写昵称", privacy: "隐私协议", language: "语言", currency: "货币",
+    me: "我的", meLedger: "账本", meDisplay: "显示", meData: "数据", categories: "分类", profileHint: "点击填写昵称", privacy: "隐私协议", about: "关于我们", disclaimer: "免责声明",
+    aboutLead: "SpendLogBook 是记在这台设备上的账本，由 LIGACAO VITAL - COMERCIO E SERVICOS, (SU), LDA 运营。",
+    aboutDoesTitle: "这个应用做什么",
+    aboutDoes: "你自己记下账户、收支、预算和灵感。\n合计、图表和排序都在这台设备上，用你记下的数字算出来。\n你可以导出 JSON 或 Excel。登录了 iCloud、账里有你记下的内容时，会在你自己的 iCloud 里留一份，也可以自己点保存。空账本不会上传。",
+    aboutNotTitle: "这个应用不做什么",
+    aboutNot: "不连接银行。\n不向我们注册账号。\n不提供税务、投资或借贷建议。",
+    aboutOperator: "运营者", aboutMail: "邮箱",
+    aboutWrite: "写信时请写上应用名称，方便我们分辨是哪一个产品。",
+    disclaimerBody: "这里记下的是你输入的金额。结余、图表和汇总是用这些记录算出来的，不是银行对账单，不是报税材料，也不是消费、投资或借贷建议。\n每一笔是否要留，由你自己核对。\n账本在这台设备上。只有保存到 iCloud 时，你自己的 iCloud 里才有一份。我们没有服务器上的另一份。\n清空账本、卸载应用，或设备丢失，本机这份会没有。已经在 iCloud 里的那份不会因此删掉。\n这些数字不保证和其他产品完全一致，应用也不保证从不中断。",
+    language: "语言", currency: "货币",
     reminderTitle: "提醒", reminderDaily: "每天提醒记账", reminderTime: "时间",
     reminderNote: "到点后由系统发通知，点开进入记一笔。",
     reminderDenied: "通知权限未开启，请在系统设置中允许 {name} 发送提醒。",
@@ -716,7 +736,15 @@ private let englishCopy = LedgerCopy(
     txViewList: "List", txViewCalendar: "Calendar",
     weekdays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     calendarWeek: ["S", "M", "T", "W", "T", "F", "S"],
-    me: "Me", meLedger: "Book", meDisplay: "Display", meData: "Data", categories: "Categories", profileHint: "Tap to set nickname", privacy: "Privacy",
+    me: "Me", meLedger: "Book", meDisplay: "Display", meData: "Data", categories: "Categories", profileHint: "Tap to set nickname", privacy: "Privacy", about: "About", disclaimer: "Disclaimer",
+    aboutLead: "SpendLogBook is a ledger kept on this device, operated by LIGACAO VITAL - COMERCIO E SERVICOS, (SU), LDA.",
+    aboutDoesTitle: "What this app does",
+    aboutDoes: "You enter accounts, transactions, budgets and notes.\nTotals, charts and ranks are calculated on this device from those figures.\nYou can export JSON or Excel. When you are signed in to iCloud and the book has records you entered, one copy stays in your own iCloud. You can also save it yourself. An empty book is not uploaded.",
+    aboutNotTitle: "What this app does not do",
+    aboutNot: "It does not connect to a bank.\nIt does not ask you to register an account with us.\nIt does not give tax, investment or lending advice.",
+    aboutOperator: "Operator", aboutMail: "Email",
+    aboutWrite: "Please include the app name so we can tell which product the question is about.",
+    disclaimerBody: "The amounts here are the ones you type in. Balances, charts and summaries are calculated from those records. They are not a bank statement, a tax filing, or advice about spending, investing or borrowing.\nYou check whether each entry is one you want to keep.\nThe book stays on this device. A copy exists in your iCloud only when you save one there. We do not keep another copy on a server we operate.\nClearing the book, uninstalling the app, or losing the device removes the on-device copy. A copy already in iCloud is not deleted by that.\nThese figures are not promised to match another product, and the app is not promised to run without interruption.",
     language: "Language", currency: "Currency",
     reminderTitle: "Reminders", reminderDaily: "Daily reminder", reminderTime: "Time",
     reminderNote: "The system notifies you at this time. Tap it to add a transaction.",

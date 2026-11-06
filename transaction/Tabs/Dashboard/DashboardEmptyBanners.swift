@@ -8,6 +8,7 @@ import SwiftUI
 struct DashboardEmptyBanners: View {
     @ObservedObject var screen: LedgerScreen
     var copy: LedgerCopy
+    private let artWeight: CGFloat = 7
 
     var body: some View {
         VStack(spacing: 12) {
@@ -84,17 +85,17 @@ struct DashboardEmptyBanners: View {
     private func bar(_ height: CGFloat, opacity: Double) -> some View {
         Capsule()
             .fill(Palette.down.opacity(opacity))
-            .frame(width: 14, height: height)
+            .frame(width: artWeight, height: height)
     }
 
     private var budgetRing: some View {
         ZStack {
             Circle()
                 .trim(from: 0, to: 0.72)
-                .stroke(Palette.pink, style: StrokeStyle(lineWidth: 7, lineCap: .butt))
+                .stroke(Palette.pink, style: StrokeStyle(lineWidth: artWeight, lineCap: .butt))
             Circle()
                 .trim(from: 0.72, to: 1)
-                .stroke(Palette.wash, style: StrokeStyle(lineWidth: 7, lineCap: .butt))
+                .stroke(Palette.wash, style: StrokeStyle(lineWidth: artWeight, lineCap: .butt))
         }
         .rotationEffect(.degrees(-90))
         .frame(width: 29, height: 29)

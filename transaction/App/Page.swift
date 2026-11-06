@@ -26,6 +26,8 @@ enum Page: Hashable {
     case language
     case currency
     case privacy
+    case about
+    case disclaimer
     case reminder
     case export
     case cloud
