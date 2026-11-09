@@ -78,6 +78,17 @@ final class QCBookStore: ObservableObject {
             book.sparks.removeAll { $0.id.hasPrefix("preview-spark-") }
             shortened = true
         }
+        if !book.accounts.contains(where: { !$0.id.hasPrefix("sample-") }) {
+            let copy = QCLedgerCopy.resolve(book.locale)
+            book.accounts.append(QCAccount(
+                id: QCLedgerID.make(),
+                name: copy.accountKindCash,
+                opening: 0,
+                kind: .cash,
+                countsInWorth: true
+            ))
+            shortened = true
+        }
         let adopted = QCCategoryMarks.adopt(&book)
         let labeled = Self.labelSamples(&book)
         let store = QCBookStore(book: book, database: database, legacyURL: legacyURL)
