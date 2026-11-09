@@ -111,9 +111,23 @@ struct QCSparkHomeView: View {
             Text(copy.sparkNotes)
                 .font(.system(size: 13, weight: .bold))
                 .foregroundStyle(QCPalette.muted)
-            if matched.isEmpty && !searching {
+            if matched.isEmpty && searching {
+                VStack(spacing: 16) {
+                    Image(systemName: "doc.text")
+                        .font(.system(size: 28, weight: .regular))
+                        .foregroundStyle(QCPalette.down)
+                        .frame(width: 76, height: 76)
+                        .background(QCPalette.pink.opacity(0.45), in: Circle())
+                    Text(copy.sparkShelfNone)
+                        .font(.system(size: 15))
+                        .foregroundStyle(QCPalette.muted)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.top, 28)
+            } else if matched.isEmpty {
                 emptyPaper(copy)
-            } else if !matched.isEmpty {
+            } else {
                 VStack(spacing: 0) {
                     ForEach(shown) { spark in
                         QCSparkBrief(copy: copy, spark: spark) {
@@ -792,71 +806,71 @@ private enum QCPaperCue {
         switch locale {
         case .zh:
             return QCWords(tally: "{count} 字", leaves: [
-                .idea: "这笔钱该不该花",
-                .diary: "今天钱花在哪了",
+                .idea: "这笔该不该花",
+                .diary: "今天花在哪了",
                 .thought: "花得值不值",
                 .summary: "今天花了多少",
             ])
         case .zhHant:
             return QCWords(tally: "{count} 字", leaves: [
-                .idea: "這筆錢該不該花",
-                .diary: "今天錢花在哪了",
+                .idea: "這筆該不該花",
+                .diary: "今天花在哪了",
                 .thought: "花得值不值",
                 .summary: "今天花了多少",
             ])
         case .ja:
             return QCWords(tally: "{count} 字", leaves: [
-                .idea: "このお金は使うべきか",
-                .diary: "今日の金は何に使ったか",
+                .idea: "これは使うべきか",
+                .diary: "今日は何に使ったか",
                 .thought: "使った価値はあったか",
                 .summary: "今日はいくら使ったか",
             ])
         case .ko:
             return QCWords(tally: "{count}자", leaves: [
-                .idea: "이 돈을 써야 할까",
-                .diary: "오늘 돈은 어디에 썼나",
+                .idea: "이걸 써야 할까",
+                .diary: "오늘 어디에 썼나",
                 .thought: "쓸 만한 값어치가 있었나",
                 .summary: "오늘 얼마를 썼나",
             ])
         case .es:
             return QCWords(tally: "{count} caracteres", leaves: [
-                .idea: "¿Conviene gastar este dinero?",
-                .diary: "¿En qué se fue el dinero hoy?",
+                .idea: "¿Conviene gastarlo?",
+                .diary: "¿En qué se gastó hoy?",
                 .thought: "¿Valió la pena?",
                 .summary: "¿Cuánto se gastó hoy?",
             ])
         case .pt:
             return QCWords(tally: "{count} caracteres", leaves: [
-                .idea: "Este dinheiro deve ser gasto?",
-                .diary: "Onde foi o dinheiro de hoje?",
+                .idea: "Isto deve ser gasto?",
+                .diary: "Onde se gastou hoje?",
                 .thought: "Valeu a pena?",
                 .summary: "Quanto se gastou hoje?",
             ])
         case .fr:
             return QCWords(tally: "{count} caractères", leaves: [
-                .idea: "Cet argent doit-il être dépensé ?",
-                .diary: "Où est passé l'argent aujourd'hui ?",
+                .idea: "Faut-il le dépenser ?",
+                .diary: "Où est-ce passé aujourd'hui ?",
                 .thought: "En valait-il la peine ?",
                 .summary: "Combien a été dépensé aujourd'hui ?",
             ])
         case .de:
             return QCWords(tally: "{count} Zeichen", leaves: [
-                .idea: "Soll dieses Geld ausgegeben werden?",
-                .diary: "Wofür ging das Geld heute?",
+                .idea: "Soll das ausgegeben werden?",
+                .diary: "Wofür wurde heute ausgegeben?",
                 .thought: "Hat es sich gelohnt?",
                 .summary: "Wie viel wurde heute ausgegeben?",
             ])
         case .it:
             return QCWords(tally: "{count} caratteri", leaves: [
-                .idea: "Questi soldi vanno spesi?",
-                .diary: "Dove sono finiti i soldi oggi?",
+                .idea: "Va speso?",
+                .diary: "Dove è finito oggi?",
                 .thought: "Ne è valsa la pena?",
                 .summary: "Quanto si è speso oggi?",
             ])
         case .en:
             return QCWords(tally: "{count} characters", leaves: [
-                .idea: "Should this money be spent",
-                .diary: "Where did today's money go",
+                .idea: "Should this be spent",
+                .diary: "Where did it go today",
                 .thought: "Was it worth it",
                 .summary: "How much was spent today",
             ])
