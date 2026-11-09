@@ -678,7 +678,7 @@ private let chinese = QCLedgerCopy(
     yearExpand: "展开", yearFold: "收起", yearRefunded: "已退",
     yearPrev: "上一年", yearNext: "下一年",
     accountMonthFlow: "本月进出",
-    sparks: "灵感", sparkPlaceholder: "记下这一刻", sparkHint: "写在这里",
+    sparks: "灵感", sparkPlaceholder: "写下", sparkHint: "现在的想法是…",
     sparkIdea: "灵感", sparkDiary: "日记", sparkThought: "随想", sparkSummary: "每日总结",
     sparkFavorite: "收藏", sparkTags: "标签", sparkTagHint: "用空格分开",
     sparkPicture: "图片", sparkPictureRemove: "去掉图片",

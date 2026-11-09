@@ -127,7 +127,7 @@ let traditionalCopy = QCLedgerCopy(
     yearExpand: "展開", yearFold: "收起", yearRefunded: "已退",
     yearPrev: "上一年", yearNext: "下一年",
     accountMonthFlow: "本月進出",
-    sparks: "靈感", sparkPlaceholder: "記下這一刻", sparkHint: "寫在這裡",
+    sparks: "靈感", sparkPlaceholder: "寫下", sparkHint: "現在的想法是…",
     sparkIdea: "靈感", sparkDiary: "日記", sparkThought: "隨想", sparkSummary: "每日總結",
     sparkFavorite: "收藏", sparkTags: "標籤", sparkTagHint: "用空格分開",
     sparkPicture: "圖片", sparkPictureRemove: "去掉圖片",
