@@ -47,23 +47,45 @@ struct QCYearReportPage: View {
         )
 
         VStack(alignment: .leading, spacing: 0) {
-            QCSubpageHead(title: "\(year) \(copy.yearReport)", back: copy.back) { pageBack() }
-                .padding(.horizontal, 18)
-                .padding(.top, 8)
-                .padding(.bottom, 16)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(QCPalette.stage)
+            HStack(spacing: 8) {
+                Button { pageBack() } label: {
+                    Image(systemName: "arrow.left")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(QCPalette.ink)
+                        .frame(width: 36, height: 36)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(copy.back)
+                Text("\(year) \(copy.yearReport)")
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundStyle(QCPalette.ink)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+                Spacer(minLength: 12)
+                HStack(spacing: 0) {
+                    yearStep("chevron.left", label: copy.yearPrev) { shiftYear(-1) }
+                    Text(String(year))
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(QCPalette.ink)
+                    yearStep(
+                        "chevron.right",
+                        label: copy.yearNext,
+                        enabled: year < Calendar.current.component(.year, from: Date())
+                    ) { shiftYear(1) }
+                }
+                .padding(.horizontal, 4)
+                .padding(.vertical, 2)
+                .background(Color.white, in: Capsule())
+                .overlay(Capsule().stroke(QCPalette.line, lineWidth: 1))
+                .fixedSize(horizontal: true, vertical: false)
+            }
+            .padding(.horizontal, 18)
+            .padding(.top, 8)
+            .padding(.bottom, 16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(QCPalette.stage)
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                HStack {
-                    Button(copy.yearPrev) { shiftYear(-1) }
-                    Spacer()
-                    Button(copy.yearNext) { shiftYear(1) }
-                        .disabled(year >= Calendar.current.component(.year, from: Date()))
-                        .opacity(year >= Calendar.current.component(.year, from: Date()) ? 0.35 : 1)
-                }
-                .font(.system(size: 14, weight: .bold))
-                .foregroundColor(QCPalette.ink)
                 HStack(spacing: 8) {
                     kindPill(copy.statsOut, id: "out")
                     kindPill(copy.statsIn, id: "in")
@@ -174,6 +196,19 @@ struct QCYearReportPage: View {
             }
         }
         .buttonStyle(.plain)
+    }
+
+    private func yearStep(_ system: String, label: String, enabled: Bool = true, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: system)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(enabled ? QCPalette.ink : QCPalette.faint)
+                .frame(width: 28, height: 32)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(!enabled)
+        .accessibilityLabel(label)
     }
 
     private func kindPill(_ title: String, id: String) -> some View {

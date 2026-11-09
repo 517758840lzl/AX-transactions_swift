@@ -167,7 +167,7 @@ struct QCDashboardStatsPanel: View {
         let pills = [copy.statsOut, copy.statsIn, copy.statsOther].reduce(CGFloat(0)) { total, label in
             total + ceil((label as NSString).size(withAttributes: [.font: font]).width) + 26
         }
-        let date = CGFloat(28 + 28 + (annual ? 52 : 64) + 10)
+        let date = CGFloat(44 + 44 + (annual ? 52 : 64) + 10)
         return date + 8 + pills + 16 > width
     }
 
@@ -193,7 +193,7 @@ struct QCDashboardStatsPanel: View {
             Image(systemName: system)
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(enabled ? QCPalette.ink : QCPalette.faint)
-                .frame(width: 28, height: 28)
+                .frame(width: 44, height: 36)
         }
         .buttonStyle(.plain)
         .disabled(!enabled)

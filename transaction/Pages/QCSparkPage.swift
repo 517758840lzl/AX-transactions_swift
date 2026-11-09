@@ -18,7 +18,6 @@ struct QCSparkHomeView: View {
         let ordered = orderedSparks(store.book.sparks)
         let needle = query.trimmingCharacters(in: .whitespacesAndNewlines)
         let matched = needle.isEmpty ? ordered : ordered.filter { sparkMatches($0, query: needle, copy: copy) }
-        let wroteSummary = store.book.sparks.contains { $0.kind == .summary && $0.writtenOn == QCLedgerDay.today() }
 
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
@@ -36,11 +35,8 @@ struct QCSparkHomeView: View {
             .pageTitleBar()
             QCPageScroll(place: "spark-home", bottom: 28) {
                 composer(copy)
-                if !wroteSummary {
-                    summaryPrompt(copy)
-                }
-                kindGrid(copy, ordered: ordered)
                 QCSparkLookup(text: $query, placeholder: copy.sparkSearch)
+                kindGrid(copy, ordered: ordered)
                 notePreview(copy, matched: matched, searching: !needle.isEmpty)
             }
         }
@@ -71,32 +67,6 @@ struct QCSparkHomeView: View {
         .buttonStyle(.plain)
     }
 
-    private func summaryPrompt(_ copy: QCLedgerCopy) -> some View {
-        Button {
-            begin(.summary)
-        } label: {
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(copy.sparkSummary)
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(QCPalette.ink)
-                    Text(copy.today)
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(QCPalette.muted)
-                }
-                Spacer(minLength: 8)
-                Text(copy.sparkPlaceholder)
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(QCPalette.ink)
-            }
-            .padding(14)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(QCPalette.wash, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-    }
-
     private func kindGrid(_ copy: QCLedgerCopy, ordered: [QCSpark]) -> some View {
         let columns = [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)]
         return LazyVGrid(columns: columns, spacing: 10) {
@@ -118,8 +88,8 @@ struct QCSparkHomeView: View {
                         }
                         Text(mine.first.map { oneLine($0.body) } ?? QCPaperCue.pack(store.book.locale, kind).hint)
                             .font(.system(size: 13))
-                            .foregroundStyle(mine.isEmpty ? QCPalette.faint : QCPalette.muted)
-                            .lineLimit(2)
+                            .foregroundStyle(mine.isEmpty ? QCPalette.faint : QCPalette.ink)
+                            .lineLimit(1)
                             .multilineTextAlignment(.leading)
                             .frame(maxWidth: .infinity, minHeight: 34, alignment: .topLeading)
                     }
@@ -345,12 +315,40 @@ struct QCSparksListView: View {
             .compositingGroup()
             .shadow(color: Color(red: 232 / 255, green: 93 / 255, blue: 117 / 255).opacity(0.07), radius: 14, y: 8)
             .padding(.top, 8)
-            if timeline {
+            if shelfBlank(visible) {
+                emptyShelf(copy, narrowed: shelfNarrowed)
+            } else if timeline {
                 timelineList(copy, sparks: visible)
             } else {
                 noteList(copy, sparks: visible)
             }
         }
+    }
+
+    private var shelfNarrowed: Bool {
+        !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || filter == 1
+    }
+
+    private func shelfBlank(_ sparks: [QCSpark]) -> Bool {
+        if timeline { return timelineDays(sparks).isEmpty }
+        return sparks.isEmpty
+    }
+
+    private func emptyShelf(_ copy: QCLedgerCopy, narrowed: Bool) -> some View {
+        VStack(spacing: 16) {
+            Image(systemName: "doc.text")
+                .font(.system(size: 28, weight: .regular))
+                .foregroundStyle(QCPalette.down)
+                .frame(width: 76, height: 76)
+                .background(QCPalette.pink.opacity(0.45), in: Circle())
+            Text(narrowed ? copy.sparkShelfNone : copy.sparkShelfEmpty)
+                .font(.system(size: 15))
+                .foregroundStyle(QCPalette.muted)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 28)
     }
 
     private func sparkVisible(_ spark: QCSpark, copy: QCLedgerCopy) -> Bool {
@@ -383,30 +381,6 @@ struct QCSparksListView: View {
                 .padding(.top, 6)
             ForEach(sparks.filter { $0.writtenOn == day }) { spark in
                 sparkCard(copy, spark: spark)
-            }
-            ForEach(dayEntries(day)) { entry in
-                Button { screen.open(.entry(id: entry.id)) } label: {
-                    HStack(spacing: 8) {
-                        QCCategoryBadge(
-                            style: QCCategoryMarks.style(name: entry.category, marks: store.book.categoryMarks),
-                            selected: false,
-                            side: 28
-                        )
-                        Text(entry.title)
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(QCPalette.ink)
-                            .lineLimit(1)
-                        Spacer(minLength: 8)
-                        Text(entryAmount(entry))
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundStyle(entry.isOut ? QCPalette.down : QCPalette.ink)
-                    }
-                    .padding(14)
-                    .background(Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(QCPalette.line, lineWidth: 1))
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
             }
         }
     }
@@ -462,32 +436,7 @@ struct QCSparksListView: View {
     }
 
     private func timelineDays(_ sparks: [QCSpark]) -> [String] {
-        var days = sparks.map(\.writtenOn)
-        if filter == 0 {
-            for entry in store.book.entries where !entry.isTransfer && entryMatches(entry) && !days.contains(entry.date) {
-                days.append(entry.date)
-            }
-        }
-        return Array(Set(days)).sorted(by: >)
-    }
-
-    private func dayEntries(_ day: String) -> [QCEntry] {
-        guard filter == 0 else { return [] }
-        return store.book.entries.filter { entry in
-            entry.date == day && !entry.isTransfer && entryMatches(entry)
-        }
-    }
-
-    private func entryMatches(_ entry: QCEntry) -> Bool {
-        let needle = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        if needle.isEmpty { return true }
-        return entry.title.localizedCaseInsensitiveContains(needle) || entry.date.contains(needle)
-    }
-
-    private func entryAmount(_ entry: QCEntry) -> String {
-        if store.book.hideAmounts { return "***" }
-        let text = QCLedgerMoney.text(entry.amount, mark: store.book.mark)
-        return entry.isOut ? "−\(text)" : "+\(text)"
+        Array(Set(sparks.map(\.writtenOn))).sorted(by: >)
     }
 }
 
@@ -642,28 +591,6 @@ struct QCSparkFormView: View {
             QCDateField(copy: copy, iso: $writtenOn, label: copy.date, sheet: true)
             if let picture {
                 paperPhoto(picture, copy: copy)
-            }
-            if empty {
-                Text(cue.lead)
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(QCPalette.muted)
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(cue.lines, id: \.self) { line in
-                        Button {
-                            bodyText = line
-                        } label: {
-                            Text(line)
-                                .font(.system(size: 15, weight: .semibold))
-                                .foregroundStyle(QCPalette.ink)
-                                .multilineTextAlignment(.leading)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 10)
-                                .background(QCPalette.wash, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
             }
             HStack(alignment: .top, spacing: 10) {
                 VStack(spacing: 16) {
@@ -843,14 +770,12 @@ private func sparkDays(_ sparks: [QCSpark], copy: QCLedgerCopy) -> [QCSparkDay] 
 private enum QCPaperCue {
     struct QCPack {
         var hint: String
-        var lead: String
-        var lines: [String]
     }
 
     static func pack(_ locale: QCBookLocale, _ kind: QCSparkKind) -> QCPack {
         let words = table(locale)
-        let leaf = words.leaves[kind] ?? words.leaves[.idea]!
-        return QCPack(hint: leaf.hint, lead: words.lead, lines: leaf.lines)
+        let hint = words.leaves[kind] ?? words.leaves[.idea]!
+        return QCPack(hint: hint)
     }
 
     static func tally(_ locale: QCBookLocale, _ count: Int) -> String {
@@ -858,88 +783,82 @@ private enum QCPaperCue {
         return text.replacingOccurrences(of: "{count}", with: "\(count)")
     }
 
-    private struct QCLeaf {
-        var hint: String
-        var lines: [String]
-    }
-
     private struct QCWords {
-        var lead: String
         var tally: String
-        var leaves: [QCSparkKind: QCLeaf]
+        var leaves: [QCSparkKind: String]
     }
 
     private static func table(_ locale: QCBookLocale) -> QCWords {
         switch locale {
         case .zh:
-            return QCWords(lead: "从一笔开始", tally: "{count} 字", leaves: [
-                .idea: QCLeaf(hint: "还有一笔没记上", lines: ["这笔下次能少花吗", "想先记下的一笔"]),
-                .diary: QCLeaf(hint: "今天这笔钱花在哪", lines: ["为什么会花这一笔", "哪一笔最不该花"]),
-                .thought: QCLeaf(hint: "这笔花得值不值", lines: ["还能再省下来吗", "先记着，回头再对"]),
-                .summary: QCLeaf(hint: "今天花得最多的是", lines: ["今天一共出去多少", "明天想少花的一笔"]),
+            return QCWords(tally: "{count} 字", leaves: [
+                .idea: "这笔钱该不该花",
+                .diary: "今天钱花在哪了",
+                .thought: "花得值不值",
+                .summary: "今天花了多少",
             ])
         case .zhHant:
-            return QCWords(lead: "從一筆開始", tally: "{count} 字", leaves: [
-                .idea: QCLeaf(hint: "還有一筆沒記上", lines: ["這筆下次能少花嗎", "想先記下的一筆"]),
-                .diary: QCLeaf(hint: "今天這筆錢花在哪", lines: ["為什麼會花這一筆", "哪一筆最不該花"]),
-                .thought: QCLeaf(hint: "這筆花得值不值", lines: ["還能再省下來嗎", "先記著，回頭再對"]),
-                .summary: QCLeaf(hint: "今天花得最多的是", lines: ["今天一共出去多少", "明天想少花的一筆"]),
+            return QCWords(tally: "{count} 字", leaves: [
+                .idea: "這筆錢該不該花",
+                .diary: "今天錢花在哪了",
+                .thought: "花得值不值",
+                .summary: "今天花了多少",
             ])
         case .ja:
-            return QCWords(lead: "一件から書く", tally: "{count} 字", leaves: [
-                .idea: QCLeaf(hint: "まだ書いていない支出", lines: ["次は減らせるだろうか", "先に残しておきたい一件"]),
-                .diary: QCLeaf(hint: "今日このお金は何に使った", lines: ["なぜこの一件を使ったか", "一番いらなかった一件"]),
-                .thought: QCLeaf(hint: "この支出は見合ったか", lines: ["まだ減らせるか", "先に書いて、あとで見返す"]),
-                .summary: QCLeaf(hint: "今日いちばん使ったものは", lines: ["今日出ていった合計", "明日減らしたい一件"]),
+            return QCWords(tally: "{count} 字", leaves: [
+                .idea: "このお金は使うべきか",
+                .diary: "今日の金は何に使ったか",
+                .thought: "使った価値はあったか",
+                .summary: "今日はいくら使ったか",
             ])
         case .ko:
-            return QCWords(lead: "한 건부터", tally: "{count}자", leaves: [
-                .idea: QCLeaf(hint: "아직 적지 않은 지출", lines: ["다음에는 줄일 수 있을까", "먼저 남겨 둘 한 건"]),
-                .diary: QCLeaf(hint: "오늘 이 돈은 어디에 썼나", lines: ["왜 이 돈을 썼는지", "가장 쓰지 말았어야 할 한 건"]),
-                .thought: QCLeaf(hint: "이 지출은 값어치가 있나", lines: ["더 아낄 수 있나", "먼저 적고 나중에 맞춰 보기"]),
-                .summary: QCLeaf(hint: "오늘 가장 많이 쓴 것은", lines: ["오늘 나간 돈을 합치면", "내일 덜 쓰고 싶은 한 건"]),
+            return QCWords(tally: "{count}자", leaves: [
+                .idea: "이 돈을 써야 할까",
+                .diary: "오늘 돈은 어디에 썼나",
+                .thought: "쓸 만한 값어치가 있었나",
+                .summary: "오늘 얼마를 썼나",
             ])
         case .es:
-            return QCWords(lead: "Empieza por un gasto", tally: "{count} caracteres", leaves: [
-                .idea: QCLeaf(hint: "Un gasto que aún no anoté", lines: ["¿La próxima vez se puede gastar menos?", "Un apunte que quiero dejar primero"]),
-                .diary: QCLeaf(hint: "En qué se fue este dinero hoy", lines: ["Por qué salió este gasto", "El gasto que no debía salir"]),
-                .thought: QCLeaf(hint: "¿Valió este gasto?", lines: ["¿Se puede ahorrar un poco más?", "Lo anoto y lo reviso después"]),
-                .summary: QCLeaf(hint: "En qué se fue más el dinero hoy", lines: ["Cuánto salió hoy en total", "Lo que quiero gastar menos mañana"]),
+            return QCWords(tally: "{count} caracteres", leaves: [
+                .idea: "¿Conviene gastar este dinero?",
+                .diary: "¿En qué se fue el dinero hoy?",
+                .thought: "¿Valió la pena?",
+                .summary: "¿Cuánto se gastó hoy?",
             ])
         case .pt:
-            return QCWords(lead: "Começa por uma despesa", tally: "{count} caracteres", leaves: [
-                .idea: QCLeaf(hint: "Uma despesa ainda por anotar", lines: ["Da próxima, dá para gastar menos?", "Um lançamento para deixar primeiro"]),
-                .diary: QCLeaf(hint: "Em que foi este dinheiro hoje", lines: ["Por que saiu esta despesa", "A despesa que não devia sair"]),
-                .thought: QCLeaf(hint: "Esta despesa valeu a pena?", lines: ["Dá para poupar mais um pouco?", "Anoto agora e confiro depois"]),
-                .summary: QCLeaf(hint: "Onde foi mais o dinheiro hoje", lines: ["Quanto saiu hoje no total", "O que quero gastar menos amanhã"]),
+            return QCWords(tally: "{count} caracteres", leaves: [
+                .idea: "Este dinheiro deve ser gasto?",
+                .diary: "Onde foi o dinheiro de hoje?",
+                .thought: "Valeu a pena?",
+                .summary: "Quanto se gastou hoje?",
             ])
         case .fr:
-            return QCWords(lead: "Commence par une dépense", tally: "{count} caractères", leaves: [
-                .idea: QCLeaf(hint: "Une dépense pas encore notée", lines: ["La prochaine fois, dépenser moins ?", "Une écriture à poser d'abord"]),
-                .diary: QCLeaf(hint: "Où est parti cet argent aujourd'hui", lines: ["Pourquoi cette dépense est sortie", "La dépense qui ne devait pas sortir"]),
-                .thought: QCLeaf(hint: "Cette dépense en valait-elle la peine", lines: ["On peut encore en garder un peu ?", "Je note, je vérifie plus tard"]),
-                .summary: QCLeaf(hint: "Là où l'argent est le plus parti", lines: ["Combien est sorti aujourd'hui", "Ce que je veux dépenser moins demain"]),
+            return QCWords(tally: "{count} caractères", leaves: [
+                .idea: "Cet argent doit-il être dépensé ?",
+                .diary: "Où est passé l'argent aujourd'hui ?",
+                .thought: "En valait-il la peine ?",
+                .summary: "Combien a été dépensé aujourd'hui ?",
             ])
         case .de:
-            return QCWords(lead: "Mit einer Ausgabe anfangen", tally: "{count} Zeichen", leaves: [
-                .idea: QCLeaf(hint: "Eine Ausgabe, die noch fehlt", lines: ["Lässt sich das nächste Mal weniger ausgeben?", "Eine Buchung, die ich zuerst festhalten will"]),
-                .diary: QCLeaf(hint: "Wofür dieses Geld heute ging", lines: ["Warum diese Ausgabe rausging", "Die Ausgabe, die nicht sein musste"]),
-                .thought: QCLeaf(hint: "War diese Ausgabe es wert", lines: ["Lässt sich noch etwas sparen?", "Erst notieren, später nachsehen"]),
-                .summary: QCLeaf(hint: "Wofür heute das meiste Geld ging", lines: ["Wie viel heute insgesamt rausging", "Was ich morgen weniger ausgeben will"]),
+            return QCWords(tally: "{count} Zeichen", leaves: [
+                .idea: "Soll dieses Geld ausgegeben werden?",
+                .diary: "Wofür ging das Geld heute?",
+                .thought: "Hat es sich gelohnt?",
+                .summary: "Wie viel wurde heute ausgegeben?",
             ])
         case .it:
-            return QCWords(lead: "Parti da una spesa", tally: "{count} caratteri", leaves: [
-                .idea: QCLeaf(hint: "Una spesa non ancora segnata", lines: ["La prossima volta si può spendere meno?", "Una voce da annotare prima"]),
-                .diary: QCLeaf(hint: "Dove sono finiti questi soldi oggi", lines: ["Perché è uscita questa spesa", "La spesa che non doveva uscire"]),
-                .thought: QCLeaf(hint: "Questa spesa ne valeva la pena?", lines: ["Si può risparmiare ancora un po'?", "Lo segno e lo controllo dopo"]),
-                .summary: QCLeaf(hint: "Dove sono finiti più soldi oggi", lines: ["Quanto è uscito oggi in tutto", "Quello che voglio spendere meno domani"]),
+            return QCWords(tally: "{count} caratteri", leaves: [
+                .idea: "Questi soldi vanno spesi?",
+                .diary: "Dove sono finiti i soldi oggi?",
+                .thought: "Ne è valsa la pena?",
+                .summary: "Quanto si è speso oggi?",
             ])
         case .en:
-            return QCWords(lead: "Start from one expense", tally: "{count} characters", leaves: [
-                .idea: QCLeaf(hint: "An expense not written down yet", lines: ["Could the next one cost less?", "One entry to set down first"]),
-                .diary: QCLeaf(hint: "Where this money went today", lines: ["Why this expense went out", "The one that should not have"]),
-                .thought: QCLeaf(hint: "Was this expense worth it", lines: ["Can a little more be kept back?", "Write it now, check it later"]),
-                .summary: QCLeaf(hint: "Where most of the money went today", lines: ["How much went out today", "What to spend less on tomorrow"]),
+            return QCWords(tally: "{count} characters", leaves: [
+                .idea: "Should this money be spent",
+                .diary: "Where did today's money go",
+                .thought: "Was it worth it",
+                .summary: "How much was spent today",
             ])
         }
     }
@@ -975,7 +894,7 @@ private struct QCSparkLookup: View {
                 .foregroundStyle(QCPalette.ink)
         }
         .padding(.horizontal, 12)
-        .frame(maxWidth: .infinity, minHeight: 42, alignment: .leading)
+        .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
         .background(QCPalette.neutral, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }

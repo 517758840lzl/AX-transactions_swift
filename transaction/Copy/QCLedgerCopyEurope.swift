@@ -67,7 +67,7 @@ let spanishCopy = QCLedgerCopy(
     aboutNot: "No se conecta a un banco.\nNo te pide una cuenta con nosotros.\nNo da consejo fiscal, de inversión ni de préstamo.",
     aboutOperator: "Operador", aboutMail: "Correo",
     aboutWrite: "Incluye el nombre de la app para que sepamos de qué producto se trata.",
-    disclaimerBody: "Las cifras son las que escribes. Los saldos, gráficos y resúmenes se calculan con esos registros. No son un extracto bancario, una declaración fiscal ni un consejo sobre gasto, inversión o préstamo.\nTú compruebas si cada apunte es el que quieres conservar.\nEl libro está en este dispositivo. Solo hay una copia en tu iCloud cuando la guardas allí. Nosotros no guardamos otra copia en un servidor propio.\nBorrar el libro, desinstalar la app o perder el dispositivo quita la copia del dispositivo. Una copia que ya esté en iCloud no se borra por eso.\nNo se promete que las cifras coincidan con otro producto, ni que la app funcione sin interrupciones.",
+    disclaimerBody: "Los importes, saldos y gráficos de esta aplicación se calculan a partir de los registros que usted introduce y se ofrecen únicamente como referencia para la contabilidad personal. No constituyen un extracto bancario ni un justificante fiscal, ni asesoramiento sobre gasto, inversión o préstamo.\nCompruebe usted la exactitud de cada apunte y si debe conservarse.\nLos datos se almacenan de forma predeterminada en este dispositivo. Solo tras guardarlos en iCloud existirá una copia en su iCloud. No conservamos otra copia del libro en un servidor propio.\nBorrar el libro, desinstalar la aplicación o perder el dispositivo hace irrecuperables los datos del dispositivo. Esa acción no elimina la copia ya guardada en su iCloud.\nEl funcionamiento depende de su dispositivo y de su sistema, y esta aplicación no garantiza un funcionamiento ininterrumpido en todos los casos.",
     language: "Idioma", currency: "Moneda",
     reminderTitle: "Avisos", reminderDaily: "Recordatorio diario", reminderTime: "Hora",
     reminderNote: "El sistema avisa a esta hora. Ábrelo para anotar.",
@@ -137,7 +137,8 @@ let spanishCopy = QCLedgerCopy(
     sparkIdea: "Idea", sparkDiary: "Diario", sparkThought: "Pensamiento", sparkSummary: "Resumen del día",
     sparkFavorite: "Favorito", sparkTags: "Etiquetas", sparkTagHint: "Sepáralas con espacios",
     sparkPicture: "Foto", sparkPictureRemove: "Quitar foto",
-    sparkSearch: "Buscar texto, etiqueta o fecha", sparkNotes: "Notas", sparkTimeline: "Línea de tiempo"
+    sparkSearch: "Buscar texto, etiqueta o fecha", sparkNotes: "Notas", sparkTimeline: "Línea de tiempo",
+    sparkShelfEmpty: "Todavía no hay contenido.", sparkShelfNone: "No hay contenido que coincida."
 )
 
 let portugueseCopy = QCLedgerCopy(
@@ -200,7 +201,7 @@ let portugueseCopy = QCLedgerCopy(
     aboutNot: "Não liga a um banco.\nNão pede uma conta connosco.\nNão dá conselho fiscal, de investimento ou de empréstimo.",
     aboutOperator: "Operador", aboutMail: "E-mail",
     aboutWrite: "Inclua o nome da app para sabermos de que produto se trata.",
-    disclaimerBody: "Os valores são os que escreve. Saldos, gráficos e resumos são calculados com esses registos. Não são um extrato bancário, uma declaração fiscal nem um conselho sobre despesa, investimento ou empréstimo.\nVocê confirma se cada lançamento é o que quer manter.\nO livro fica neste dispositivo. Só há uma cópia no seu iCloud quando a guarda lá. Nós não guardamos outra cópia num servidor nosso.\nLimpar o livro, desinstalar a app ou perder o dispositivo tira a cópia do dispositivo. Uma cópia que já esteja no iCloud não é apagada por isso.\nNão se promete que os valores coincidam com outro produto, nem que a app funcione sem interrupções.",
+    disclaimerBody: "Os valores, saldos e gráficos desta aplicação são calculados a partir dos registos que introduz e destinam-se apenas à contabilidade pessoal. Não constituem um extrato bancário nem um comprovativo fiscal, nem aconselhamento sobre despesa, investimento ou empréstimo.\nVerifique a exatidão de cada lançamento e se deve ser conservado.\nOs dados ficam, por predefinição, neste dispositivo. Só após a gravação no iCloud passa a existir uma cópia no seu iCloud. Não conservamos outra cópia do livro num servidor próprio.\nLimpar o livro, desinstalar a aplicação ou perder o dispositivo torna irrecuperáveis os dados do dispositivo. Essa ação não elimina a cópia já guardada no seu iCloud.\nO funcionamento depende do seu dispositivo e do sistema, e esta aplicação não garante um funcionamento ininterrupto em todos os casos.",
     language: "Idioma", currency: "Moeda",
     reminderTitle: "Avisos", reminderDaily: "Lembrete diário", reminderTime: "Hora",
     reminderNote: "O sistema avisa neste horário. Abra para lançar.",
@@ -270,7 +271,8 @@ let portugueseCopy = QCLedgerCopy(
     sparkIdea: "Ideia", sparkDiary: "Diário", sparkThought: "Pensamento", sparkSummary: "Resumo do dia",
     sparkFavorite: "Favorito", sparkTags: "Etiquetas", sparkTagHint: "Separe com espaços",
     sparkPicture: "Foto", sparkPictureRemove: "Tirar foto",
-    sparkSearch: "Buscar texto, etiqueta ou data", sparkNotes: "Notas", sparkTimeline: "Linha do tempo"
+    sparkSearch: "Buscar texto, etiqueta ou data", sparkNotes: "Notas", sparkTimeline: "Linha do tempo",
+    sparkShelfEmpty: "Ainda não há conteúdo.", sparkShelfNone: "Nenhum conteúdo correspondente."
 )
 
 let frenchCopy = QCLedgerCopy(
@@ -333,7 +335,7 @@ let frenchCopy = QCLedgerCopy(
     aboutNot: "Elle ne se connecte pas à une banque.\nElle ne demande pas de compte chez nous.\nElle ne donne pas de conseil fiscal, d’investissement ou de prêt.",
     aboutOperator: "Opérateur", aboutMail: "E-mail",
     aboutWrite: "Indiquez le nom de l’app pour que nous sachions de quel produit il s’agit.",
-    disclaimerBody: "Les montants sont ceux que vous saisissez. Les soldes, graphiques et synthèses sont calculés à partir de ces écritures. Ce n’est ni un relevé bancaire, ni une déclaration fiscale, ni un conseil sur les dépenses, l’investissement ou l’emprunt.\nVous vérifiez si chaque écriture est celle que vous voulez garder.\nLe livre reste sur cet appareil. Une copie n’existe dans votre iCloud que lorsque vous l’y enregistrez. Nous ne gardons pas d’autre copie sur un serveur que nous exploitons.\nEffacer le livre, désinstaller l’app ou perdre l’appareil retire la copie sur l’appareil. Une copie déjà dans iCloud n’est pas supprimée pour autant.\nCes chiffres ne sont pas garantis identiques à ceux d’un autre produit, et l’app n’est pas garantie sans interruption.",
+    disclaimerBody: "Les montants, soldes et graphiques de cette application sont calculés à partir des écritures que vous saisissez, et sont fournis uniquement à titre de comptabilité personnelle. Ils ne constituent ni un relevé bancaire, ni une pièce fiscale, ni un conseil en matière de dépenses, d’investissement ou d’emprunt.\nVeuillez vérifier l’exactitude de chaque écriture et s’il convient de la conserver.\nLes données sont enregistrées par défaut sur cet appareil. Une copie n’est placée dans votre iCloud qu’une fois l’enregistrement effectué. Nous ne conservons pas d’autre copie de votre livre sur un serveur que nous exploitons.\nEffacer le livre, désinstaller l’application ou perdre l’appareil rend les données de l’appareil irrécupérables. Cette action ne supprime pas la copie déjà enregistrée dans votre iCloud.\nLe fonctionnement dépend de votre appareil et de votre système, et cette application ne garantit pas un fonctionnement sans interruption dans tous les cas.",
     language: "Langue", currency: "Devise",
     reminderTitle: "Rappels", reminderDaily: "Rappel du jour", reminderTime: "Heure",
     reminderNote: "Le système prévient à cette heure. Ouvrez pour noter.",
@@ -403,7 +405,8 @@ let frenchCopy = QCLedgerCopy(
     sparkIdea: "Idée", sparkDiary: "Journal", sparkThought: "Pensée", sparkSummary: "Bilan du jour",
     sparkFavorite: "Favori", sparkTags: "Étiquettes", sparkTagHint: "Sépare par des espaces",
     sparkPicture: "Photo", sparkPictureRemove: "Retirer la photo",
-    sparkSearch: "Chercher un mot, une étiquette ou une date", sparkNotes: "Notes", sparkTimeline: "Fil"
+    sparkSearch: "Chercher un mot, une étiquette ou une date", sparkNotes: "Notes", sparkTimeline: "Fil",
+    sparkShelfEmpty: "Aucun contenu pour le moment.", sparkShelfNone: "Aucun contenu correspondant."
 )
 
 let germanCopy = QCLedgerCopy(
@@ -466,7 +469,7 @@ let germanCopy = QCLedgerCopy(
     aboutNot: "Sie verbindet sich nicht mit einer Bank.\nSie verlangt kein Konto bei uns.\nSie gibt keine Steuer-, Anlage- oder Kreditberatung.",
     aboutOperator: "Betreiber", aboutMail: "E-Mail",
     aboutWrite: "Bitte schreib den App-Namen dazu, damit wir wissen, um welches Produkt es geht.",
-    disclaimerBody: "Die Beträge sind die, die du eingibst. Salden, Diagramme und Summen werden aus diesen Einträgen gerechnet. Sie sind kein Kontoauszug, keine Steuererklärung und keine Beratung zu Ausgaben, Anlagen oder Krediten.\nDu prüfst, ob jeder Eintrag der ist, den du behalten willst.\nDas Buch liegt auf diesem Gerät. Eine Kopie gibt es in deiner iCloud nur, wenn du sie dort sicherst. Wir behalten keine weitere Kopie auf einem Server, den wir betreiben.\nBuch löschen, App entfernen oder Gerät verlieren entfernt die Kopie auf dem Gerät. Eine Kopie, die schon in iCloud liegt, wird dadurch nicht gelöscht.\nDie Zahlen müssen nicht mit einem anderen Produkt übereinstimmen, und die App muss nicht ohne Unterbrechung laufen.",
+    disclaimerBody: "Beträge, Salden und Diagramme in dieser App werden aus den von Ihnen erfassten Buchungen berechnet und dienen ausschließlich der privaten Buchführung. Sie stellen keinen Kontoauszug und keinen Steuerbeleg dar und sind keine Beratung zu Ausgaben, Anlagen oder Krediten.\nBitte prüfen Sie jede Buchung auf Richtigkeit und darauf, ob sie aufbewahrt werden soll.\nDie Daten werden standardmäßig auf diesem Gerät gespeichert. Eine Kopie liegt in Ihrer iCloud erst, nachdem Sie sie dort gesichert haben. Wir bewahren keine weitere Kopie Ihres Buches auf einem von uns betriebenen Server auf.\nDas Löschen des Buches, das Entfernen der App oder der Verlust des Geräts macht die Daten auf dem Gerät unwiederbringlich. Dadurch wird eine bereits in Ihrer iCloud gespeicherte Kopie nicht gelöscht.\nDer Betrieb hängt von Ihrem Gerät und Ihrem System ab. Diese App gewährleistet nicht, dass er in jedem Fall ohne Unterbrechung läuft.",
     language: "Sprache", currency: "Währung",
     reminderTitle: "Erinnerung", reminderDaily: "Tägliche Erinnerung", reminderTime: "Zeit",
     reminderNote: "Das System meldet sich zu dieser Zeit. Tippen öffnet eine Buchung.",
@@ -536,7 +539,8 @@ let germanCopy = QCLedgerCopy(
     sparkIdea: "Einfall", sparkDiary: "Tagebuch", sparkThought: "Gedanke", sparkSummary: "Tagesfazit",
     sparkFavorite: "Favorit", sparkTags: "Stichworte", sparkTagHint: "Mit Leerzeichen trennen",
     sparkPicture: "Foto", sparkPictureRemove: "Foto entfernen",
-    sparkSearch: "Text, Stichwort oder Datum suchen", sparkNotes: "Notizen", sparkTimeline: "Zeitstrahl"
+    sparkSearch: "Text, Stichwort oder Datum suchen", sparkNotes: "Notizen", sparkTimeline: "Zeitstrahl",
+    sparkShelfEmpty: "Hier ist noch nichts.", sparkShelfNone: "Keine passenden Einträge."
 )
 
 let italianCopy = QCLedgerCopy(
@@ -599,7 +603,7 @@ let italianCopy = QCLedgerCopy(
     aboutNot: "Non si collega a una banca.\nNon chiede un account presso di noi.\nNon dà consulenza fiscale, di investimento o di prestito.",
     aboutOperator: "Operatore", aboutMail: "E-mail",
     aboutWrite: "Indica il nome dell’app, così capiamo di quale prodotto si tratta.",
-    disclaimerBody: "Gli importi sono quelli che scrivi. Saldi, grafici e riepiloghi si calcolano da queste registrazioni. Non sono un estratto conto, una dichiarazione fiscale né un consiglio su spese, investimenti o prestiti.\nControlli tu se ogni voce è quella che vuoi tenere.\nIl libro resta su questo dispositivo. Una copia nel tuo iCloud esiste solo quando la salvi lì. Non teniamo un’altra copia su un server nostro.\nCancellare il libro, disinstallare l’app o perdere il dispositivo toglie la copia sul dispositivo. Una copia già in iCloud non viene cancellata per questo.\nLe cifre non sono garantite uguali a un altro prodotto, e l’app non è garantita senza interruzioni.",
+    disclaimerBody: "Importi, saldi e grafici di questa app sono calcolati dalle registrazioni da lei inserite e sono forniti solo come riferimento per la contabilità personale. Non costituiscono un estratto conto né un documento fiscale, né una consulenza su spese, investimenti o prestiti.\nVerifichi l’esattezza di ogni registrazione e se debba essere conservata.\nI dati sono memorizzati per impostazione predefinita su questo dispositivo. Una copia è presente nel suo iCloud solo dopo il salvataggio. Non conserviamo un’altra copia del libro su un server da noi gestito.\nCancellare il libro, disinstallare l’app o perdere il dispositivo rende irrecuperabili i dati sul dispositivo. Tale operazione non elimina la copia già salvata nel suo iCloud.\nIl funzionamento dipende dal suo dispositivo e dal sistema, e questa app non garantisce un funzionamento senza interruzioni in ogni caso.",
     language: "Lingua", currency: "Valuta",
     reminderTitle: "Promemoria", reminderDaily: "Promemoria giornaliero", reminderTime: "Ora",
     reminderNote: "Il sistema avvisa a quest’ora. Aprilo per annotare.",
@@ -669,5 +673,6 @@ let italianCopy = QCLedgerCopy(
     sparkIdea: "Idea", sparkDiary: "Diario", sparkThought: "Pensiero", sparkSummary: "Riepilogo del giorno",
     sparkFavorite: "Preferito", sparkTags: "Etichette", sparkTagHint: "Separale con spazi",
     sparkPicture: "Foto", sparkPictureRemove: "Togli foto",
-    sparkSearch: "Cerca testo, etichetta o data", sparkNotes: "Note", sparkTimeline: "Cronologia"
+    sparkSearch: "Cerca testo, etichetta o data", sparkNotes: "Note", sparkTimeline: "Cronologia",
+    sparkShelfEmpty: "Non c'è ancora nulla.", sparkShelfNone: "Nessun contenuto corrispondente."
 )

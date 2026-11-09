@@ -358,6 +358,8 @@ struct QCLedgerCopy {
     var sparkSearch: String
     var sparkNotes: String
     var sparkTimeline: String
+    var sparkShelfEmpty: String
+    var sparkShelfNone: String
 
     func monthTitle(now: Date = Date()) -> String {
         let month = QCLedgerDay.month(of: now)
@@ -616,7 +618,7 @@ private let chinese = QCLedgerCopy(
     aboutNot: "不连接银行。\n不向我们注册账号。\n不提供税务、投资或借贷建议。",
     aboutOperator: "运营者", aboutMail: "邮箱",
     aboutWrite: "写信时请写上应用名称，方便我们分辨是哪一个产品。",
-    disclaimerBody: "金额是你填的。结余和图表拿这些记录算，不是银行账单，不能拿去报税，也不是理财建议。每一笔留不留，自己看。\n账在这台手机上。点了保存，你的 iCloud 里才有一份。我们没有服务器再存一份。\n清掉账本、卸掉应用，或者手机丢了，本机这份就没了。iCloud 里已经存的那份还在。\n跟别的软件对不上也正常。这个应用也不能保证从不闪退。",
+    disclaimerBody: "本应用中的金额、结余与图表，均依据您录入的记录计算生成，仅供个人记账参考。其不代表银行对账单或税务凭证，也不构成任何投资、借贷或消费建议。\n请您自行核对每一笔记账是否准确、是否保留。\n数据默认保存在本机。只有在您完成 iCloud 保存后，才会在您的 iCloud 中留有副本。我们不会在自有服务器上另行存储您的账本。\n清空账本、卸载本应用或遗失设备后，本机数据将无法恢复。此操作不会删除您已保存在 iCloud 中的副本。\n受您的设备与系统状况影响，本应用不保证在任何情况下均能持续、不中断地运行。",
     language: "语言", currency: "货币",
     reminderTitle: "提醒", reminderDaily: "每天提醒记账", reminderTime: "时间",
     reminderNote: "到点后由系统发通知，点开进入记一笔。",
@@ -682,7 +684,8 @@ private let chinese = QCLedgerCopy(
     sparkIdea: "灵感", sparkDiary: "日记", sparkThought: "随想", sparkSummary: "每日总结",
     sparkFavorite: "收藏", sparkTags: "标签", sparkTagHint: "用空格分开",
     sparkPicture: "图片", sparkPictureRemove: "去掉图片",
-    sparkSearch: "搜索文字、标签或日期", sparkNotes: "笔记", sparkTimeline: "时间轴"
+    sparkSearch: "搜索文字、标签或日期", sparkNotes: "笔记", sparkTimeline: "时间轴",
+    sparkShelfEmpty: "这里还没有内容。", sparkShelfNone: "没有找到相关内容。"
 )
 
 private let englishCopy = QCLedgerCopy(
@@ -747,7 +750,7 @@ private let englishCopy = QCLedgerCopy(
     aboutNot: "It does not connect to a bank.\nIt does not ask you to register an account with us.\nIt does not give tax, investment or lending advice.",
     aboutOperator: "Operator", aboutMail: "Email",
     aboutWrite: "Please include the app name so we can tell which product the question is about.",
-    disclaimerBody: "The amounts here are the ones you type in. Balances, charts and summaries are calculated from those records. They are not a bank statement, a tax filing, or advice about spending, investing or borrowing.\nYou check whether each entry is one you want to keep.\nThe book stays on this device. A copy exists in your iCloud only when you save one there. We do not keep another copy on a server we operate.\nClearing the book, uninstalling the app, or losing the device removes the on-device copy. A copy already in iCloud is not deleted by that.\nThese figures are not promised to match another product, and the app is not promised to run without interruption.",
+    disclaimerBody: "The amounts, balances, and charts in this app are calculated from records you enter, and are provided for personal bookkeeping only. They do not constitute a bank statement or a tax record, and they do not constitute advice on spending, investing, or borrowing.\nPlease review each entry for accuracy and for whether it should be retained.\nData is stored on this device by default. A copy is placed in your iCloud only after you save it there. We do not keep a separate copy of your book on a server we operate.\nClearing the book, uninstalling the app, or losing the device makes the on-device data unrecoverable. That action does not delete a copy already saved in your iCloud.\nOperation depends on your device and system, and this app does not warrant that it will run without interruption in every case.",
     language: "Language", currency: "Currency",
     reminderTitle: "Reminders", reminderDaily: "Daily reminder", reminderTime: "Time",
     reminderNote: "The system notifies you at this time. Tap it to add a transaction.",
@@ -817,5 +820,6 @@ private let englishCopy = QCLedgerCopy(
     sparkIdea: "Idea", sparkDiary: "Diary", sparkThought: "Thought", sparkSummary: "Day note",
     sparkFavorite: "Favorite", sparkTags: "Tags", sparkTagHint: "Separate with spaces",
     sparkPicture: "Photo", sparkPictureRemove: "Remove photo",
-    sparkSearch: "Search words, tags, or date", sparkNotes: "Notes", sparkTimeline: "Timeline"
+    sparkSearch: "Search words, tags, or date", sparkNotes: "Notes", sparkTimeline: "Timeline",
+    sparkShelfEmpty: "Nothing here yet.", sparkShelfNone: "No matching notes."
 )

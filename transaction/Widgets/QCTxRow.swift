@@ -19,41 +19,42 @@ struct QCTxRow: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
-            QCCategoryBadge(
-                style: QCCategoryMarks.style(name: entry.category, marks: marks),
-                selected: false,
-                side: 40
-            )
             Button(action: onOpen) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(entry.title)
-                        .font(.system(size: 15, weight: .medium))
-                        .foregroundStyle(QCPalette.ink)
-                        .lineLimit(1)
-                    Text(meta)
-                        .font(.system(size: 12))
-                        .foregroundStyle(QCPalette.muted)
-                        .lineLimit(1)
+                HStack(alignment: .center, spacing: 12) {
+                    QCCategoryBadge(
+                        style: QCCategoryMarks.style(name: entry.category, marks: marks),
+                        selected: false,
+                        side: 40
+                    )
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(entry.title)
+                            .font(.system(size: 15, weight: .medium))
+                            .foregroundStyle(QCPalette.ink)
+                            .lineLimit(1)
+                        Text(meta)
+                            .font(.system(size: 12))
+                            .foregroundStyle(QCPalette.muted)
+                            .lineLimit(1)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    QCMoneyText(value: entry.isOut ? -entry.amount : entry.amount, mark: mark, size: 16, signed: true, digitWeight: .semibold)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 8)
+                .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
+                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            VStack(alignment: .trailing, spacing: 6) {
-                QCMoneyText(value: entry.isOut ? -entry.amount : entry.amount, mark: mark, size: 16, signed: true, digitWeight: .semibold)
-                Button(action: onToggle) {
-                    Text(entry.checked ? copy.checked : copy.unchecked)
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(entry.checked ? QCPalette.ink : QCPalette.review)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .frame(minWidth: 44, minHeight: 20)
-                        .background(entry.checked ? QCPalette.pink : QCPalette.review.opacity(0.14), in: Capsule())
-                }
-                .buttonStyle(.plain)
+            Button(action: onToggle) {
+                Text(entry.checked ? copy.checked : copy.unchecked)
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(entry.checked ? QCPalette.ink : QCPalette.review)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .frame(minWidth: 44, minHeight: 20)
+                    .background(entry.checked ? QCPalette.pink : QCPalette.review.opacity(0.14), in: Capsule())
             }
+            .buttonStyle(.plain)
         }
-        .padding(.vertical, 8)
-        .frame(minHeight: 56)
         .overlay(alignment: .top) {
             if showTopBorder {
                 Rectangle().fill(QCPalette.line.opacity(0.85)).frame(height: 1)

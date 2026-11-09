@@ -65,7 +65,7 @@ let traditionalCopy = QCLedgerCopy(
     aboutNot: "不連接銀行。\n不向我們註冊帳號。\n不提供稅務、投資或借貸建議。",
     aboutOperator: "營運者", aboutMail: "郵箱",
     aboutWrite: "寫信時請寫上 App 名稱，方便我們分辨是哪一個產品。",
-    disclaimerBody: "這裡記下的是你輸入的金額。結餘、圖表和彙總是用這些紀錄算出來的，不是銀行對帳單，不是報稅資料，也不是消費、投資或借貸建議。\n每一筆是否要留，由你自己核對。\n帳本在這台裝置上。只有儲存到 iCloud 時，你自己的 iCloud 裡才有一份。我們沒有伺服器上的另一份。\n清空帳本、解除安裝，或裝置遺失，本機這份會沒有。已經在 iCloud 裡的那份不會因此刪掉。\n這些數字不保證和其他產品完全一致，App 也不保證從不中斷。",
+    disclaimerBody: "本應用中的金額、結餘與圖表，均依據您輸入的紀錄計算生成，僅供個人記帳參考。其不代表銀行對帳單或稅務憑證，也不構成任何投資、借貸或消費建議。\n請您自行核對每一筆記帳是否準確、是否保留。\n資料預設儲存在本機。只有在您完成 iCloud 儲存後，才會在您的 iCloud 中留有副本。我們不會在自有伺服器上另行儲存您的帳本。\n清空帳本、解除安裝本應用或遺失裝置後，本機資料將無法復原。此操作不會刪除您已儲存在 iCloud 中的副本。\n受您的裝置與系統狀況影響，本應用不保證在任何情況下均能持續、不中斷地運行。",
     language: "語言", currency: "貨幣",
     reminderTitle: "提醒", reminderDaily: "每天提醒記帳", reminderTime: "時間",
     reminderNote: "到點後由系統發通知，點開進入記一筆。",
@@ -131,7 +131,8 @@ let traditionalCopy = QCLedgerCopy(
     sparkIdea: "靈感", sparkDiary: "日記", sparkThought: "隨想", sparkSummary: "每日總結",
     sparkFavorite: "收藏", sparkTags: "標籤", sparkTagHint: "用空格分開",
     sparkPicture: "圖片", sparkPictureRemove: "去掉圖片",
-    sparkSearch: "搜文字、標籤或日期", sparkNotes: "筆記", sparkTimeline: "時間軸"
+    sparkSearch: "搜文字、標籤或日期", sparkNotes: "筆記", sparkTimeline: "時間軸",
+    sparkShelfEmpty: "這裡還沒有內容。", sparkShelfNone: "沒有找到相關內容。"
 )
 
 let japaneseCopy = QCLedgerCopy(
@@ -192,7 +193,7 @@ let japaneseCopy = QCLedgerCopy(
     aboutNot: "銀行には接続しません。\n当社へのアカウント登録はありません。\n税務、投資、借入れの助言はしません。",
     aboutOperator: "運営者", aboutMail: "メール",
     aboutWrite: "どの製品への問い合わせか分かるよう、アプリ名を書いてください。",
-    disclaimerBody: "ここに残る金額は、入力した金額です。残高、グラフ、集計は、その記録から計算したもので、銀行の明細でも、税務書類でも、消費・投資・借入れの助言でもありません。\n各記録を残すかどうかは、自分で確認します。\n家計簿はこの端末にあります。iCloud に保存したときだけ、自分の iCloud に 1 部できます。当社のサーバーには別のコピーを置きません。\n家計簿の消去、アプリの削除、端末の紛失で、端末上の記録はなくなります。すでに iCloud にあるコピーは、それだけでは消えません。\n他の製品と数字が一致すること、アプリが中断しないことは保証しません。",
+    disclaimerBody: "本アプリに表示される金額、残高、グラフは、お客様が入力した記録に基づいて算出され、個人の家計管理のみを目的としています。銀行の取引明細または税務書類を構成するものではなく、消費、投資、借入れに関する助言でもありません。\n各記録の正確性、および保存の要否は、お客様ご自身でご確認ください。\nデータは原則として本端末に保存されます。iCloud への保存が完了した場合に限り、お客様の iCloud に副本が置かれます。当社が運営するサーバーに、家計簿の別副本を保管することはありません。\n家計簿の消去、アプリの削除、または端末の紛失により、端末上のデータは復元できなくなります。この操作により、すでに iCloud に保存された副本が削除されることはありません。\n本アプリの動作は、お客様の端末およびシステムの状態に左右されます。いかなる場合も、中断なく動作し続けることは保証しません。",
     language: "言語", currency: "通貨",
     reminderTitle: "リマインダー", reminderDaily: "毎日の記録", reminderTime: "時間",
     reminderNote: "時間になると通知が来ます。開くと記録できます。",
@@ -258,7 +259,8 @@ let japaneseCopy = QCLedgerCopy(
     sparkIdea: "ひらめき", sparkDiary: "日記", sparkThought: "随想", sparkSummary: "一日のまとめ",
     sparkFavorite: "お気に入り", sparkTags: "タグ", sparkTagHint: "スペースで区切る",
     sparkPicture: "写真", sparkPictureRemove: "写真を外す",
-    sparkSearch: "文字、タグ、日付で探す", sparkNotes: "メモ", sparkTimeline: "タイムライン"
+    sparkSearch: "文字、タグ、日付で探す", sparkNotes: "メモ", sparkTimeline: "タイムライン",
+    sparkShelfEmpty: "まだ内容がありません。", sparkShelfNone: "該当する内容が見つかりません。"
 )
 
 let koreanCopy = QCLedgerCopy(
@@ -319,7 +321,7 @@ let koreanCopy = QCLedgerCopy(
     aboutNot: "은행과 연결하지 않습니다.\n당사 계정을 만들지 않습니다.\n세금, 투자, 대출 조언을 하지 않습니다.",
     aboutOperator: "운영자", aboutMail: "이메일",
     aboutWrite: "어떤 제품에 대한 문의인지 알 수 있도록 앱 이름을 적어 주세요.",
-    disclaimerBody: "여기의 금액은 입력한 금액입니다. 잔액, 차트, 합계는 그 기록으로 계산한 것이며, 은행 명세서나 세금 자료, 소비·투자·대출 조언이 아닙니다.\n각 기록을 남길지는 직접 확인합니다.\n가계부는 이 기기에 있습니다. iCloud에 저장할 때만 본인 iCloud에 한 부가 생깁니다. 당사 서버에는 다른 사본을 두지 않습니다.\n가계부를 지우거나, 앱을 삭제하거나, 기기를 잃어버리면 기기의 기록은 없어집니다. 이미 iCloud에 있는 사본은 그것으로 지워지지 않습니다.\n다른 제품과 숫자가 같다는 보장도, 앱이 끊기지 않는다는 보장도 하지 않습니다.",
+    disclaimerBody: "본 앱의 금액, 잔액, 차트는 이용자가 입력한 기록을 바탕으로 산출되며, 개인 가계 관리를 위한 참고 자료입니다. 은행 거래 명세서나 세무 증빙에 해당하지 않으며, 소비, 투자, 대출에 관한 조언도 아닙니다.\n각 기록의 정확성과 보관 여부는 이용자 본인이 확인해 주십시오.\n데이터는 기본적으로 이 기기에 저장됩니다. iCloud 저장을 완료한 경우에만 이용자의 iCloud에 사본이 보관됩니다. 당사는 자체 서버에 가계부의 별도 사본을 보관하지 않습니다.\n가계부를 지우거나, 앱을 삭제하거나, 기기를 분실하면 기기의 데이터는 복구할 수 없습니다. 이 조치는 이미 iCloud에 저장된 사본을 삭제하지 않습니다.\n본 앱의 동작은 이용자의 기기와 시스템 상태에 따라 달라지므로, 어떠한 경우에도 중단 없이 계속된다고 보장하지 않습니다.",
     language: "언어", currency: "통화",
     reminderTitle: "알림", reminderDaily: "매일 기록 알림", reminderTime: "시간",
     reminderNote: "정각에 알림이 옵니다. 열면 기록을 적을 수 있습니다.",
@@ -385,5 +387,6 @@ let koreanCopy = QCLedgerCopy(
     sparkIdea: "아이디어", sparkDiary: "일기", sparkThought: "생각", sparkSummary: "하루 정리",
     sparkFavorite: "즐겨찾기", sparkTags: "태그", sparkTagHint: "띄어쓰기로 구분",
     sparkPicture: "사진", sparkPictureRemove: "사진 빼기",
-    sparkSearch: "글, 태그, 날짜 검색", sparkNotes: "노트", sparkTimeline: "타임라인"
+    sparkSearch: "글, 태그, 날짜 검색", sparkNotes: "노트", sparkTimeline: "타임라인",
+    sparkShelfEmpty: "아직 내용이 없습니다.", sparkShelfNone: "해당하는 내용이 없습니다."
 )
