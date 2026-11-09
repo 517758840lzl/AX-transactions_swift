@@ -56,6 +56,7 @@ struct QCDashboardEmptyBanners: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(cardFill(wash))
             .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .contentShape(Rectangle())
             .overlay(
                 RoundedRectangle(cornerRadius: 20, style: .continuous)
                     .stroke(wash ? Color.clear : QCPalette.line.opacity(0.95), lineWidth: 1)

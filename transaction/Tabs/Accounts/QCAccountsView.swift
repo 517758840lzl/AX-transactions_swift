@@ -90,6 +90,8 @@ struct QCAccountsView: View {
                         }
                     }
                     .padding(.bottom, 16)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 ForEach(accounts) { account in
@@ -111,6 +113,7 @@ struct QCAccountsView: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         .frame(minHeight: 56, alignment: .center)
+                        .contentShape(Rectangle())
                         .overlay(alignment: .top) {
                             Rectangle().fill(QCPalette.line).frame(height: 1)
                         }
@@ -312,6 +315,7 @@ struct QCAccountsView: View {
         .padding(.vertical, 14)
         .background(Color.white, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(QCPalette.line, lineWidth: 1))
+        .contentShape(Rectangle())
         .plateShadow(opacity: 0.04, radius: 10, y: 8)
         .padding(.top, 8)
     }

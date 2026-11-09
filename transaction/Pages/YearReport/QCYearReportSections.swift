@@ -100,6 +100,8 @@ struct QCYearReportClassify: View {
                                         .font(.system(size: 11, weight: .bold))
                                         .foregroundColor(QCPalette.faint)
                                 }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .contentShape(Rectangle())
                             }
                             .buttonStyle(.plain)
                             Button {
@@ -150,6 +152,7 @@ struct QCYearReportClassify: View {
                             .padding(10)
                             .frame(maxWidth: .infinity, minHeight: 92, alignment: .topLeading)
                             .background(QCPalette.neutral, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
                     }
@@ -256,6 +259,7 @@ struct QCYearReportCompare: View {
                             openMonth(column.month)
                         } label: {
                             VStack(spacing: 6) {
+                                Spacer(minLength: 0)
                                 RoundedRectangle(cornerRadius: 6, style: .continuous)
                                     .fill(column.month == peakMonth && value > 0 ? QCPalette.pink : QCPalette.wash)
                                     .frame(height: height)
@@ -264,6 +268,8 @@ struct QCYearReportCompare: View {
                                     .font(.system(size: 11, weight: .bold))
                                     .foregroundColor(column.month == peakMonth ? QCPalette.ink : QCPalette.muted)
                             }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                            .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
                         .disabled(upcoming(column.month))
@@ -345,16 +351,22 @@ struct QCYearReportTops: View {
                             .padding(.leading, 24)
                     }
                     .padding(.vertical, 6)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
             }
             if more {
-                Button(expanded ? copy.yearFold : copy.yearExpand) {
+                Button {
                     toggle()
+                } label: {
+                    Text(expanded ? copy.yearFold : copy.yearExpand)
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(QCPalette.ink)
+                        .frame(maxWidth: .infinity, minHeight: 36)
+                        .contentShape(Rectangle())
                 }
-                .font(.system(size: 14, weight: .bold))
-                .foregroundColor(QCPalette.ink)
-                .frame(maxWidth: .infinity)
+                .buttonStyle(.plain)
             }
         }
     }
@@ -400,7 +412,9 @@ struct QCYearReportAccounts: View {
                             .font(.system(size: 12, weight: .bold))
                             .foregroundColor(QCPalette.faint)
                     }
-                    .padding(.vertical, 4)
+                    .padding(.vertical, 8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
             }

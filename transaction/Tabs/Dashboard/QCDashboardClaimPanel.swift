@@ -19,19 +19,24 @@ struct QCDashboardClaimPanel: View {
                 ForEach(waiting) { entry in
                     HStack(spacing: 8) {
                         Button { screen.open(.entry(id: entry.id)) } label: {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(entry.title)
-                                    .font(.system(size: 16, weight: .bold))
-                                    .foregroundStyle(QCPalette.ink)
-                                    .lineLimit(1)
-                                Text(entry.category)
-                                    .font(.system(size: 12, weight: .semibold))
-                                    .foregroundStyle(QCPalette.muted)
+                            HStack(spacing: 8) {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(entry.title)
+                                        .font(.system(size: 16, weight: .bold))
+                                        .foregroundStyle(QCPalette.ink)
+                                        .lineLimit(1)
+                                    Text(entry.category)
+                                        .font(.system(size: 12, weight: .semibold))
+                                        .foregroundStyle(QCPalette.muted)
+                                }
+                                Spacer(minLength: 8)
+                                QCMoneyText(value: entry.amount, mark: store.book.mark, size: 14)
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.vertical, 8)
+                            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                            .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
-                        QCMoneyText(value: entry.amount, mark: store.book.mark, size: 14)
                         Button(copy.claimPaid) { store.payClaim(entry.id) }
                             .font(.system(size: 12, weight: .bold))
                             .foregroundStyle(QCPalette.ink)
@@ -39,7 +44,6 @@ struct QCDashboardClaimPanel: View {
                             .padding(.vertical, 6)
                             .background(QCPalette.pink, in: Capsule())
                     }
-                    .padding(.vertical, 8)
                 }
             }
         }

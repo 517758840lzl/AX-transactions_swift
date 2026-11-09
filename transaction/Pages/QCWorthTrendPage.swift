@@ -37,6 +37,7 @@ struct QCWorthSummary: View {
                             .foregroundStyle(selected ? QCPalette.ink : QCPalette.muted)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
+                            .contentShape(Rectangle())
                             .overlay(alignment: .bottom) {
                                 if selected {
                                     Capsule().fill(QCPalette.pink).frame(height: 3).padding(.horizontal, 10)

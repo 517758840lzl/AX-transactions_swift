@@ -27,6 +27,7 @@ struct QCDashboardBudgetPanel: View {
                 }) {
                     filled(budget: budget, left: left)
                 }
+                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
         } else {

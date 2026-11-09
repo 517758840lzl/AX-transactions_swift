@@ -386,27 +386,12 @@ struct QCSparksListView: View {
     }
 
     private func sparkCard(_ copy: QCLedgerCopy, spark: QCSpark) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text(copy.sparkKindTitle(spark.kind))
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(QCPalette.muted)
-                Spacer(minLength: 8)
-                Button {
-                    var next = spark
-                    next.favorite.toggle()
-                    store.saveSpark(next)
-                } label: {
-                    Text(spark.favorite ? "★" : "☆")
-                        .font(.system(size: 18))
-                        .foregroundStyle(QCPalette.ink)
-                        .frame(minWidth: 32, minHeight: 32)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(copy.sparkFavorite)
-            }
+        ZStack(alignment: .topTrailing) {
             Button { screen.open(.spark(id: spark.id)) } label: {
                 VStack(alignment: .leading, spacing: 8) {
+                    Text(copy.sparkKindTitle(spark.kind))
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(QCPalette.muted)
                     if let image = spark.image, let picture = UIImage(data: image) {
                         Image(uiImage: picture)
                             .resizable()
@@ -427,11 +412,26 @@ struct QCSparksListView: View {
                             .foregroundStyle(QCPalette.muted)
                     }
                 }
+                .padding(14)
+                .padding(.trailing, 36)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+            Button {
+                var next = spark
+                next.favorite.toggle()
+                store.saveSpark(next)
+            } label: {
+                Text(spark.favorite ? "★" : "☆")
+                    .font(.system(size: 18))
+                    .foregroundStyle(QCPalette.ink)
+                    .frame(minWidth: 32, minHeight: 32)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(copy.sparkFavorite)
+            .padding(10)
         }
-        .padding(14)
         .background(QCPalette.wash, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 

@@ -226,7 +226,8 @@ struct QCDashboardStatsPanel: View {
                     .font(.system(size: 12, weight: .bold))
                     .foregroundStyle(selected ? QCPalette.ink : QCPalette.muted)
             }
-            .frame(maxWidth: .infinity, alignment: .bottom)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+            .contentShape(Rectangle())
             .opacity(future ? 0.35 : 1)
         }
         .buttonStyle(.plain)
@@ -254,6 +255,8 @@ struct QCDashboardStatsPanel: View {
             QCPortionBar(fraction: share, tint: QCPalette.pink, track: QCPalette.neutral, height: 8)
         }
         .padding(.vertical, 6)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
     }
 
     private func rankRow(index: Int, name: String, amount: Double) -> some View {
@@ -278,6 +281,8 @@ struct QCDashboardStatsPanel: View {
                 .foregroundStyle(QCPalette.faint)
         }
         .padding(.vertical, 6)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
     }
 
     private func matches(_ entry: QCEntry) -> Bool {
